@@ -2,7 +2,7 @@ language: android
 jdk:
   - oraclejdk8
 before_install:
-- sudo add-apt-repository ppa:mikegedelman/leiningen-git-stable
+- sudo add-apt-repository ppa:mikegedelman/leiningen-git-stable -y
 - sudo apt-get update -q
 - sudo apt-get install leiningen -y
 - nvm install 6
