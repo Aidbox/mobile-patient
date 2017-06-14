@@ -15,8 +15,9 @@ android:
   - addon-google_apis-google-16
 
 env:
-- GC_SA=mobile@aidbox-next.iam.gserviceaccount.com
-- BUCKET=gs://aidbox-mobile-patient
+  global:
+    - GC_SA=mobile@aidbox-next.iam.gserviceaccount.com
+    - BUCKET=gs://aidbox-mobile-patient
 
 before_install:
 - nvm install 6
