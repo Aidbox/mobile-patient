@@ -44,3 +44,5 @@ script:
   - cd android && ./gradlew assembleRelease && cd ..
   - gsutil cp -r ./android/app/build/outputs/apk/app-release-unsigned.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/app.apk
   - gsutil acl -r ch -u AllUsers:R $BUCKET
+  - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/app.apk"
+
