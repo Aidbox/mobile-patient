@@ -1,6 +1,10 @@
 language: android
 jdk:
   - oraclejdk8
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
     - $HOME/.gradle/caches/
@@ -8,9 +12,6 @@ cache:
     - $HOME/.android/build-cache
     - $HOME/.m2
     - /home/travis/build/Aidbox/mobile-patient/node_modules
-before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 
 android:
   components:
@@ -27,25 +28,20 @@ env:
     - BUCKET=gs://aidbox-mobile-patient
 
 before_install:
-- nvm install 6
-- node --version
-- curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
-- chmod a+x lein
-- sudo mv lein /bin
-- openssl aes-256-cbc -K $encrypted_df8305bdbb16_key -iv $encrypted_df8305bdbb16_iv -in account.json.enc -out account.json -d
-- wget https://dl.google.com/dl/cloudsdk/release/install_google_cloud_sdk.bash
-- chmod +x install_google_cloud_sdk.bash
-- ./install_google_cloud_sdk.bash --disable-prompts --install-dir=$HOME
-- export PATH=$PATH:$HOME/google-cloud-sdk/bin
-- gcloud auth activate-service-account $GC_SA --key-file=account.json
-
-install:
-  # - npm install
+  - nvm install 6
+  - npm install
+  - curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
+  - chmod a+x lein && - sudo mv lein /bin
+  - openssl aes-256-cbc -K $encrypted_df8305bdbb16_key -iv $encrypted_df8305bdbb16_iv -in account.json.enc -out account.json -d
+  - wget https://dl.google.com/dl/cloudsdk/release/install_google_cloud_sdk.bash
+  - chmod +x install_google_cloud_sdk.bash
+  - ./install_google_cloud_sdk.bash --disable-prompts --install-dir=$HOME
+  - export PATH=$PATH:$HOME/google-cloud-sdk/bin
+  - gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 script:
-- lein prod-build
-  #- cd android && ./gradlew assembleRelease && cd ..
-- gsutil cp -r package.json $BUCKET
-- gsutil cp -r ./android/app/build/outputs/apk/app-release-unsigned.apk $BUCKET
-- gsutil acl -r ch -u AllUsers:R $BUCKET
-- gsutil -m setmeta -h "Cache-Control:no-cache, max-age=0" -r $BUCKET
+  - lein prod-build
+  - cd android && ./gradlew assembleRelease && cd ..
+  - gsutil cp -r package.json $BUCKET
+  - gsutil cp -r ./android/app/build/outputs/apk/app-release-unsigned.apk $BUCKET
+  - gsutil acl -r ch -u AllUsers:R $BUCKET
