@@ -43,5 +43,5 @@ script:
   - lein prod-build
   - cd android && ./gradlew assembleRelease && cd ..
   - gsutil cp -r package.json $BUCKET/$TRAVIS_COMMIT
-  - gsutil cp -r ./android/app/build/outputs/apk/app-release-unsigned.apk $BUCKET
+  - gsutil cp -r ./android/app/build/outputs/apk/app-release-unsigned.apk $BUCKET/$TRAVIS_COMMIT
   - gsutil acl -r ch -u AllUsers:R $BUCKET
