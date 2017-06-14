@@ -44,7 +44,8 @@ before_install:
 script:
   - lein prod-build
   - cd android && ./gradlew assembleRelease && cd ..
-  - gsutil cp -r ./android/app/build/outputs/apk/app-release-unsigned.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/app.apk
+  - ls ./android/app/build/outputs/apk/
+  - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/app.apk
   - gsutil acl -r ch -u AllUsers:R $BUCKET
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/app.apk"
 
