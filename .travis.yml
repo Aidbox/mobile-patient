@@ -1,4 +1,5 @@
 language: android
+sudo: required
 jdk:
   - oraclejdk8
 
@@ -15,13 +16,18 @@ cache:
 
 android:
   components:
-  - build-tools-24.0.3
-  - android-23
-  - extra-android-m2repository
-  - extra-google-google_play_services
-  - extra-google-m2repository
-  - addon-google_apis-google-16
-
+    - tools
+    - platform-tools
+    - build-tools-24.0.3
+    - android-23
+    - extra-android-m2repository
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - addon-google_apis-google-16
+  licenses:
+    - 'android-sdk-preview-license-.+'
+    - 'android-sdk-license-.+'
+    - 'intel-android-extra-license.+'
 env:
   global:
     - GC_SA=mobile@aidbox-next.iam.gserviceaccount.com
