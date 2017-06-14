@@ -4,7 +4,7 @@ jdk:
 cache:
   directories:
   - $HOME/.m2
-  - ./node_modules
+  - /home/travis/build/Aidbox/mobile-patient/node_modules
 android:
   components:
   - build-tools-23.0.1
@@ -14,14 +14,11 @@ android:
   - extra-google-m2repository
   - addon-google_apis-google-16
 
-environment:
-  GC_SA: mobile@aidbox-next.iam.gserviceaccount.com
-  BUCKET: gs://aidbox-mobile-patient
+env:
+- GC_SA=mobile@aidbox-next.iam.gserviceaccount.com
+- BUCKET=gs://aidbox-mobile-patient
 
 before_install:
-- echo "1111111111111111111111111111111"
-- pwd
-- echo "1111111111111111111111111111111"
 - nvm install 6
 - node --version
 - curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
@@ -35,11 +32,11 @@ before_install:
 - gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 install:
-- npm install
+  # - npm install
 
 script:
 - lein prod-build
-- cd android && ./gradlew assembleRelease && cd ..
+  #- cd android && ./gradlew assembleRelease && cd ..
 - gsutil cp -r package.json $BUCKET
 - gsutil cp -r ./android/app/build/outputs/apk/app-release-unsigned.apk $BUCKET
 - gsutil acl -r ch -u AllUsers:R $BUCKET
