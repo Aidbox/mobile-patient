@@ -33,6 +33,7 @@ before_install:
   - curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
   - chmod a+x lein && sudo mv lein /bin
   - openssl aes-256-cbc -K $encrypted_df8305bdbb16_key -iv $encrypted_df8305bdbb16_iv -in account.json.enc -out account.json -d
+  - openssl aes-256-cbc -K $encrypted_456bb67d1fef_key -iv $encrypted_456bb67d1fef_iv -in my-release-key.keystore.enc -out my-release-key.keystore -d
   - wget https://dl.google.com/dl/cloudsdk/release/install_google_cloud_sdk.bash
   - chmod +x install_google_cloud_sdk.bash
   - ./install_google_cloud_sdk.bash --disable-prompts --install-dir=$HOME
@@ -42,7 +43,9 @@ before_install:
 script:
   - lein prod-build
   - cd android && ./gradlew assembleRelease && cd ..
-  - gsutil cp -r ./android/app/build/outputs/apk/app-release-unsigned.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/app.apk
+  - zipalign -v -p 4 ./android/app/build/outputs/apk/app-release-unsigned.apk ./app-release-unsigned-aligned.apk
+  - apksigner sign --ks my-release-key.keystore --out app-release.apk app-release-unsigned-aligned.apk
+  - gsutil cp -r ./app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/app.apk
   - gsutil acl -r ch -u AllUsers:R $BUCKET
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/app.apk"
 
