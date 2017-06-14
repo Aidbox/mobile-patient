@@ -3,8 +3,15 @@ jdk:
   - oraclejdk8
 cache:
   directories:
-  - $HOME/.m2
-  - /home/travis/build/Aidbox/mobile-patient/node_modules
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
+    - $HOME/.m2
+    - /home/travis/build/Aidbox/mobile-patient/node_modules
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
 android:
   components:
   - build-tools-23.0.1
