@@ -1,6 +1,10 @@
 language: android
 jdk:
   - oraclejdk8
+cache:
+  directories:
+  - $HOME/.m2
+  - ./node_modules
 android:
   components:
   - build-tools-23.0.1
@@ -10,15 +14,33 @@ android:
   - extra-google-m2repository
   - addon-google_apis-google-16
 
+environment:
+  GC_SA: mobile@aidbox-next.iam.gserviceaccount.com
+  BUCKET: gs://aidbox-mobile-patient
+
 before_install:
+- echo "1111111111111111111111111111111"
+- pwd
+- echo "1111111111111111111111111111111"
 - nvm install 6
 - node --version
 - curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
 - chmod a+x lein
 - sudo mv lein /bin
+- openssl aes-256-cbc -K $encrypted_df8305bdbb16_key -iv $encrypted_df8305bdbb16_iv -in account.json.enc -out account.json -d
+- wget https://dl.google.com/dl/cloudsdk/release/install_google_cloud_sdk.bash
+- chmod +x install_google_cloud_sdk.bash
+- ./install_google_cloud_sdk.bash --disable-prompts --install-dir=$HOME
+- export PATH=$PATH:$HOME/google-cloud-sdk/bin
+- gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 install:
 - npm install
+
 script:
 - lein prod-build
-- cd android && ./gradlew assembleRelease
+- cd android && ./gradlew assembleRelease && cd ..
+- gsutil cp -r package.json $BUCKET
+- gsutil cp -r ./android/app/build/outputs/apk/app-release-unsigned.apk $BUCKET
+- gsutil acl -r ch -u AllUsers:R $BUCKET
+- gsutil -m setmeta -h "Cache-Control:no-cache, max-age=0" -r $BUCKET
