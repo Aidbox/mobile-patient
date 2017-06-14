@@ -33,6 +33,8 @@ before_install:
   - curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
   - chmod a+x lein && sudo mv lein /bin
   - openssl aes-256-cbc -K $encrypted_df8305bdbb16_key -iv $encrypted_df8305bdbb16_iv -in account.json.enc -out account.json -d
+  - openssl aes-256-cbc -K $encrypted_06308b3b5ec9_key -iv $encrypted_06308b3b5ec9_iv -in gradle.properties.enc -out gradle.properties -d
+  - openssl aes-256-cbc -K $encrypted_456bb67d1fef_key -iv $encrypted_456bb67d1fef_iv -in my-release-key.keystore.enc -out my-release-key.keystore -d
   - wget https://dl.google.com/dl/cloudsdk/release/install_google_cloud_sdk.bash
   - chmod +x install_google_cloud_sdk.bash
   - ./install_google_cloud_sdk.bash --disable-prompts --install-dir=$HOME
