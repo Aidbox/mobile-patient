@@ -31,7 +31,7 @@ before_install:
   - nvm install 6
   - npm install
   - curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
-  - chmod a+x lein && - sudo mv lein /bin
+  - chmod a+x lein && sudo mv lein /bin
   - openssl aes-256-cbc -K $encrypted_df8305bdbb16_key -iv $encrypted_df8305bdbb16_iv -in account.json.enc -out account.json -d
   - wget https://dl.google.com/dl/cloudsdk/release/install_google_cloud_sdk.bash
   - chmod +x install_google_cloud_sdk.bash
