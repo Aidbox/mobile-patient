@@ -1,4 +1,4 @@
-(ns mobile-patient.app
+(ns mobile-patient.nav
   (:require [reagent.core :as r]
             [mobile-patient.ui :as ui]
             [mobile-patient.nav :as nav]

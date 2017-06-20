@@ -1,1 +1,1 @@
-(ns mobile-patient)
+(ns mobile-patient.app)
