@@ -1,7 +1,7 @@
 (ns mobile-patient.android.core
   (:require [reagent.core :as r :refer [atom]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [mobile-patient.app :refer [app]]
+            [mobile-patient.nav :refer [routes]]
             [mobile-patient.events]
             [mobile-patient.subs]))
 
@@ -10,7 +10,7 @@
 
 
 (defn app-root []
-  [(r/adapt-react-class app)])
+  [(r/adapt-react-class routes)])
 
 (defn init []
       (dispatch-sync [:initialize-db])
