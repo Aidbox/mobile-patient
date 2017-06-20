@@ -80,4 +80,5 @@
 
      })
    (clj->js
-    {:initialRouteName "Login"})))
+    {:initialRouteName "Login"
+     :headerMode :screen})))
