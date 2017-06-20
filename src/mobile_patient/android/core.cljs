@@ -1,7 +1,7 @@
 (ns mobile-patient.android.core
   (:require [reagent.core :as r :refer [atom]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [mobile-patient.nav :refer [routes]]
+            [mobile-patient.routes :refer [routes]]
             [mobile-patient.events]
             [mobile-patient.subs]))
 
