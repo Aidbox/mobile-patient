@@ -5,4 +5,4 @@
 
 (defn ChatScreen [{:keys [navigation]}]
   [ui/view {:style {:flex 1}}
-   [ui/text "Chat"]])
+   [ui/text "Chatssssss"]])

@@ -3,7 +3,6 @@
             [mobile-patient.ui :as ui]
             [mobile-patient.nav :as nav]))
 
-
 (defn LoginScreen [{:keys [navigation]}]
   [ui/view {:style {:flex 1
                     :justify-content :center}}
