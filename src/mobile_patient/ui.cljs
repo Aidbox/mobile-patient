@@ -13,6 +13,8 @@
 (def image (r/adapt-react-class (.-Image ReactNative)))
 (def text (r/adapt-react-class (.-Text ReactNative)))
 (def input (r/adapt-react-class (.-TextInput ReactNative)))
+(def Switch (.-Switch ReactNative))
+(def switch (r/adapt-react-class (.-Switch ReactNative)))
 (def button (r/adapt-react-class (.-Button ReactNative)))
 (def date-picker (r/adapt-react-class (aget react-datepicker "default")))
 (def list-view (r/adapt-react-class (.-ListView ReactNative)))

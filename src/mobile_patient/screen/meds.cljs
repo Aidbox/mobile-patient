@@ -4,5 +4,9 @@
 
 
 (defn MedsScreen [{:keys [navigation]}]
-  [ui/view {:style {:flex 1}}
-   [ui/text "Meds"]])
+  [ui/table-view
+   [ui/section
+    [ui/cell {:title "Medication 1" :on-press #()}]
+    [ui/cell {:title "Medication 2" :on-press #()}]
+    [ui/cell {:title "Medication 3" :on-press #()}]
+    ]])
