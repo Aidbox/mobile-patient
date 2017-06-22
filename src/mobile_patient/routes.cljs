@@ -5,7 +5,7 @@
             [mobile-patient.screen.demographics :refer [DemographicsScreen]]
             [mobile-patient.screen.vitals :refer [VitalsScreen]]
             [mobile-patient.screen.meds :refer [MedsScreen]]
-            [mobile-patient.screen.chat :refer [ChatScreen]]
+            [mobile-patient.events :refer [ChatScreen]]
             [mobile-patient.screen.settings :refer [SettingsScreen]]
             [mobile-patient.screen.contacts :refer [ContactsScreen]]))
 
@@ -62,7 +62,8 @@
                                     #js {:title "Chat"
                                          :headerRight (r/as-element [chat-buttons props.navigation])})}})
    (clj->js
-    {:tabBarPosition "bottom"})))
+    {:tabBarPosition "bottom"
+     :initialRouteName "Chat" })))      ;delete
 
 
 (def routes
@@ -84,5 +85,5 @@
 
      })
    (clj->js
-    {:initialRouteName "Login"
+    {:initialRouteName "Tabs";; "Login"
      :headerMode :screen})))

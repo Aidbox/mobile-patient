@@ -7,4 +7,6 @@
   (s/keys :req-un [::greeting]))
 
 ;; initial state of app-db
-(def app-db {:greeting "Hello Clojure in iOS and Android!"})
+(def app-db {:config {:base-url "https://sansara.health-samurai.io/"
+                      :client-id "sansara"}
+             :chats []})
