@@ -9,7 +9,8 @@
     "react-navigation",
     "react-native-datepicker",
     "react-native-vector-icons",
-    "react-native-vector-icons/MaterialIcons"
+    "react-native-vector-icons/MaterialIcons",
+    "react-native-tableview-simple"
   ],
   "imageDirs": [
     "images"

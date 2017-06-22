@@ -30,3 +30,8 @@
 
 (def Icon (js/require "react-native-vector-icons/MaterialIcons"))
 (def icon (r/adapt-react-class (aget Icon "default")))
+
+(def ReactNativeTableviewSimple (js/require "react-native-tableview-simple"))
+(def table-view (r/adapt-react-class (.-TableView ReactNativeTableviewSimple)))
+(def section (r/adapt-react-class (.-Section ReactNativeTableviewSimple)))
+(def cell (r/adapt-react-class (.-Cell ReactNativeTableviewSimple)))
