@@ -38,6 +38,7 @@
                     [ui/text (:name chat)]]))))
 
 (defn ChatScreen [{:keys [navigation]}]
+  (js/setInterval #(dispatch [:get-chats]) 3000)
   (let [chats (subscribe [:chats])]
     (fn [_]
       [ui/view
@@ -92,4 +93,7 @@
 (reg-event-fx
  :get-chats
  (fn [cofx [_]]
-   {:fetch {:uri "/Chat" :success :on-chats}}))
+   (let [user (subscribe [:get-in [:user]])]
+     {:fetch {:uri "/Chat"
+              :success :on-chats
+              :opts {:parms {:participant @user}}}})))
