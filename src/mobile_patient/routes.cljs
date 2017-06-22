@@ -5,7 +5,7 @@
             [mobile-patient.screen.demographics :refer [DemographicsScreen]]
             [mobile-patient.screen.vitals :refer [VitalsScreen]]
             [mobile-patient.screen.meds :refer [MedsScreen]]
-            [mobile-patient.screen.chat :refer [ChatScreen]]
+            [mobile-patient.events :refer [ChatScreen]]
             [mobile-patient.screen.settings :refer [SettingsScreen]]
             [mobile-patient.screen.contacts :refer [ContactsScreen]]))
 
@@ -28,16 +28,14 @@
 
 (defn add-chat-button [navigation]
   [ui/touchable-highlight {:on-press #(navigation.navigate "Contacts")}
-   [ui/image {:source plus-img
-              :style  {:width 36 :height 36 :margin-right 8}}]])
+   [ui/icon {:name "add-circle" :size 36 :color "#FF485C" :margin-right 8}]])
 
 (defn settings-button [navigation]
   [ui/touchable-highlight {:on-press #(navigation.navigate "Settings")}
-   [ui/image {:source settings-img
-              :style  {:width 36 :height 36 :margin-right 8}}]])
+   [ui/icon {:name "settings" :size 36 :color "#000" :margin-right 8}]])
 
 (defn chat-buttons [navigation]
-  [ui/view {:flex-direction :row}
+  [ui/view {:flex-direction :row :justify-content :space-around :width 86}
    [settings-button navigation]
    [add-chat-button navigation]])
 
@@ -62,7 +60,8 @@
                                     #js {:title "Chat"
                                          :headerRight (r/as-element [chat-buttons props.navigation])})}})
    (clj->js
-    {:tabBarPosition "bottom"})))
+    {:tabBarPosition "bottom"
+     :initialRouteName "Chat" })))      ;delete
 
 
 (def routes
@@ -84,5 +83,5 @@
 
      })
    (clj->js
-    {:initialRouteName "Login"
+    {:initialRouteName "Tabs";; "Login"
      :headerMode :screen})))
