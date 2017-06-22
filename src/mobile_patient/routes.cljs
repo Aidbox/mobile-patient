@@ -28,16 +28,14 @@
 
 (defn add-chat-button [navigation]
   [ui/touchable-highlight {:on-press #(navigation.navigate "Contacts")}
-   [ui/image {:source plus-img
-              :style  {:width 36 :height 36 :margin-right 8}}]])
+   [ui/icon {:name "add-circle" :size 36 :color "#FF485C" :margin-right 8}]])
 
 (defn settings-button [navigation]
   [ui/touchable-highlight {:on-press #(navigation.navigate "Settings")}
-   [ui/image {:source settings-img
-              :style  {:width 36 :height 36 :margin-right 8}}]])
+   [ui/icon {:name "settings" :size 36 :color "#000" :margin-right 8}]])
 
 (defn chat-buttons [navigation]
-  [ui/view {:flex-direction :row}
+  [ui/view {:flex-direction :row :justify-content :space-around :width 86}
    [settings-button navigation]
    [add-chat-button navigation]])
 
