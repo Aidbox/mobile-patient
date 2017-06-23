@@ -1,11 +1,12 @@
 (ns mobile-patient.routes
   (:require [reagent.core :as r]
+            [re-frame.core :refer [subscribe]]
             [mobile-patient.ui :as ui]
             [mobile-patient.screen.login :refer [LoginScreen]]
             [mobile-patient.screen.demographics :refer [DemographicsScreen]]
             [mobile-patient.screen.vitals :refer [VitalsScreen]]
             [mobile-patient.screen.meds :refer [MedsScreen]]
-            [mobile-patient.events :refer [ChatScreen]]
+            [mobile-patient.events :refer [ChatsScreen ChatScreen]]
             [mobile-patient.screen.settings :refer [SettingsScreen]]
             [mobile-patient.screen.contacts :refer [ContactsScreen]]))
 
@@ -55,13 +56,13 @@
                                     #js {:title "Meds"
                                          :headerRight (r/as-element [logout-button props.navigation])})}
 
-     "Chat"   {:screen (r/reactify-component ChatScreen)
+     "Chats"   {:screen (r/reactify-component ChatsScreen)
                :navigationOptions (fn [props]
-                                    #js {:title "Chat"
+                                    #js {:title "Chats"
                                          :headerRight (r/as-element [chat-buttons props.navigation])})}})
    (clj->js
     {:tabBarPosition "bottom"
-     :initialRouteName "Chat" })))      ;delete
+     :initialRouteName "Chats" })))      ;delete
 
 
 (def routes
@@ -77,6 +78,12 @@
 
      "Settings" {:screen (r/reactify-component SettingsScreen)
                  :navigationOptions {:title "Settings"}}
+
+     "Chat" {:screen (r/reactify-component ChatScreen)
+             :navigationOptions ;; {:title "Chat"}
+             (fn [props]
+               (let [chat-name (-> props .-navigation .-state .-params (aget "chat-name"))]
+                 #js {:title chat-name}))}
 
      "Contacts" {:screen (r/reactify-component ContactsScreen)
                  :navigationOptions {:title "Contacts"}}

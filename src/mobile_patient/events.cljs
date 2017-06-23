@@ -3,7 +3,7 @@
   (:require
    [reagent.core :as r]
    [re-frame.core :refer [reg-event-db after reg-event-fx reg-fx
-                          dispatch subscribe reg-sub-raw]]
+                          dispatch dispatch-sync subscribe reg-sub-raw]]
    [mobile-patient.ui :as ui]
    [clojure.spec.alpha :as s]
    [mobile-patient.db :as db :refer [app-db]]))
@@ -24,7 +24,8 @@
     (after (partial check-and-throw ::db/app-db))
     []))
 
-;; Views
+;; -- Views----------------------------------------------------------
+
 (def ds (ui/ReactNative.ListView.DataSource. #js{:rowHasChanged (fn[a b] false)}))
 
 (def row-comp (r/reactify-component
@@ -34,20 +35,42 @@
                        chat @row]
                    [ui/touchable-highlight
                     {:style {:border-top-width 1 :border-color "#000"}
-                     :on-press #(println "Chat click")}
+                     :on-press #(do
+                                  (dispatch [:set-chat chat])
+                                  (navigation.navigate "Chat" #js{:chat-name (:name chat)}))}
                     [ui/text (:name chat)]]))))
 
-(defn ChatScreen [{:keys [navigation]}]
-  (js/setInterval #(dispatch [:get-chats]) 3000)
-  (let [chats (subscribe [:chats])]
-    (fn [_]
+(defonce get-chats-timer-id (atom nil))
+(def dt (atom (js/Date.)))
+
+(defn ChatsScreen [{:keys [navigation]}]
+  (js/clearInterval @get-chats-timer-id)
+  (reset! get-chats-timer-id (js/setInterval #(dispatch [:get-chats])) 3000)
+  (fn [_]
+    (let [chats (subscribe [:chats])
+          source (map #(r/atom %) @chats)]
       [ui/view
-       [ui/list-view {:dataSource (.cloneWithRows ds (clj->js @chats))
+       [ui/list-view {:dataSource (.cloneWithRows ds (clj->js source))
                       :render-row (fn [row]
                                     (r/create-element
                                      row-comp
                                      #js{:row row
                                          :navigation navigation}))}]])))
+
+(defn ChatScreen [_]
+  (fn [_]
+    [ui/view
+     [ui/text "Test1"]]))
+
+;; -- Subscriptions----------------------------------------------------------
+
+(reg-sub-raw
+ :chats
+ (fn [db _] (reaction (:chats @db))))
+
+(reg-sub-raw
+ :chat
+ (fn [db _] (reaction (:chat @db))))
 
 ;; -- Handlers --------------------------------------------------------------
 
@@ -56,14 +79,18 @@
  (fn [_ _]
    app-db))
 
-(reg-sub-raw
- :chats
- (fn [db _] (reaction (:chats @db))))
+(reg-event-db
+ :set-chat
+ (fn [db [_ chat]]
+   (assoc db :chat chat)))
 
 (reg-event-db
  :on-chats
  (fn [db [_ value]]
-   (assoc db :chats (vec (map #(r/atom (:resource %)) (:entry value))))))
+   (let [chats (map :resource (:entry value))]
+     (if (not (= (:chats db) chats))
+       (assoc db :chats chats)
+       db))))
 
 (defn parms->query [parms]
   (str "?"
