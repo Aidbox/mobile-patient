@@ -51,6 +51,7 @@
           source (map #(r/atom %) @chats)]
       [ui/view
        [ui/list-view {:dataSource (.cloneWithRows ds (clj->js source))
+                      :enableEmptySections true
                       :render-row (fn [row]
                                     (r/create-element
                                      row-comp
