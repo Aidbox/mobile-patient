@@ -87,7 +87,7 @@
                  :navigationOptions {:title "Settings"}}
 
      "Chat" {:screen (r/reactify-component ChatScreen)
-             :navigationOptions ;; {:title "Chat"}
+             :navigationOptions
              (fn [props]
                (let [chat-name (-> props .-navigation .-state .-params (aget "chat-name"))]
                  #js {:title chat-name}))}
@@ -97,6 +97,6 @@
 
      })
    (clj->js
-    {:initialRouteName "Login"
+    {:initialRouteName "Tabs";; "Login"
      :navigationOptions {:headerTintColor color/grey}
      :headerMode :screen})))

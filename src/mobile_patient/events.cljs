@@ -4,6 +4,7 @@
    [reagent.core :as r]
    [re-frame.core :refer [reg-event-db after reg-event-fx reg-fx
                           dispatch dispatch-sync subscribe reg-sub-raw]]
+   [mobile-patient.color :as color]
    [re-frame.loggers :as rf.log]
    [mobile-patient.ui :as ui]
    [clojure.spec.alpha :as s]
@@ -48,7 +49,19 @@
          :on-press #(do
                       (dispatch [:set-chat chat])
                       (navigation.navigate "Chat" #js{:chat-name (:name chat)}))}
-        [ui/text (:name chat)]]))))
+        [ui/view {:style {:flex 1
+                          :flex-direction :row
+                          :margin-top 10
+                          :margin-bottom 10
+                          :margin-left 10}}
+         [ui/view {:style {:flex 0.9}}
+          [ui/text {:style {:color "black"}}
+           (:name chat)]
+          [ui/text "Participants: abafjalkfjalfkajfl;kajflkasjfalskfjaslkfjaslkfjaslfkasjflkasjflak;sjfaslk;fjaslkfjsalkfjaslkfsjaflksjflksjmslkafjslkmqpofmslad;kmn"]]
+         [ui/icon {:style {:flex 0.1}
+                   :name "chevron-right"
+                   :size 36
+                   :color color/pink}]]]))))
 
 (defn dispatch-get-chats-event []
   (dispatch [:get-chats]))
@@ -109,7 +122,7 @@
                                           (.setNativeProps @input #js{:text ""})
                                           (.dismiss (.-Keyboard ui/ReactNative))
                                           (dispatch [:send-message]))}
-     [ui/icon {:name "send" :size 32 :color "deepskyblue" :margin-right 8}]]))
+     [ui/icon {:name "send" :size 36 :color "deepskyblue" :margin-right 8}]]))
 
 (defn ChatScreen [_]
   (let [this (r/current-component)
@@ -222,30 +235,13 @@
  :fetch
  (fn [{:keys [:uri :opts :success]}]
    (let [base-url (subscribe [:get-in [:config :base-url]])]
-     (when (= (:method opts) "POST")
-       (println "parms" (str @base-url uri (parms->query (:parms opts))))
-       (println (merge {:method "GET"
-                        :headers {"content-type" "application/json"}}
-                       opts)))
      (-> (js/fetch (str @base-url uri (parms->query (:parms opts)))
                    (clj->js (merge {:method "GET"
                                     :headers {"Content-Type" "application/json"}}
                                    opts)))
-         (.then #(do
-                   (if (= (:method opts) "POST")
-                     (do
-                       (println "status" (.-status %))
-                       (println "content type" (.get (.-headers %) "Content-Type"))
-                       (.text %))
-                     (.json %))
-                   ;; (when (= (:method opts) "POST")
-                   ;;   (println "fetch then" (.text %)))
-                   ;; (.json %)
-                   ))
+         (.then #(.json %))
          (.then
           (fn [response]
-            (when (= (:method opts) "POST")
-              (println "then" response))
             (dispatch [success (js->clj response :keywordize-keys true)])))
          (.catch #(println "Fetch error" %)))
      {})))
@@ -278,13 +274,11 @@
                      :resourceType "Chat"}
               :author {:id user
                        :resourceType "User"}}]
-     (println "msg" msg)
-     (println "send-message" message)
      (if (and message (not (clojure.string/blank? message)))
        {:fetch {:uri "/Message"
                 :success :on-send-message
                 :opts {:method "POST"
-                       :headers {"Content-Type" "text/plain"}
+                       :headers {"content-type" "application/json"}
                        :body (.stringify js/JSON (clj->js msg))}}
         :dispatch [:set-message ""]}
        {}))))
