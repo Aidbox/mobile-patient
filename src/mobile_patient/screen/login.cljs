@@ -14,9 +14,7 @@
   (let [login (atom "")
         password (atom "")]
     (fn []
-      [ui/view {:style {:flex 1 :justify-content :center}}
-       [ui/text "Login"]
-       [ui/input {:on-change-text #(reset! login %)}]
-       [ui/text "Password"]
-       [ui/input {:on-change-text #(reset! password %)}]
-       [ui/button {:title "LogIn" :on-press #(login-handler @login @password navigation.dispatch)}]])))
+      [ui/view {:style {:flex 1 :justify-content :center :margin 30}}
+       [ui/input {:placeholder "Login" :on-change-text #(reset! login %)}]
+       [ui/input {:placeholder "Password" :on-change-text #(reset! password %)}]
+       [ui/button {:title "Log In" :on-press #(login-handler @login @password navigation.dispatch)}]])))

@@ -19,21 +19,19 @@
         sex (r/atom "")
         address (atom "")]
     (fn []
-      [ui/view {:style {:flex 1}}
-
-       [ui/text "Age"]
-       [ui/input {:on-change-text #(reset! age %)
+      [ui/view {:style {:flex 1 :margin 30}}
+       [ui/input {:placeholder "Age"
+                  :on-change-text #(reset! age %)
                   :keyboard-type :numeric}]
 
-       [ui/text "Sex"]
        [ui/picker {:on-value-change #(reset! sex %)
                    :selected-value @sex}
-        [ui/picker-item {:label "-- Select Gender --" :value ""}]
+        [ui/picker-item {:label "-- Sex --" :value ""}]
         [ui/picker-item {:label "Male" :value "male"}]
         [ui/picker-item {:label "Female" :value "female"}]]
 
-       [ui/text "Address"]
-       [ui/input {:on-change-text #(reset! address %)}]
+       [ui/input {:placeholder "Address"
+                  :on-change-text #(reset! address %)}]
 
        [ui/button {:title "Save" :on-press #(submit-handler @age
                                                             @sex

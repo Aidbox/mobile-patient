@@ -18,6 +18,6 @@
 
 
 (defn ContactsScreen [{:keys [navigation]}]
-  [ui/flat-list {:data #js [#js {:key "a" :title "aaa"}
-                            #js {:key "b" :title "bbb"}]
+  [ui/flat-list {:data #js [#js {:key "a" :title "Mary"}
+                            #js {:key "b" :title "Brian"}]
                  :render-item (fn [row] (r/as-element [row-component (js->clj row :keywordize-keys true)]))}])
