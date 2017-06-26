@@ -8,6 +8,7 @@
    [re-frame.loggers :as rf.log]
    [mobile-patient.ui :as ui]
    [clojure.spec.alpha :as s]
+   [clojure.string :as str]
    [mobile-patient.db :as db :refer [app-db]]))
 
 (def warn (js/console.warn.bind js/console))
@@ -37,6 +38,7 @@
 ;; -- Views----------------------------------------------------------
 
 (def ds (ui/ReactNative.ListView.DataSource. #js{:rowHasChanged (fn[a b] false)}))
+(def font-size 18)
 
 (def chat-row-comp
   (r/reactify-component
@@ -44,24 +46,28 @@
      (let [row (props :row)
            navigation (props :navigation)
            chat @row]
-       [ui/touchable-highlight
-        {:style {:border-top-width 1 :border-color "#000"}
-         :on-press #(do
-                      (dispatch [:set-chat chat])
-                      (navigation.navigate "Chat" #js{:chat-name (:name chat)}))}
+       [ui/touchable-highlight {:on-press #(do
+                                             (dispatch [:set-chat chat])
+                                             (navigation.navigate "Chat" #js{:chat-name (:name chat)}))
+                                :underlay-color "white"}
         [ui/view {:style {:flex 1
                           :flex-direction :row
                           :margin-top 10
                           :margin-bottom 10
-                          :margin-left 10}}
+                          :margin-left 20}}
          [ui/view {:style {:flex 0.9}}
-          [ui/text {:style {:color "black"}}
+          [ui/text {:style {:color "black"
+                            :font-weight :bold
+                            :font-size font-size}}
            (:name chat)]
-          [ui/text "Participants: abafjalkfjalfkajfl;kajflkasjfalskfjaslkfjaslkfjaslfkasjflkasjflak;sjfaslk;fjaslkfjsalkfjaslkfsjaflksjflksjmslkafjslkmqpofmslad;kmn"]]
-         [ui/icon {:style {:flex 0.1}
-                   :name "chevron-right"
-                   :size 36
-                   :color color/pink}]]]))))
+          [ui/text {:style {:color "#919291"
+                            :font-size font-size}}
+           (str/join ", " (map :id (:participants chat)))]]
+          [ui/icon {:style {:flex 0.1
+                            :align-self :center}
+                    :name "chevron-right"
+                    :size 36
+                    :color color/pink}]]]))))
 
 (defn dispatch-get-chats-event []
   (dispatch [:get-chats]))
@@ -74,13 +80,28 @@
 (defonce do-get-chats (js/setInterval dispatch-get-chats-event 3000))
 (defonce do-get-messages (js/setInterval dispatch-get-messages-event 1000))
 
+(def chat-row-sep
+  (r/create-element
+   (r/reactify-component
+    (fn [_] [ui/view {:style {:border-width 1
+                              :border-color "#d7d7d7"}}]))
+   #js{}))
+
 (defn ChatsScreen [{:keys [navigation]}]
   (fn [_]
     (let [chats (subscribe [:chats])
           source (map #(r/atom %) @chats)]
-      [ui/view
+      [ui/view {:style {:background-color "white"
+                        :flex 1}}
+       [ui/text {:style {:margin-left 20
+                         :margin-top 20
+                         :margin-bottom 20
+                         :color color/pink
+                         :font-size font-size}}
+        "Practice Groups"]
        [ui/list-view {:dataSource (.cloneWithRows ds (clj->js source))
                       :enableEmptySections true
+                      :render-separator (fn [_] chat-row-sep)
                       :render-row (fn [row]
                                     (r/create-element
                                      chat-row-comp
@@ -118,11 +139,15 @@
   (let [this (r/current-component)]
     [ui/touchable-highlight {:style {:margin-left 5
                                      :margin-right 5}
+                             :underlay-color "#cccccc"
                              :on-press #(do
                                           (.setNativeProps @input #js{:text ""})
                                           (.dismiss (.-Keyboard ui/ReactNative))
                                           (dispatch [:send-message]))}
-     [ui/icon {:name "send" :size 36 :color "deepskyblue" :margin-right 8}]]))
+     [ui/icon {:name "send"
+               :size 36
+               :color "deepskyblue"
+               :margin-right 8}]]))
 
 (defn ChatScreen [_]
   (let [this (r/current-component)
@@ -133,6 +158,7 @@
         [ui/view {:style {:flex 1
                           :background-color "#f4f4f4"}}
          [ui/list-view {:style {:flex 1}
+                        :enableEmptySections true                        
                         :dataSource (.cloneWithRows ds (clj->js source))
                         :render-row (fn [row]
                                       (r/create-element
