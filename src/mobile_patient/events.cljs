@@ -231,6 +231,12 @@
    (assoc db :message value)))
 
 (reg-event-db
+ :set-user
+ (fn [db [_ value]]
+   (println "set-user" value)
+   (assoc db :user value)))
+
+(reg-event-db
  :on-messages
  (fn [db [_ value]]
    db
@@ -318,7 +324,6 @@
          chat {:resourceType "Chat"
                :name chat-name
                :participants (map (fn [p] {:id p :resourceType "User"}) (conj participants user))}]
-     (println "create-chat" chat)
      {:fetch {:uri "/Chat"
               :opts {:method "POST"
                      :headers {"content-type" "application/json"}

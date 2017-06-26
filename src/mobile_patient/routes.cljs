@@ -97,6 +97,6 @@
 
      })
    (clj->js
-    {:initialRouteName "Tabs";; "Login"
+    {:initialRouteName "Login"
      :navigationOptions {:headerTintColor color/grey}
      :headerMode :screen})))
