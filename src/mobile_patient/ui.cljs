@@ -23,6 +23,7 @@
 (def flat-list (r/adapt-react-class (.-FlatList ReactNative)))
 (def section-list (r/adapt-react-class (.-SectionList ReactNative)))
 (def scroll-view (r/adapt-react-class (.-ScrollView ReactNative)))
+(def activity-indicator (r/adapt-react-class (.-ActivityIndicator ReactNative)))
 
 (def picker (r/adapt-react-class (.-Picker ReactNative)))
 (def picker-item (r/adapt-react-class (.-Picker.Item ReactNative)))
