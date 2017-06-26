@@ -268,7 +268,8 @@
          (.then #(.json %))
          (.then
           (fn [response]
-            (dispatch [success (js->clj response :keywordize-keys true)])))
+            (when success
+              (dispatch [success (js->clj response :keywordize-keys true)]))))
          (.catch #(println "Fetch error" %)))
      {})))
 
@@ -309,3 +310,16 @@
         :dispatch [:set-message ""]}
        {}))))
 
+(reg-event-fx
+ :create-chat
+ (fn [_ [_ participants]]
+   (let [user @(subscribe [:get-in [:user]])
+         chat-name (first participants) ; todo: correct chat name
+         chat {:resourceType "Chat"
+               :name chat-name
+               :participants (map (fn [p] {:id p :resourceType "User"}) (conj participants user))}]
+     (println "create-chat" chat)
+     {:fetch {:uri "/Chat"
+              :opts {:method "POST"
+                     :headers {"content-type" "application/json"}
+                     :body (.stringify js/JSON (clj->js chat))}}})))
