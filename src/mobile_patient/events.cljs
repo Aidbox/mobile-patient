@@ -96,6 +96,11 @@
    (assoc db :message value)))
 
 (reg-event-db
+ :set-user
+ (fn [db [_ value]]
+   (assoc db :user value)))
+
+(reg-event-db
  :on-messages
  (fn [db [_ value]]
    (let [messages (map :resource (:entry value))]
