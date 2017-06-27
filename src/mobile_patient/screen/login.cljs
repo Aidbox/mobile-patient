@@ -47,6 +47,12 @@
 
 ;; For test purposes. Uncomment code above for prod.
 
+(def user-map
+  {"Mary" {:id "Mary" :ref {:id "76b0930f-8a5f-49d9-b9cb-94bb76ecf7c9" :resourceType "Patient"}}
+   "Brian" {:id "Brian" :ref {:id "6ee2281a-2d3a-4084-b0fa-9e3b73446122" :resourceType "Patient"}}
+   "practitioner" {:id "patient" :ref {:id "26fa1663-e8a2-4ee8-90d5-de632fc2f68a" :resourceType "Practitioner"}}
+   "patient" {:id "patient" :ref {:id "fe0ecce6-a577-4cde-8c02-f7c482111de8" :resourceType "Patient"}}})
+
 (defn LoginScreen [{:keys [navigation]}]
   (let [login (atom "")
         password (atom "")
@@ -57,6 +63,9 @@
        [ui/input {:placeholder "Login" :on-change-text #(reset! login %)}]
        [ui/input {:placeholder "Password" :on-change-text #(reset! password %)}]
        [ui/button {:title "Log In" :on-press #(do
-                                                (rf/dispatch [:set-user @login])
-                                                (navigation.dispatch nav/tabs))}]])))
+                                                (if-let [user (get user-map @login)]
+                                                  (do
+                                                    (rf/dispatch [:set-user user])
+                                                    (navigation.dispatch nav/tabs))
+                                                  (ui/alert "Login" "User not found")))}]])))
 

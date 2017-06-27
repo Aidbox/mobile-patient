@@ -11,4 +11,4 @@
                       :client-id "sansara"}
              :chats []
              :messages []
-             :user "patient"})
+             :user {:id "patient" :ref {:id "fe0ecce6-a577-4cde-8c02-f7c482111de8" :resourceType "Patient"}}})
