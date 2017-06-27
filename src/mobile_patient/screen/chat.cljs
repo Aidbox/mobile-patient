@@ -119,15 +119,18 @@
 
 (defn ChatScreen [_]
   (let [this (r/current-component)
-        input (atom nil)]
+        input (atom nil)
+        lv (atom nil)]
     (fn [_]
       (let [messages (subscribe [:messages])
             source (map #(r/atom %) @messages)]
         [ui/view {:style {:flex 1
                           :background-color "#f4f4f4"}}
          [ui/list-view {:style {:flex 1}
-                        :enableEmptySections true                        
+                        :enableEmptySections true
+                        :on-content-size-change #(some-> @lv .scrollToEnd)
                         :dataSource (.cloneWithRows ds (clj->js source))
+                        :ref #(reset! lv %)
                         :render-row (fn [row]
                                       (r/create-element
                                        chat-message-row-comp
