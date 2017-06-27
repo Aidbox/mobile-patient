@@ -9,7 +9,9 @@
    [mobile-patient.ui :as ui]
    [clojure.spec.alpha :as s]
    [clojure.string :as str]
-   [mobile-patient.db :as db :refer [app-db]]))
+   [mobile-patient.db :as db :refer [app-db]]
+   [goog.json]
+   [goog.crypt.base64]))
 
 (def warn (js/console.warn.bind js/console))
 (rf.log/set-loggers!
@@ -124,19 +126,37 @@
                parms)))
     nil))
 
+(defn query->params [str-params]
+  "Get string of key=params separated by &
+   Returns map of keys to params"
+  (->> (str/split str-params #"[&=]")
+       (map-indexed #(if (even? %1) (keyword %2) %2))
+       (apply hash-map)))
+
 (reg-fx
  :fetch
  (fn [{:keys [:uri :opts :success :success-parms]}]
-   (let [base-url (subscribe [:get-in [:config :base-url]])]
+   (let [base-url (subscribe [:get-in [:config :base-url]])
+         response (atom nil)]
      (-> (js/fetch (str @base-url uri (parms->query (:parms opts)))
-                   (clj->js (merge {:method "GET"
+                   (clj->js (merge {:redirect "manual"
+                                    :method "GET"
                                     :headers {"Content-Type" "application/json"}}
                                    opts)))
-         (.then #(.json %))
+         (.then (fn [x]
+                  (reset! response x)
+                  (if (str/starts-with? (-> x (aget "headers") (.get "content-type"))
+                                        "application/json")
+                    (.json x)
+                    (.text x))))
          (.then
-          (fn [response]
+          (fn [response-body]
             (when success
-              (dispatch [success (js->clj response :keywordize-keys true) success-parms]))))
+              (dispatch [success (if (= (type response-body) js/Object)
+                                   (js->clj response-body :keywordize-keys true)
+                                   response-body)
+                         success-parms
+                         @response]))))
          (.catch #(println "Fetch error" %)))
      {})))
 
@@ -190,6 +210,7 @@
                      :headers {"content-type" "application/json"}
                      :body (.stringify js/JSON (clj->js chat))}}})))
 
+
 (reg-event-db
  :set-contacts
  (fn [db [_ value ids]]
@@ -242,3 +263,43 @@
               :success :set-contacts
               :success-parms pat-ids
               :opts {:method "GET"}}})))
+
+(defn get-username-from-token [token]
+  (let [[header payload signature] (clojure.string/split token #"\.")]
+    (-> payload
+        goog.crypt.base64/decodeString
+        goog.json.parse
+        (aget "email"))))
+
+(reg-event-fx
+ :on-login
+ (fn [_ [_ resp-body _ resp]]
+   (let [invalid (boolean (re-find #"Wrong credentials" resp-body))]
+     (if invalid
+       (ui/alert "" "Wrong credentials")
+       (let [auth-data (-> (.-url resp) (str/split #"#") second query->params)
+             id-token (:id_token auth-data)]
+         {:db {:current-screen :chat
+               :access-token (:access_token auth-data)
+               :user (get-username-from-token id-token)}})))))
+
+(reg-event-fx
+ :login
+ (fn [_ [_ login password]]
+   (let []
+     {:fetch {:uri "/oauth2/authorize"
+              :success :on-login
+              :opts {:parms {:response_type "id_token token"
+                             :client_id "sansara"
+                             :state "state"
+                             :scope "openid"}
+                     :method "POST"
+                     :headers {"Content-Type" "application/x-www-form-urlencoded"}
+                     :body (str "email=" (js/encodeURIComponent login)
+                                "&password=" (js/encodeURIComponent password))}
+              }})))
+
+(reg-event-db
+ :set-current-screen
+ (fn [db [_ screen]]
+   (assoc db :current-screen screen)))
