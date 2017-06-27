@@ -3,7 +3,7 @@
   (:require
    [reagent.core :as r]
    [re-frame.core :refer [reg-event-db after reg-event-fx reg-fx
-                          dispatch subscribe reg-sub-raw]]
+                          dispatch subscribe reg-sub-raw reg-sub]]
    [mobile-patient.color :as color]
    [re-frame.loggers :as rf.log]
    [mobile-patient.ui :as ui]
@@ -48,25 +48,29 @@
  :user-ref
  (fn [db _] (reaction (get-in @db [:user :ref]))))
 
-(reg-sub-raw
+(reg-sub
+ :contacts
+ (fn [db _] (:contacts db)))
+
+(reg-sub
  :users
- (fn [db _] (reaction (:users @db))))
+ (fn [db _] (:users db)))
 
-(reg-sub-raw
+(reg-sub
  :chats
- (fn [db _] (reaction (:chats @db))))
+ (fn [db _] (:chats db)))
 
-(reg-sub-raw
+(reg-sub
  :chat
- (fn [db _] (reaction (:chat @db))))
+ (fn [db _] (:chat db)))
 
-(reg-sub-raw
+(reg-sub
  :messages
- (fn [db _] (reaction (:messages @db))))
+ (fn [db _] (:messages db)))
 
-(reg-sub-raw
+(reg-sub
  :message
- (fn [db _] (reaction (:message @db))))
+ (fn [db _] (:message db)))
 
 ;; -- Handlers --------------------------------------------------------------
 
@@ -96,11 +100,6 @@
    (assoc db :message value)))
 
 (reg-event-db
- :set-user
- (fn [db [_ value]]
-   (assoc db :user value)))
-
-(reg-event-db
  :on-messages
  (fn [db [_ value]]
    (let [messages (map :resource (:entry value))]
@@ -111,7 +110,6 @@
 (reg-event-fx
  :on-send-message
  (fn [db [_ value]]
-   (println value)
    {}))
 
 (defn parms->query [parms]
@@ -138,7 +136,7 @@
          (.then
           (fn [response]
             (when success
-              (dispatch [success (js->clj response :keywordize-keys true)]))))
+              (dispatch [success (js->clj response :keywordize-keys true) success-parms]))))
          (.catch #(println "Fetch error" %)))
      {})))
 
@@ -192,33 +190,55 @@
                      :headers {"content-type" "application/json"}
                      :body (.stringify js/JSON (clj->js chat))}}})))
 
-;; uncomment and refine
-;; (reg-event-fx
-;;  :get-users
-;;  (fn [_]
-;;    (let []
-;;      {:fetch {:uri "/User"
-;;               :success :on-get-users
-;;               :opts {:method "GET"}}})))
+(reg-event-db
+ :set-contacts
+ (fn [db [_ value ids]]
+   (let [users (map :resource (:entry value))
+         contacts (filter #((set ids) (-> % :ref :id)) users)]
+     (assoc db :contacts contacts))))
 
-;; (reg-event-fx
-;;  :on-get-users
-;;  (fn [cofx [_ value]]
-;;    {:db (assoc db :users (map :resource (:entry value)))
-;;     :dispatch [:get-contacts]}))
+(reg-event-fx
+ :on-get-users
+ (fn [cofx [_ value]]
+   {:db (assoc (:db cofx) :users (map :resource (:entry value)))
+    :dispatch [:get-contacts]}))
 
-;; (reg-event-fx
-;;  :set-user
-;;  (fn [cofx [_ value]]
-;;    {:db (assoc db :user value)
-;;     :dispatch [:get-user-ref]}))
+(reg-event-fx
+ :set-user
+ (fn [cofx [_ value]]
+   {:db (->  (:db cofx)
+             (assoc :user value)
+             (assoc :chats [])
+             (assoc :contacts []))
+    :dispatch [:on-set-user]}))
 
-;; и(reg-event-fx
-;;  :get-user-ref
-;;  (fn [_]
-;;    (let [user-ref @(subscribe [:user-ref])]
-;;      (case (:resourceType user-ref)
-;;        "Patient" {:fetch {:uri (str "/Patient/" (:id user-ref))
-;;                           :success :on-get-user-ref
-;;                           :opts {:method "GET"}}}
-;;        {}))))
+(reg-event-fx
+ :on-set-user
+ (fn [_]
+   (let [user-ref @(subscribe [:user-ref])]
+     (case (:resourceType user-ref)
+       "Patient" {:fetch {:uri (str "/Patient/" (:id user-ref))
+                          :success :on-get-patient
+                          :opts {:method "GET"}}}
+       "Practitioner" {:fetch {:uri "/Patient"
+                               :success :on-get-patients
+                               :opts {:method "GET"}}}
+       {}))))
+
+(reg-event-fx
+ :on-get-patient
+ (fn [_ [_ value]]
+   (let [prac-ids (map :id (filter #(= (:resourceType %) "Practitioner") (:generalPractitioner value)))]
+     {:fetch {:uri "/User"
+              :success :set-contacts
+              :success-parms prac-ids
+              :opts {:method "GET"}}})))
+
+(reg-event-fx
+ :on-get-patients
+ (fn [_ [_ value]]
+   (let [pat-ids (map #(-> % :resource :id) (:entry value))]
+     {:fetch {:uri "/User"
+              :success :set-contacts
+              :success-parms pat-ids
+              :opts {:method "GET"}}})))

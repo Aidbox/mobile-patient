@@ -50,7 +50,7 @@
 (def user-map
   {"Mary" {:id "Mary" :ref {:id "76b0930f-8a5f-49d9-b9cb-94bb76ecf7c9" :resourceType "Patient"}}
    "Brian" {:id "Brian" :ref {:id "6ee2281a-2d3a-4084-b0fa-9e3b73446122" :resourceType "Patient"}}
-   "practitioner" {:id "patient" :ref {:id "26fa1663-e8a2-4ee8-90d5-de632fc2f68a" :resourceType "Practitioner"}}
+   "practitioner" {:id "practitioner" :ref {:id "26fa1663-e8a2-4ee8-90d5-de632fc2f68a" :resourceType "Practitioner"}}
    "patient" {:id "patient" :ref {:id "fe0ecce6-a577-4cde-8c02-f7c482111de8" :resourceType "Patient"}}})
 
 (defn LoginScreen [{:keys [navigation]}]

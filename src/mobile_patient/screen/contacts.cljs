@@ -12,15 +12,15 @@
                                    :padding 10
                                    :background-color "#ffffff"}
                            :on-press (fn []
-                                       (dispatch [:create-chat [(:title item)]])
+                                       (dispatch [:create-chat [(:id item)]])
                                        (navigation.goBack nil))}
    [ui/view {:style {:flex-direction :row :justify-content :space-between}}
-    [ui/text {:style {:text-align "left"}} (:title item)]
+    [ui/text {:style {:text-align "left"}} (:id item)]
     [ui/icon {:name "chevron-right" :size 30 :color "#FF485C"}]]])
 
 
 (defn ContactsScreen [{:keys [navigation]}]
-  [ui/flat-list {:data #js [#js {:key "a" :title "Mary"}
-                            #js {:key "b" :title "Brian"}
-                            #js {:key "admin" :title "admin"}]
-                 :render-item (fn [row] (r/as-element [row-component (js->clj row :keywordize-keys true) navigation]))}])
+  (let [contacts (subscribe [:contacts])]
+    [ui/flat-list {:data (clj->js @contacts)
+                   :key-extractor #(.-id %)
+                   :render-item (fn [row] (r/as-element [row-component (js->clj row :keywordize-keys true) navigation]))}]))
