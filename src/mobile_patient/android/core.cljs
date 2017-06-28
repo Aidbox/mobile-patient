@@ -1,7 +1,7 @@
 (ns mobile-patient.android.core
   (:require [reagent.core :as r :refer [atom]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [mobile-patient.routes :refer [routes]]
+            [mobile-patient.routes :refer [drawer-routes]]
             [mobile-patient.screen.login :refer [LoginScreen]]
             [mobile-patient.screen.demographics :refer [DemographicsScreen]]
             [mobile-patient.events]
@@ -19,8 +19,7 @@
       [(case @screen
          :login LoginScreen
          :demographics DemographicsScreen
-         :main (r/adapt-react-class routes)
-         )])))
+         :main (r/adapt-react-class drawer-routes))])))
 
 (defn init []
       (dispatch-sync [:initialize-db])
