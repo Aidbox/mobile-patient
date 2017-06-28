@@ -28,6 +28,7 @@
 (def picker (r/adapt-react-class (.-Picker ReactNative)))
 (def picker-item (r/adapt-react-class (.-Picker.Item ReactNative)))
 (def touchable-highlight (r/adapt-react-class (.-TouchableHighlight ReactNative)))
+(def touchable-opacity (r/adapt-react-class (.-TouchableOpacity ReactNative)))
 
 (defn alert [title msg]
   (.alert (.-Alert ReactNative) title msg   #js[#js{:text "Close"}]))

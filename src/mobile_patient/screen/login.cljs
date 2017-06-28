@@ -29,5 +29,5 @@
                                                 (if-let [user (get user-map @login)]
                                                   (do
                                                     (rf/dispatch-sync [:set-user user])
-                                                    (rf/dispatch [:set-current-screen :chat]))
+                                                    (rf/dispatch [:set-current-screen :main]))
                                                   (ui/alert "Login" "User not found")))}]])))

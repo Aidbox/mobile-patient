@@ -14,12 +14,12 @@
 
 
 (defn app-root []
-  (let [screen (subscribe [:get-current-screen])]
-    (fn []
+  (fn []
+    (let [screen (subscribe [:get-current-screen])]
       [(case @screen
          :login LoginScreen
          :demographics DemographicsScreen
-         :chat (r/adapt-react-class routes)
+         :main (r/adapt-react-class routes)
          )])))
 
 (defn init []

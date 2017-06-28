@@ -301,4 +301,5 @@
 (reg-event-db
  :set-current-screen
  (fn [db [_ screen]]
+   (println "set-current-screen" screen)
    (assoc db :current-screen screen)))

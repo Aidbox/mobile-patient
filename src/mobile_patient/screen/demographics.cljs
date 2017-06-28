@@ -1,5 +1,6 @@
 (ns mobile-patient.screen.demographics
   (:require [reagent.core :as r]
+            [re-frame.core :as rf]
             [mobile-patient.ui :as ui]
             [mobile-patient.nav :as nav]))
 
@@ -10,7 +11,9 @@
           (empty? sex)
           (empty? address))
     (ui/alert "" "All fields are required")
-    (dispatch nav/tabs)
+    ;; fix submit
+    ;; (dispatch nav/tabs)
+    (rf/dispatch [:set-current-screen :main])
     ))
 
 
@@ -36,4 +39,6 @@
        [ui/button {:title "Save" :on-press #(submit-handler @age
                                                             @sex
                                                             @address
-                                                            navigation.dispatch)}]])))
+                                                            nil
+                                                            ;; navigation.dispatch
+                                                            )}]])))

@@ -23,11 +23,14 @@
 
 (defn logout-button [navigation]
   [ui/link {:title "Log Out"
-              :on-press #(rf/dispatch [:initialize-db])}])
+            :on-press #(do
+                         (rf/dispatch [:initialize-db])
+                         (rf/dispatch [:set-current-screen :login]))}])
 
 (defn add-chat-button [navigation]
-  [ui/touchable-highlight {:on-press #(navigation.navigate "Contacts")}
-   [ui/icon {:name "add-circle" :size 36 :color color/pink :margin-right 8}]])
+  [ui/touchable-highlight {:on-press #(navigation.navigate "Contacts")
+                           :style {:margin-right 20}}
+   [ui/icon {:name "add-circle" :size 36 :color color/pink}]])
 
 (defn settings-button [navigation]
   [ui/touchable-highlight {:on-press #(navigation.navigate "Settings")}
@@ -46,8 +49,28 @@
                            :on-press #(navigation.navigate "DrawerOpen")}
    [ui/icon {:name "menu" :size 36 :color color/grey}]])
 
-(defn content-comp [props]
-  (let [user-id @(subscribe [:user-id])]
+(defn drawer-nav-button []
+  [ui/touchable-opacity
+   [ui/view {:style {:flexDirection :row
+                     :height 50
+                     :paddingLeft 15
+                     :backgroundColor "#fff0"
+                     :borderTopWidth 0.5
+                     :borderColor "#fff"}}
+    [ui/text {:style {:fontSize 36
+                      :color "#fff"}} "Name"]]])
+
+(defonce props-tmp (atom nil))
+
+(defn drawer-content-comp [props]
+  (let [user-id @(rf/subscribe [:user-id])
+        filter-items (fn [props]
+                       (let [clj-props (js->clj props)
+                             excluded #{"About App"}]
+                         (clj->js
+                          (merge clj-props
+                                 {"items" (remove #(excluded (% "key"))
+                                                  (clj-props "items"))}))))]
     [ui/view {:style {:background-color "#f4f4f4"
                       :flex 1}}
      [ui/view {:style {:background-color "white"
@@ -62,29 +85,83 @@
       [ui/text {:style {:font-size 20
                         :margin-left 10
                         :color "black"
-                        :align-self :center}} user-id]
-      ]
-     [DrawerItems props]
-     ]))
-      
+                        :align-self :center}} user-id]]
+     [ui/view {:flex 1}
+      [DrawerItems (filter-items props)]
+      [ui/touchable-highlight {:style {:height 45
+                                       :justify-content :center}
+                               :on-press #(do
+                                            (rf/dispatch [:initialize-db])
+                                            (rf/dispatch [:set-current-screen :login]))
+                               :underlay-color color/grey}
+       [ui/text {:style {:margin-left 50
+                         :font-size 24}} "Logout"]]]
+     [ui/touchable-highlight {:style {:margin-bottom 60
+                                      :height 45
+                                      :justify-content :center}
+                              :underlay-color color/grey
+                              :on-press #(props.navigation.navigate "About App")}
+      [ui/text {:style {:margin-left 50
+                        :font-size 24}} "About app"]]]))
+
+(defn stack-navigator
+  ([routes]
+   (stack-navigator routes {}))
+  ([routes nav-opts]
+   (r/reactify-component
+    (StackNavigator (clj->js routes) (clj->js nav-opts)))))
+
+(defn drawer-nav-opts [title header-right]
+  (fn [props]
+    #js{:title title
+        :headerLeft (r/as-element [menu-button props.navigation])
+        :headerRight (r/as-element [header-right props.navigation])}))
 
 (def drawer-routes
   (DrawerNavigator
    (clj->js
-    {"Route 1" {:screen (r/reactify-component (fn [_] [ui/text "Route 1"]))
-                :navigationOptions (fn [props]
-                                     #js{:title "Route 1"
-                                         :headerLeft (r/as-element [menu-button props.navigation])})}
+    {"Medications" {:screen (stack-navigator
+                             {"Meds" {:screen (r/reactify-component MedsScreen)
+                                      :navigationOptions (drawer-nav-opts "Medications" logout-button)}})}
 
-     "Route 2" {:screen (r/reactify-component (fn [_] [ui/text "Route 2"]))
-                :navigationOptions (fn [props]
-                                     #js{:title "Route 2"
-                                         :headerLeft (r/as-element [menu-button props.navigation])})}
+     "Vitals Signs" {:screen (stack-navigator
+                        {"Vitals" {:screen (r/reactify-component VitalsScreen)
+                                   :navigationOptions (drawer-nav-opts "Vitals Signs" logout-button)}})}
+
+     "Chats" {:screen (stack-navigator
+                       {"Chats" {:screen (r/reactify-component ChatsScreen)
+                                 :navigationOptions (drawer-nav-opts "Chats" add-chat-button)}
+
+                        "Settings" {:screen (r/reactify-component SettingsScreen)
+                                    :navigationOptions {:title "Settings"}}
+
+                        "Chat" {:screen (r/reactify-component ChatScreen)
+                                :navigationOptions
+                                (fn [props]
+                                  (let [chat-name (-> props .-navigation .-state .-params (aget "chat-name"))]
+                                    #js {:title chat-name}))}
+
+                        "Contacts" {:screen (r/reactify-component ContactsScreen)
+                                    :navigationOptions {:title "Contacts"}}
+                        })}
+
+     "Settings" {:screen (stack-navigator
+                          {"Settings" {:screen (r/reactify-component SettingsScreen)
+                                       :navigationOptions (drawer-nav-opts "Settings" logout-button)}})}
+
+     "About App" {:screen (stack-navigator
+                           {"About App" {:screen (r/reactify-component (fn [] [ui/text "About app"]))
+                                         :navigationOptions (drawer-nav-opts "About App" logout-button)}})}
      })
    (clj->js
     {:drawerWidth 300
      :contentComponent (fn [props]
-                         (r/as-element [content-comp props]))})))
+                         (r/as-element [drawer-content-comp props]))
+     :contentOptions {:style {:marginVertical 0}
+                      :labelStyle {:fontSize 24
+                                   :marginLeft 50
+                                   :marginVertical 8
+                                   :fontWeight :normal}}})))
 
 (def tab-routes
   (TabNavigator
@@ -112,26 +189,28 @@
                      :labelStyle {}}
      :initialRouteName "Chats" })))      ;delete
 
-(def routes
-  (StackNavigator
-   (clj->js
-    {"Tabs" {:screen tab-routes}
+;; (def routes
+;;   (StackNavigator
+;;    (clj->js
+;;     {"Tabs" {:screen tab-routes}
 
-     "Drawer" {:screen drawer-routes}
+;;      "Drawer" {:screen drawer-routes}
 
-     "Settings" {:screen (r/reactify-component SettingsScreen)
-                 :headerTintColor color/grey
-                 :navigationOptions {:title "Settings"}}
+;;      "Settings" {:screen (r/reactify-component SettingsScreen)
+;;                  :headerTintColor color/grey
+;;                  :navigationOptions {:title "Settings"}}
 
-     "Chat" {:screen (r/reactify-component ChatScreen)
-             :navigationOptions
-             (fn [props]
-               (let [chat-name (-> props .-navigation .-state .-params (aget "chat-name"))]
-                 #js {:title chat-name}))}
+;;      "Chat" {:screen (r/reactify-component ChatScreen)
+;;              :navigationOptions
+;;              (fn [props]
+;;                (let [chat-name (-> props .-navigation .-state .-params (aget "chat-name"))]
+;;                  #js {:title chat-name}))}
 
-     "Contacts" {:screen (r/reactify-component ContactsScreen)
-                 :navigationOptions {:title "Contacts"}}})
-   (clj->js
-    {:initialRouteName "Tabs"
-     :navigationOptions {:headerTintColor color/grey}
-     :headerMode :screen})))
+;;      "Contacts" {:screen (r/reactify-component ContactsScreen)
+;;                  :navigationOptions {:title "Contacts"}}})
+;;    (clj->js
+;;     {:initialRouteName "Drawer"
+;;      :navigationOptions {:headerTintColor color/grey}
+;;      :headerMode :screen})))
+
+(def routes drawer-routes)
