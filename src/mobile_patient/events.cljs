@@ -263,24 +263,28 @@
               :success-parms pat-ids
               :opts {:method "GET"}}})))
 
-(defn get-username-from-token [token]
+(defn get-data-from-token [token]
   (let [[header payload signature] (clojure.string/split token #"\.")]
     (-> payload
         goog.crypt.base64/decodeString
         goog.json.parse
-        (aget "email"))))
+        (js->clj :keywordize-keys true))))
 
 (reg-event-fx
  :on-login
- (fn [_ [_ resp-body _ resp]]
+ (fn [cofx [_ resp-body _ resp]]
    (let [invalid (boolean (re-find #"Wrong credentials" resp-body))]
      (if invalid
        (ui/alert "" "Wrong credentials")
        (let [auth-data (-> (.-url resp) (str/split #"#") second query->params)
-             id-token (:id_token auth-data)]
-         {:db {:current-screen :chat
-               :access-token (:access_token auth-data)
-               :user (get-username-from-token id-token)}})))))
+             id-token (:id_token auth-data)
+             token-data (get-data-from-token id-token)]
+         {:fetch {:uri (str "/User/" (:user-id token-data))
+                  :opts {:method "GET"}
+                  :success :set-user}
+          :db (merge (:db cofx) {:current-screen :chat
+                                 :access-token (:access_token auth-data)})
+          })))))
 
 (reg-event-fx
  :login

@@ -16,17 +16,17 @@
    "patient" {:id "patient" :ref {:id "fe0ecce6-a577-4cde-8c02-f7c482111de8" :resourceType "Patient"}}})
 
 (defn LoginScreen [{:keys [navigation]}]
-  (let [login (r/atom "patient")
-        password (r/atom "")
+  (let [login (atom "")
+        password (atom "")
         loading (r/atom false)]
     (fn []
       [ui/view {:style {:flex 1 :justify-content :center :margin 30}}
        (if @loading [ui/activity-indicator])
-       [ui/input {:placeholder "Login" :value @login :on-change-text #(reset! login %)}]
-       [ui/input {:placeholder "Password" :value @password :on-change-text #(reset! password %)}]
+       [ui/input {:placeholder "Login" :on-change-text #(reset! login %)}]
+       [ui/input {:placeholder "Password" :on-change-text #(reset! password %)}]
        [ui/button {:title "Log In" :on-press #(do
-                                                #_(rf/dispatch [:login @login @password])
-                                                (if-let [user (get user-map @login)]
+                                                (rf/dispatch [:login @login @password])
+                                                #_(if-let [user (get user-map @login)]
                                                   (do
                                                     (rf/dispatch-sync [:set-user user])
                                                     (rf/dispatch [:set-current-screen :main]))
