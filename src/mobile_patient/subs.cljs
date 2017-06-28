@@ -10,3 +10,8 @@
  :get-in
  (fn [db [_ path]]
    (get-in db path)))
+
+(reg-sub
+ :get-current-screen
+ (fn [db _]
+   (:current-screen db)))

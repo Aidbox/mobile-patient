@@ -1,6 +1,6 @@
 (ns mobile-patient.routes
   (:require [reagent.core :as r]
-            [re-frame.core :refer [subscribe]]
+            [re-frame.core :as rf]
             [mobile-patient.ui :as ui]
             [mobile-patient.color :as color]
             [mobile-patient.screen.login :refer [LoginScreen]]
@@ -19,16 +19,11 @@
 (def DrawerNavigator (.-DrawerNavigator react-navigation))
 (def DrawerItems (.-DrawerItems react-navigation))
 
-(def plus-img (js/require "./images/plus-circle.png"))
-(def settings-img (js/require "./images/settings.png"))
-
-
-
 ;; NAVIGATION BUTTONS
 
 (defn logout-button [navigation]
   [ui/link {:title "Log Out"
-              :on-press #(navigation.navigate "Login")}])
+              :on-press #(rf/dispatch [:initialize-db])}])
 
 (defn add-chat-button [navigation]
   [ui/touchable-highlight {:on-press #(navigation.navigate "Contacts")}
@@ -120,13 +115,7 @@
 (def routes
   (StackNavigator
    (clj->js
-    {"Login" {:screen (r/reactify-component LoginScreen)
-              :navigationOptions {:header nil}}
-
-     "Demographics" {:screen (r/reactify-component DemographicsScreen)
-                     :navigationOptions {:title "Demographics"}}
-
-     "Tabs" {:screen tab-routes}
+    {"Tabs" {:screen tab-routes}
 
      "Drawer" {:screen drawer-routes}
 
@@ -141,10 +130,8 @@
                  #js {:title chat-name}))}
 
      "Contacts" {:screen (r/reactify-component ContactsScreen)
-                 :navigationOptions {:title "Contacts"}}
-
-     })
+                 :navigationOptions {:title "Contacts"}}})
    (clj->js
-    {:initialRouteName "Drawer";; "Login"
+    {:initialRouteName "Tabs"
      :navigationOptions {:headerTintColor color/grey}
      :headerMode :screen})))

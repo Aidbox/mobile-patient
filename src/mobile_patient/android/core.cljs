@@ -2,6 +2,8 @@
   (:require [reagent.core :as r :refer [atom]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [mobile-patient.routes :refer [routes]]
+            [mobile-patient.screen.login :refer [LoginScreen]]
+            [mobile-patient.screen.demographics :refer [DemographicsScreen]]
             [mobile-patient.events]
             [mobile-patient.subs]))
 
@@ -12,7 +14,13 @@
 
 
 (defn app-root []
-  [(r/adapt-react-class routes)])
+  (let [screen (subscribe [:get-current-screen])]
+    (fn []
+      [(case @screen
+         :login LoginScreen
+         :demographics DemographicsScreen
+         :chat (r/adapt-react-class routes)
+         )])))
 
 (defn init []
       (dispatch-sync [:initialize-db])
