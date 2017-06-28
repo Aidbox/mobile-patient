@@ -7,7 +7,7 @@
   (s/keys :req-un [::greeting]))
 
 ;; initial state of app-db
-(def app-db {:current-screen :main
+(def app-db {:current-screen :login
              :config {:base-url "https://sansara.health-samurai.io"
                       :client-id "sansara"}
              :contacts []

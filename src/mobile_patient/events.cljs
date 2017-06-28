@@ -282,7 +282,7 @@
          {:fetch {:uri (str "/User/" (:user-id token-data))
                   :opts {:method "GET"}
                   :success :set-user}
-          :db (merge (:db cofx) {:current-screen :chat
+          :db (merge (:db cofx) {:current-screen :main
                                  :access-token (:access_token auth-data)})
           })))))
 
