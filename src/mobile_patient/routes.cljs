@@ -16,6 +16,8 @@
 
 (def StackNavigator (.-StackNavigator react-navigation))
 (def TabNavigator (.-TabNavigator react-navigation))
+(def DrawerNavigator (.-DrawerNavigator react-navigation))
+(def DrawerItems (.-DrawerItems react-navigation))
 
 (def plus-img (js/require "./images/plus-circle.png"))
 (def settings-img (js/require "./images/settings.png"))
@@ -44,6 +46,51 @@
 
 ;; NAVIGATION ROUTES
 
+(defn menu-button [navigation]
+  [ui/touchable-highlight {:style {:margin-left 10}
+                           :on-press #(navigation.navigate "DrawerOpen")}
+   [ui/icon {:name "menu" :size 36 :color color/grey}]])
+
+(defn content-comp [props]
+  (let [user-id @(subscribe [:user-id])]
+    [ui/view {:style {:background-color "#f4f4f4"
+                      :flex 1}}
+     [ui/view {:style {:background-color "white"
+                       :height 100
+                       :flex-direction :row
+                       :justify-content :center}}
+      [ui/view {:style {:width 48
+                        :height 48
+                        :border-radius 24
+                        :background-color "#9e9e9e"
+                        :align-self :center}}]
+      [ui/text {:style {:font-size 20
+                        :margin-left 10
+                        :color "black"
+                        :align-self :center}} user-id]
+      ]
+     [DrawerItems props]
+     ]))
+      
+
+(def drawer-routes
+  (DrawerNavigator
+   (clj->js
+    {"Route 1" {:screen (r/reactify-component (fn [_] [ui/text "Route 1"]))
+                :navigationOptions (fn [props]
+                                     #js{:title "Route 1"
+                                         :headerLeft (r/as-element [menu-button props.navigation])})}
+
+     "Route 2" {:screen (r/reactify-component (fn [_] [ui/text "Route 2"]))
+                :navigationOptions (fn [props]
+                                     #js{:title "Route 2"
+                                         :headerLeft (r/as-element [menu-button props.navigation])})}
+     })
+   (clj->js
+    {:drawerWidth 300
+     :contentComponent (fn [props]
+                         (r/as-element [content-comp props]))})))
+
 (def tab-routes
   (TabNavigator
    (clj->js
@@ -70,7 +117,6 @@
                      :labelStyle {}}
      :initialRouteName "Chats" })))      ;delete
 
-
 (def routes
   (StackNavigator
    (clj->js
@@ -81,6 +127,8 @@
                      :navigationOptions {:title "Demographics"}}
 
      "Tabs" {:screen tab-routes}
+
+     "Drawer" {:screen drawer-routes}
 
      "Settings" {:screen (r/reactify-component SettingsScreen)
                  :headerTintColor color/grey
@@ -97,6 +145,6 @@
 
      })
    (clj->js
-    {:initialRouteName "Login"
+    {:initialRouteName "Drawer";; "Login"
      :navigationOptions {:headerTintColor color/grey}
      :headerMode :screen})))

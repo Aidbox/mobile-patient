@@ -14,7 +14,6 @@
 (def warn (js/console.warn.bind js/console))
 (rf.log/set-loggers!
  {:warn (fn [& args]
-          (println (first args))
           (cond
             (= "re-frame: overwriting" (first args)) nil
             :else (apply warn args)))})

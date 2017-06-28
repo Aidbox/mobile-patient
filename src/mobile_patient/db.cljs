@@ -9,6 +9,7 @@
 ;; initial state of app-db
 (def app-db {:config {:base-url "https://sansara.health-samurai.io"
                       :client-id "sansara"}
+             :contacts []
              :chats []
              :messages []
              :user {:id "patient" :ref {:id "fe0ecce6-a577-4cde-8c02-f7c482111de8" :resourceType "Patient"}}})
