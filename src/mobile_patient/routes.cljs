@@ -22,26 +22,17 @@
 
 (defn add-chat-button [navigation]
   [ui/touchable-highlight {:on-press #(navigation.navigate "Contacts")
-                           :style {:margin-right 20}}
+                           :style {:margin-right 20}
+                           :underlay-color color/grey}
    [ui/icon {:name "add-circle" :size 36 :color color/pink}]])
 
 ;; NAVIGATION ROUTES
 
 (defn menu-button [navigation]
   [ui/touchable-highlight {:style {:margin-left 10}
-                           :on-press #(navigation.navigate "DrawerOpen")}
+                           :on-press #(navigation.navigate "DrawerOpen")
+                           :underlay-color color/grey}
    [ui/icon {:name "menu" :size 36 :color color/grey}]])
-
-(defn drawer-nav-button []
-  [ui/touchable-opacity
-   [ui/view {:style {:flexDirection :row
-                     :height 50
-                     :paddingLeft 15
-                     :backgroundColor "#fff0"
-                     :borderTopWidth 0.5
-                     :borderColor "#fff"}}
-    [ui/text {:style {:fontSize 36
-                      :color "#fff"}} "Name"]]])
 
 (defn drawer-item
   ([title on-press]
@@ -57,14 +48,7 @@
 
 (defn drawer-content [props]
   (let [user-id @(rf/subscribe [:user-id])
-        excluded #{"About App"}
-        filter-items (fn [props]
-                       (let [clj-props (js->clj props)
-                             excluded #{"About App"}]
-                         (clj->js
-                          (merge clj-props
-                                 {"items" (remove #(excluded (% "key"))
-                                                  (clj-props "items"))}))))]
+        excluded #{"About App"}]
     [ui/view {:style {:background-color "#f4f4f4"
                       :flex 1}}
      [ui/view {:style {:background-color "white"
@@ -94,6 +78,13 @@
   (r/reactify-component
    (StackNavigator (clj->js routes)
                    (clj->js {:headerTitleStyle {:fontWeight :normal}}))))
+
+(defn stack-navigator-back-button [props]
+  (r/as-element
+   [ui/touchable-highlight {:on-press #(props.navigation.goBack nil)
+                            :style {:margin-left 15}
+                            :underlay-color color/grey}
+    [ui/icon {:name "chevron-left" :size 36 :color color/pink}]]))
 
 (defn drawer-nav-opts
   ([title]
@@ -126,13 +117,17 @@
                                 (fn [props]
                                   (let [chat-name (-> props .-navigation .-state .-params (aget "chat-name"))]
                                     #js {:title chat-name
+                                         :headerLeft (stack-navigator-back-button props)
                                          :headerTitleStyle #js{:fontWeight "normal"
                                                                :color "#6e6e6e"}}))}
 
                         "Contacts" {:screen (r/reactify-component ContactsScreen)
-                                    :navigationOptions {:title "Contacts"
-                                                        :headerTitleStyle #js{:fontWeight "normal"
-                                                                              :color "#6e6e6e"}}}})}
+                                    :navigationOptions
+                                    (fn [props]
+                                      #js{:title "Contacts"
+                                          :headerLeft (stack-navigator-back-button props)
+                                          :headerTitleStyle #js{:fontWeight "normal"
+                                                                :color "#6e6e6e"}})}})}
 
      "Settings" {:screen (stack-navigator
                           {"Settings" {:screen (r/reactify-component SettingsScreen)
