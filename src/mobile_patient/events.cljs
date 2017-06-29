@@ -89,6 +89,12 @@
        db))))
 
 (reg-event-db
+ :on-get-medication-statements
+ (fn [db [_ value]]
+   (let [medication-statements (sort-by #(-> % :effective :dateTime) (map :resource (:entry value)))]
+     (assoc db :medication-statements medication-statements))))
+
+(reg-event-db
  :set-chat
  (fn [db [_ chat]]
    (-> db
@@ -305,5 +311,13 @@
 (reg-event-db
  :set-current-screen
  (fn [db [_ screen]]
-   (println "set-current-screen" screen)
    (assoc db :current-screen screen)))
+
+(reg-event-fx
+ :get-medication-statements
+ (fn [_]
+   (let [user-ref @(subscribe [:user-ref])]
+     {:fetch {:uri "/MedicationStatement"
+              :success :on-get-medication-statements
+              :opts {:parms {:subject (:id user-ref)}
+                     :method "GET"}}})))
