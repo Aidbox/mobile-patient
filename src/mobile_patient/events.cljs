@@ -346,6 +346,7 @@
               :success :on-get-medication-statements
               :opts {:parms {:subject (:id user-ref)}
                      :method "GET"}}})))
+(reg-event-fx
  :on-submit-demographics
  (fn [{:keys [db]} [_ resource-type-data]]
    {:db (merge db {:resource-type-data resource-type-data})
