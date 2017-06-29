@@ -37,15 +37,14 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_df8305bdbb16_key -iv $encrypted_df8305bdbb16_iv -in account.json.enc -out account.json -d
   - openssl aes-256-cbc -K $encrypted_06308b3b5ec9_key -iv $encrypted_06308b3b5ec9_iv -in android/gradle.properties.enc -out android/gradle.properties -d
   - openssl aes-256-cbc -K $encrypted_456bb67d1fef_key -iv $encrypted_456bb67d1fef_iv -in android/app/my-release-key.keystore.enc -out android/app/my-release-key.keystore -d
-  - wget https://dl.google.com/dl/cloudsdk/release/install_google_cloud_sdk.bash
-  - source install_google_cloud_sdk.bash --disable-prompts --install-dir=$HOME
+  - wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-161.0.0-linux-x86_64.tar.gz
+  - tar -xzf google-cloud-sdk-161.0.0-linux-x86_64.tar.gz
+  - chmod +x ./google-cloud-sdk/install.sh 
+  - source ./google-cloud-sdk/install.sh  --disable-prompts --install-dir=$HOME
   - export PATH=$PATH:$HOME/google-cloud-sdk/bin
   - gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 script:
-  # - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
-  # - source /home/travis/google-cloud-sdk/path.bash.inc
-  # - gcloud version
   - lein prod-build
   - cd android && ./gradlew assembleRelease && cd ..
   - ls ./android/app/build/outputs/apk/
