@@ -4,10 +4,9 @@
 
 
 (def ReactNative (js/require "react-native"))
-(def react-datepicker (js/require "react-native-datepicker"))
 
-;; (def picker (r/adapt-react-class (.-Picker ReactNative)))
-;; (def picker-item (r/adapt-react-class (.. ReactNative -Picker -Item)))
+(def date-picker (.-DatePickerAndroid ReactNative))
+(def Dimensions (.-Dimensions ReactNative))
 
 (def view (r/adapt-react-class (.-View ReactNative)))
 (def modal (r/adapt-react-class (.-Modal ReactNative)))
@@ -17,7 +16,6 @@
 (def Switch (.-Switch ReactNative))
 (def switch (r/adapt-react-class (.-Switch ReactNative)))
 (def rn-button (r/adapt-react-class (.-Button ReactNative)))
-(def date-picker (r/adapt-react-class (aget react-datepicker "default")))
 (def list-view (r/adapt-react-class (.-ListView ReactNative)))
 (def virtualized-list (r/adapt-react-class (.-VirtualizedList ReactNative)))
 (def flat-list (r/adapt-react-class (.-FlatList ReactNative)))

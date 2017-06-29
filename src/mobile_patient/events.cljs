@@ -235,7 +235,8 @@
    {:db (->  (:db cofx)
              (assoc :user value)
              (assoc :chats [])
-             (assoc :contacts []))
+             (assoc :contacts [])
+             (assoc :current-screen :main))
     :dispatch [:on-set-user]}))
 
 (reg-event-fx
@@ -276,20 +277,44 @@
         goog.json.parse
         (js->clj :keywordize-keys true))))
 
+(defn contains-many? [m & ks]
+  (every? #(contains? m %) ks))
+
+(reg-event-fx
+ :set-demographics
+ (fn [{:keys [db]} [_ resource-type-data]]
+   (if (contains-many? resource-type-data :gender :birthDate :address)
+     {:db (merge db {:resource-type-data resource-type-data})
+      :dispatch [:set-user (:user db)]}
+
+     {:db (merge db {:resource-type-data resource-type-data
+                     :current-screen :demographics})})))
+
+(reg-event-fx
+ :on-user-load
+ (fn [{:keys [db]} [_ user-data]]
+   {:fetch {:uri (str "/" (get-in user-data [:ref :resourceType])
+                      "/" (get-in user-data [:ref :id]))
+            :opts {:method "GET"}
+            :success :set-demographics}
+    :db (merge db {:user user-data})}))
+
 (reg-event-fx
  :on-login
- (fn [cofx [_ resp-body _ resp]]
+ (fn [{:keys [db]} [_ resp-body _ resp]]
    (let [invalid (boolean (re-find #"Wrong credentials" resp-body))]
      (if invalid
        (ui/alert "" "Wrong credentials")
        (let [auth-data (-> (.-url resp) (str/split #"#") second query->params)
              id-token (:id_token auth-data)
-             token-data (get-data-from-token id-token)]
-         {:fetch {:uri (str "/User/" (:user-id token-data))
+             token-data (get-data-from-token id-token)
+             user-id (->> (:email token-data) (re-find #"(.+)@") second)]
+         (print "token-data" token-data)
+         (assert user-id)
+         {:fetch {:uri (str "/User/" user-id)
                   :opts {:method "GET"}
-                  :success :set-user}
-          :db (merge (:db cofx) {:current-screen :main
-                                 :access-token (:access_token auth-data)})
+                  :success :on-user-load}
+          :db (merge db {:access-token (:access_token auth-data)})
           })))))
 
 (reg-event-fx
@@ -321,3 +346,28 @@
               :success :on-get-medication-statements
               :opts {:parms {:subject (:id user-ref)}
                      :method "GET"}}})))
+ :on-submit-demographics
+ (fn [{:keys [db]} [_ resource-type-data]]
+   {:db (merge db {:resource-type-data resource-type-data})
+    :dispatch [:set-user (:user db)]
+    }))
+
+(reg-event-fx
+ :submit-demographics
+ (fn [_ [_ form-data]]
+   (let [user @(subscribe [:get-in [:user]])
+         resource-type-data @(subscribe [:get-in [:resource-type-data]])]
+     {:fetch {:uri (str "/" (get-in user [:ref :resourceType ])
+                        "/" (get-in user [:ref :id ]))
+              :success :on-submit-demographics
+              :opts {:method "PUT"
+                     :headers {"content-type" "application/json"}
+                     :body (js/JSON.stringify
+                            (clj->js
+                             (merge resource-type-data
+                                    {:gender (:sex form-data)
+                                     :birthDate (:birthday form-data)
+                                     :address [{:use "home"
+                                                :type "postal"
+                                                :text (:address form-data)
+                                                }]})))}}})))
