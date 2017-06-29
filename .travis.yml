@@ -41,7 +41,7 @@ before_install:
   - tar -xzf google-cloud-sdk-161.0.0-linux-x86_64.tar.gz
   - chmod +x ./google-cloud-sdk/install.sh 
   - cd ./google-cloud-sdk
-  - ./install.sh --quiet --install-dir=$HOME
+  - ./install.sh --quiet
   - cd ..
   - export PATH=$PATH:$HOME/google-cloud-sdk/bin
   - gcloud auth activate-service-account $GC_SA --key-file=account.json
