@@ -21,5 +21,5 @@
          :main (r/adapt-react-class drawer-routes))])))
 
 (defn init []
-      (dispatch-sync [:initialize-db])
-      (.registerComponent app-registry "MobilePatient" #(r/reactify-component app-root)))
+  (dispatch-sync [:initialize-db])
+  (.registerComponent app-registry "MobilePatient" #(r/reactify-component app-root)))

@@ -10,8 +10,10 @@
 (def app-db {:current-screen :login
              :config {:base-url "https://sansara.health-samurai.io"
                       :client-id "sansara"}
+             :active-medication-statements []
+             :other-medication-statements []
              :contacts []
              :chats []
              :messages []
              :resource-type-data {}
-             :user {:id "patient" :ref {:id "fe0ecce6-a577-4cde-8c02-f7c482111de8" :resourceType "Patient"}}})
+             :user nil})

@@ -36,10 +36,6 @@
     (after (partial check-and-throw ::db/app-db))
     []))
 
-;; -- Views----------------------------------------------------------
-
-
-
 ;; -- Subscriptions----------------------------------------------------------
 (reg-sub-raw
  :user-id
@@ -73,11 +69,20 @@
  :message
  (fn [db _] (:message db)))
 
+(reg-sub
+ :active-medication-statements
+ (fn [db _] (:active-medication-statements db)))
+
+(reg-sub
+ :other-medication-statements
+ (fn [db _] (:other-medication-statements db)))
+
 ;; -- Handlers --------------------------------------------------------------
 
 (reg-event-db
  :initialize-db
  (fn [_ _]
+   (println app-db)
    app-db))
 
 (reg-event-db
@@ -91,8 +96,11 @@
 (reg-event-db
  :on-get-medication-statements
  (fn [db [_ value]]
-   (let [medication-statements (sort-by #(-> % :effective :dateTime) (map :resource (:entry value)))]
-     (assoc db :medication-statements medication-statements))))
+   (let [medication-statements (sort-by #(-> % :effective :dateTime) (map :resource (:entry value)))
+         groups (group-by #(= (:status %) "active") medication-statements)]
+     (-> db
+         (assoc :active-medication-statements (groups true))
+         (assoc :other-medication-statements (groups false))))))
 
 (reg-event-db
  :set-chat
@@ -302,6 +310,7 @@
 (reg-event-fx
  :on-login
  (fn [{:keys [db]} [_ resp-body _ resp]]
+   (println "on-login" db)
    (let [invalid (boolean (re-find #"Wrong credentials" resp-body))]
      (if invalid
        (ui/alert "" "Wrong credentials")
