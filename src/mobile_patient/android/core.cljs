@@ -7,11 +7,10 @@
             [mobile-patient.events]
             [mobile-patient.subs]))
 
-(enable-console-print!)
+(when-not js/goog.DEBUG (enable-console-print!))
 
 (def ReactNative (js/require "react-native"))
 (def app-registry (.-AppRegistry ReactNative))
-
 
 (defn app-root []
   (fn []

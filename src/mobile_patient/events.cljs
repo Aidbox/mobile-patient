@@ -308,8 +308,9 @@
        (let [auth-data (-> (.-url resp) (str/split #"#") second query->params)
              id-token (:id_token auth-data)
              token-data (get-data-from-token id-token)
-             user-id (->> (:email token-data) (re-find #"(.+)@") second)]
-         (print "token-data" token-data)
+             user-id  (:user-id token-data)]
+         (println "token-data" token-data)
+         (println "user-id" user-id)
          (assert user-id)
          {:fetch {:uri (str "/User/" user-id)
                   :opts {:method "GET"}
