@@ -18,7 +18,8 @@
 (defn LoginScreen [{:keys [navigation]}]
   (let [login (atom "")
         password (atom "")
-        loading (r/atom false)]
+        loading (rf/subscribe [:get-in [:spinner :login]])
+        ]
     (fn []
       [ui/view {:style {:flex 1 :justify-content :center :margin 30}}
        (if @loading [ui/activity-indicator])

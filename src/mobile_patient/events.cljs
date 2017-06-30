@@ -148,9 +148,10 @@
 
 (reg-fx
  :fetch
- (fn [{:keys [:uri :opts :success :success-parms]}]
+ (fn [{:keys [:uri :opts :success :success-parms spinner-id]}]
    (let [base-url (subscribe [:get-in [:config :base-url]])
          response (atom nil)]
+     (if spinner-id (dispatch [:spinner spinner-id true]))
      (-> (js/fetch (str @base-url uri (parms->query (:parms opts)))
                    (clj->js (merge {:redirect "manual"
                                     :method "GET"
@@ -165,13 +166,21 @@
          (.then
           (fn [response-body]
             (when success
+              (if spinner-id (dispatch [:spinner spinner-id false]))
               (dispatch [success (if (= (type response-body) js/Object)
                                    (js->clj response-body :keywordize-keys true)
                                    response-body)
                          success-parms
                          @response]))))
-         (.catch #(println "Fetch error" %)))
+         (.catch (fn [e]
+                   (if spinner-id (dispatch [:spinner spinner-id false]))
+                   (println "Fetch error" e))))
      {})))
+
+(reg-event-db
+ :spinner
+ (fn [db [_ path state]]
+   (assoc-in db [:spinner path] state)))
 
 (reg-event-fx
  :get-chats
@@ -332,6 +341,7 @@
  (fn [_ [_ login password]]
    (let []
      {:fetch {:uri "/oauth2/authorize"
+              :spinner-id :login
               :success :on-login
               :opts {:parms {:response_type "id_token token"
                              :client_id "sansara"
