@@ -23,8 +23,8 @@
     (fn []
       [ui/view {:style {:flex 1 :justify-content :center :margin 30}}
        (if @loading [ui/activity-indicator])
-       [ui/input {:placeholder "Login" :on-change-text #(reset! login %)}]
-       [ui/input {:placeholder "Password" :on-change-text #(reset! password %)}]
+       [ui/input {:placeholder "Login" :on-change-text #(reset! login %) :style {:height 40}}]
+       [ui/input {:placeholder "Password" :on-change-text #(reset! password %) :style {:height 40}}]
        [ui/button {:title "Log In" :on-press #(do
                                                 (rf/dispatch [:login @login @password])
                                                 #_(if-let [user (get user-map @login)]
