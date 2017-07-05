@@ -140,3 +140,11 @@
     {:drawerWidth 300
      :contentComponent (fn [props]
                          (r/as-element [drawer-content props]))})))
+
+;; On navigation chnage handler
+(defn on-navigation-callback [prev-state new-state action]
+  (let [action (js->clj action :keywordize-keys true)
+        route-name (:routeName action)]
+    (case route-name
+      "Vitals Signs" (rf/dispatch [:on-vitals-sign-screen])
+      nil)))

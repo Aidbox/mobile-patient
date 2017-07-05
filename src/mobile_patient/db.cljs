@@ -8,11 +8,12 @@
 
 ;; initial state of app-db
 (def app-db {:spinner {}
-             :current-screen :login
+             :current-screen :main
              :config {:base-url "https://sansara.health-samurai.io"
                       :client-id "sansara"}
              :active-medication-statements []
              :other-medication-statements []
+             :observations []
              :contacts []
              :chats []
              :messages []
