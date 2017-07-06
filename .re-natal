@@ -10,7 +10,9 @@
     "react-native-datepicker",
     "react-native-vector-icons",
     "react-native-vector-icons/MaterialIcons",
-    "react-native-tableview-simple"
+    "react-native-tableview-simple",
+    "d3-scale",
+    "d3-shape"
   ],
   "imageDirs": [
     "images"

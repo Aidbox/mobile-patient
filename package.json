@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "babel-plugin-transform-es2015-block-scoping": "6.15.0",
+    "d3-scale": "^1.0.6",
+    "d3-shape": "^1.2.0",
     "react": "16.0.0-alpha.6",
     "react-native": "0.44.0",
     "react-native-datepicker": "^1.6.0",

@@ -12,7 +12,8 @@
 (defn show-interpritation [code]
   (get INTERPRITATION code))
 
-(defn row-component [{:keys [item index header?] :or {header? false}}]
+(defn row-component [{:keys [item index header?] :or {header? false}}
+                     navigation]
   (let [abnormal? (#{"H" "L"} (:interpretation item))
         border-color "#333"
         cell-style {:flex 2
@@ -29,14 +30,20 @@
                       :flex-direction :row
                       :background-color (if (odd? index) "#fff" "#eee")
                       }}
+     ;; first column
      [ui/view {:style (merge cell-style {:border-right-width 1 :border-color border-color})}
-      [ui/text {:style text-style}
-       (:title item)]]
+      [ui/touchable-highlight {:style {}
+                               :on-press #(navigation.navigate "ExampleChart")}
 
+       [ui/text {:style (merge text-style (if header? {} {:text-decoration-line :underline}))}
+        (:title item)]]]
+
+     ;; second column
      [ui/view {:style (merge cell-style {:border-right-width 1 :border-color border-color})}
       [ui/text {:style text-style}
        (:value item)]]
 
+     ;; third column
      [ui/view {:style cell-style}
       [ui/text {:style text-style}
        (if header?
@@ -51,11 +58,11 @@
 
 (defn VitalsScreen [{:keys [navigation]}]
   (let [data @(rf/subscribe [:get-observations])]
-    (print "data" data)
     (if (empty? data)
       [ui/text "No data"]
       [ui/view {:style {:flex 1 :margin-top 0}}
        [header-component]
        [ui/flat-list
         {:data (clj->js data)
-         :render-item (fn [row] (r/as-element [row-component (js->clj row :keywordize-keys true)]))}]])))
+         :render-item (fn [row] (r/as-element [row-component (js->clj row :keywordize-keys true)
+                                               navigation]))}]])))

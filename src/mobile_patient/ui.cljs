@@ -23,6 +23,12 @@
 (def scroll-view (r/adapt-react-class (.-ScrollView ReactNative)))
 (def activity-indicator (r/adapt-react-class (.-ActivityIndicator ReactNative)))
 
+(def ART (.-ART ReactNative))
+
+(def surface (r/adapt-react-class (.-Surface ART)))
+(def group (r/adapt-react-class (.-Group ART)))
+(def shape (r/adapt-react-class (.-Shape ART)))
+
 (def picker (r/adapt-react-class (.-Picker ReactNative)))
 (def picker-item (r/adapt-react-class (.-Picker.Item ReactNative)))
 (def touchable-highlight (r/adapt-react-class (.-TouchableHighlight ReactNative)))

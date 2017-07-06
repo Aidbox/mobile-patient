@@ -9,7 +9,8 @@
             [mobile-patient.screen.meds :refer [MedsScreen]]
             [mobile-patient.screen.chat :refer [ChatsScreen ChatScreen]]
             [mobile-patient.screen.settings :refer [SettingsScreen]]
-            [mobile-patient.screen.contacts :refer [ContactsScreen]]))
+            [mobile-patient.screen.contacts :refer [ContactsScreen]]
+            [mobile-patient.screen.chart :refer [ChartScreen]]))
 
 
 (def react-navigation (js/require "react-navigation"))
@@ -105,8 +106,15 @@
                                       :navigationOptions (drawer-nav-opts "Medications")}})}
 
      "Vitals Signs" {:screen (stack-navigator
-                        {"Vitals" {:screen (r/reactify-component VitalsScreen)
-                                   :navigationOptions (drawer-nav-opts "Vitals Signs")}})}
+                              {"Vitals" {:screen (r/reactify-component VitalsScreen)
+                                         :navigationOptions (drawer-nav-opts "Vitals Signs")}
+
+                               "ExampleChart" {:screen (r/reactify-component ChartScreen)
+                                               :navigationOptions (fn [props]
+                                                                    #js{:title "Example Chart"
+                                                                        :headerLeft (stack-navigator-back-button props)
+                                                                        :headerTitleStyle #js{:fontWeight "normal"
+                                                                                              :color "#6e6e6e"}})}})}
 
      "Chats" {:screen (stack-navigator
                        {"Chats" {:screen (r/reactify-component ChatsScreen)
