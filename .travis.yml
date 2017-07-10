@@ -47,11 +47,20 @@ before_install:
   - gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 script:
-  - lein clean
-  - lein with-profile -dev,+prod,+patient cljsbuild once
+  - lein do clean, with-profile -dev,+prod,+patient cljsbuild once
   - cd android && ./gradlew assembleRelease && cd ..
   - ls ./android/app/build/outputs/apk/
-  - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/app.apk
+  - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk
   - gsutil acl -r ch -u AllUsers:R $BUCKET
-  - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="New build of patient mobile app available https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/app.apk" -d chat_id=$T_CHATID
-  - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/app.apk"
+  - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="New build of patient mobile app available https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk" -d chat_id=$T_CHATID
+  - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk"
+
+  - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once
+  - echo '{"name": "MobilePractitioner","displayName": "Mobile Practitioner"}' > app.json
+  - cd android && ./gradlew assembleRelease && cd ..
+  - ls ./android/app/build/outputs/apk/
+  - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk
+  - gsutil acl -r ch -u AllUsers:R $BUCKET
+  - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="New build of practitioner mobile app available https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk" -d chat_id=$T_CHATID
+  - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk"
+  
