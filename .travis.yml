@@ -62,5 +62,5 @@ script:
   - gsutil acl -r ch -u AllUsers:R $BUCKET
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk"
 
-  - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="New build of mobile apps available\n https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk \n https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk" -d chat_id=$T_CHATID
+  - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="New build of mobile apps available %0A https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk %0A https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk" -d chat_id=$T_CHATID
 
