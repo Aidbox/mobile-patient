@@ -16,14 +16,6 @@
  (fn [db _]
    (:current-screen db)))
 
-(reg-sub
- :get-observations
- (fn [db _]
-   (->> (:observations db)
-        (map get-observation-data)
-        (apply concat)
-        )))
-
 (defmulti get-observation-data #(:id %))
 
 (defmethod get-observation-data "blood-pressure" [item]
@@ -42,3 +34,11 @@
                 (get-in item [:valueQuantity :unit]))
     :interpretation (get-in item [:interpretation :coding 0 :code])
     }])
+
+(reg-sub
+ :get-observations
+ (fn [db _]
+   (->> (:observations db)
+        (map get-observation-data)
+        (apply concat)
+        )))

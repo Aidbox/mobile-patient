@@ -20,7 +20,6 @@
          :demographics [DemographicsScreen]
          :main [(r/adapt-react-class drawer-routes) {:onNavigationStateChange on-navigation-callback}]))))
 
-
 (defn init []
   (dispatch-sync [:initialize-db])
   (.registerComponent app-registry "MobilePatient" #(r/reactify-component app-root)))
