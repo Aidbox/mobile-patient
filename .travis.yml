@@ -52,13 +52,15 @@ script:
   - ls ./android/app/build/outputs/apk/
   - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk
   - gsutil acl -r ch -u AllUsers:R $BUCKET
-  - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="New build of patient mobile app available https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk" -d chat_id=$T_CHATID
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk"
-  - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once
+
+  - rm ./android/app/build/outputs/apk/*.apk
   - cat practitioner-app.json > app.json
+  - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once
   - cd android && ./gradlew assembleRelease && cd ..
-  - ls ./android/app/build/outputs/apk/
   - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk
   - gsutil acl -r ch -u AllUsers:R $BUCKET
-  - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="New build of practitioner mobile app available https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk" -d chat_id=$T_CHATID
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk"
+
+  - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="New build of mobile apps available\n https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk \n https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk" -d chat_id=$T_CHATID
+
