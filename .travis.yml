@@ -47,8 +47,8 @@ before_install:
   - gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 script:
-  - echo 111
-  - ack MobilePatient -l
+  - echo "DEBUG!!!"
+  - grep -lR MobilePatient --exclude-dir=.git --exclude=*.yml .
 # - for f in $(ack MobilePatient  -l); do sed -i 's/MobilePatient/Mobile Patient/g' $f; done
 # - lein do clean, with-profile -dev,+prod,+patient cljsbuild once
 # - cd android && ./gradlew assembleRelease && cd ..
