@@ -1,6 +1,6 @@
-(ns mobile-patient.screen.contacts
+(ns practitioner.screen.patients
   (:require [reagent.core :as r]
-            [re-frame.core :refer [subscribe dispatch]]
+            [re-frame.core :as rf]
             [mobile-patient.ui :as ui]))
 
 
@@ -11,15 +11,16 @@
                                    :padding 10
                                    :background-color "#ffffff"}
                            :on-press (fn []
-                                       (dispatch [:create-chat [(:id item)]])
-                                       (navigation.goBack nil))}
+                                       #_(rf/dispatch [:create-chat [(:id item)]])
+                                       #_(navigation.goBack nil))}
    [ui/view {:style {:flex-direction :row :justify-content :space-between}}
     [ui/text {:style {:text-align "left"}} (:id item)]
     [ui/icon {:name "chevron-right" :size 30 :color "#FF485C"}]]])
 
 
-(defn ContactsScreen [{:keys [navigation]}]
-  (let [contacts (subscribe [:contacts])]
-    [ui/flat-list {:data (clj->js @contacts)
+(defn PatientsScreen [{:keys [navigation]}]
+  (let [patients (rf/subscribe [:get-in [:practitioner-patients]])]
+    [ui/flat-list {:data (clj->js @patients)
                    :key-extractor #(.-id %)
-                   :render-item (fn [row] (r/as-element [row-component (js->clj row :keywordize-keys true) navigation]))}]))
+                   :render-item (fn [row]
+                                  (r/as-element [row-component (js->clj row :keywordize-keys true) navigation]))}]))

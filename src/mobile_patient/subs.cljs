@@ -1,5 +1,47 @@
 (ns mobile-patient.subs
-  (:require [re-frame.core :refer [reg-sub]]))
+  (:require-macros [reagent.ratom :refer [reaction]])
+  (:require [re-frame.core :refer [reg-sub reg-sub-raw]]))
+
+;; -- Subscriptions----------------------------------------------------------
+(reg-sub-raw
+ :user-id
+ (fn [db _] (reaction (get-in @db [:user :id]))))
+
+(reg-sub-raw
+ :user-ref
+ (fn [db _] (reaction (get-in @db [:user :ref]))))
+
+(reg-sub
+ :contacts
+ (fn [db _] (:contacts db)))
+
+(reg-sub
+ :users
+ (fn [db _] (:users db)))
+
+(reg-sub
+ :chats
+ (fn [db _] (:chats db)))
+
+(reg-sub
+ :chat
+ (fn [db _] (:chat db)))
+
+(reg-sub
+ :messages
+ (fn [db _] (:messages db)))
+
+(reg-sub
+ :message
+ (fn [db _] (:message db)))
+
+(reg-sub
+ :active-medication-statements
+ (fn [db _] (:active-medication-statements db)))
+
+(reg-sub
+ :other-medication-statements
+ (fn [db _] (:other-medication-statements db)))
 
 (reg-sub
   :get-greeting
