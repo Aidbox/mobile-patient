@@ -1,4 +1,4 @@
-(ns mobile-patient.android.core
+(ns mobile-patient.ios.core
   (:require [reagent.core :as r :refer [atom]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [practitioner.routes :refer [drawer-routes on-navigation-callback]]

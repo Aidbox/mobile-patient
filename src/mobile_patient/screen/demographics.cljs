@@ -1,8 +1,7 @@
 (ns mobile-patient.screen.demographics
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
-            [mobile-patient.ui :as ui]
-            [mobile-patient.nav :as nav]))
+            [mobile-patient.ui :as ui]))
 
 
 (defn submit-handler [form-data]
