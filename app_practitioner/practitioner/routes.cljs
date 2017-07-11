@@ -10,10 +10,10 @@
    (clj->js
     {"Patients" {:screen (rh/stack-navigator
                           {"PatientsList" {:screen (r/reactify-component PatientsScreen)
-                                           :navigationOptions (rh/drawer-nav-opts "Patients")}})}}
+                                           :navigationOptions (rh/drawer-nav-opts "Patients")}})}
     "About App" {:screen (rh/stack-navigator
                           {"About App" {:screen (r/reactify-component (fn [] [ui/text "About app"]))
-                                        :navigationOptions (rh/drawer-nav-opts "About App")}})})
+                                        :navigationOptions (rh/drawer-nav-opts "About App")}})}})
    (clj->js
     {:drawerWidth 300
      :contentComponent (fn [props]
