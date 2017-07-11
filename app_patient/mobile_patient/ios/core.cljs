@@ -1,11 +1,12 @@
-(ns mobile-patient.ios.core
+(ns mobile-patient.android.core
   (:require [reagent.core :as r :refer [atom]]
-          [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-          [mobile-patient.routes :refer [drawer-routes on-navigation-callback]]
-          [mobile-patient.screen.login :refer [LoginScreen]]
-          [mobile-patient.screen.demographics :refer [DemographicsScreen]]
-          [mobile-patient.events]
-          [mobile-patient.subs]))
+            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [patient.routes :refer [drawer-routes on-navigation-callback]]
+            [mobile-patient.screen.login :refer [LoginScreen]]
+            [mobile-patient.screen.demographics :refer [DemographicsScreen]]
+            [mobile-patient.events]
+            [patient.events]
+            [mobile-patient.subs]))
 
 (when-not js/goog.DEBUG (enable-console-print!))
 
@@ -23,4 +24,3 @@
 (defn init []
   (dispatch-sync [:initialize-db])
   (.registerComponent app-registry "MobilePatient" #(r/reactify-component app-root)))
-
