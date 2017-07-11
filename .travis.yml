@@ -48,7 +48,7 @@ before_install:
   - gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 script:
-  - for f in $(grep -lR MobilePatient --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/Mobile Patient/g' $f; done
+#  - for f in $(grep -lR MobilePatient --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/Mobile Patient/g' $f; done
   - lein do clean, with-profile -dev,+prod,+patient cljsbuild once
   - cd android && ./gradlew assembleRelease && cd ..
   - ls ./android/app/build/outputs/apk/
@@ -57,7 +57,7 @@ script:
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk"
 
   - rm ./android/app/build/outputs/apk/*.apk
-  - for f in $(grep -lR 'Mobile Patient' --exclude-dir=.git --exclude=*.yml .); do sed -i 's/Mobile Patient/Mobile Practitioner/g' $f; done
+  - for f in $(grep -lR 'MobilePatient' --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/MobilePractitioner/g' $f; done
 #  - sed -i 's/com.mobilepatient/com.mobilepractitioner/' android/app/build.gradle
   - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once
   - cd android && ./gradlew assembleRelease && cd ..
