@@ -18,7 +18,7 @@
                   :style {:height 40}}]
 
        [ui/input {:placeholder "Password"
-                  :login @password
+                  :value @password
                   :on-change-text #(reset! password %)
                   :style {:height 40}}]
 
