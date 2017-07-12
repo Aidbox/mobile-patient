@@ -5,7 +5,7 @@
             [practitioner.events]
             [mobile-patient.events]
             [mobile-patient.subs]
-            [mobile-patient.screen.login :refer [LoginScreen]]
+            [practitioner.screen.login :refer [LoginScreen]]
             [mobile-patient.ui :as ui]
             ))
 

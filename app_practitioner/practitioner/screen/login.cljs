@@ -1,12 +1,12 @@
-(ns mobile-patient.screen.login
+(ns practitioner.screen.login
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
             [mobile-patient.ui :as ui]))
 
 
 (defn LoginScreen [{:keys [navigation]}]
-  (let [login (r/atom "patient@com")
-        password (r/atom "patient")
+  (let [login (r/atom "practitioner@com")
+        password (r/atom "practitioner")
         loading (rf/subscribe [:get-in [:spinner :login]])]
     (fn []
       [ui/view {:style {:flex 1 :justify-content :center :margin 30}}
@@ -18,7 +18,7 @@
                   :style {:height 40}}]
 
        [ui/input {:placeholder "Password"
-                  :login @password
+                  :value @password
                   :on-change-text #(reset! password %)
                   :style {:height 40}}]
 
