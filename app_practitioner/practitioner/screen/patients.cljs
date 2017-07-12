@@ -11,8 +11,9 @@
                                    :padding 10
                                    :background-color "#ffffff"}
                            :on-press (fn []
-                                       #_(rf/dispatch [:create-chat [(:id item)]])
-                                       #_(navigation.goBack nil))}
+                                       (rf/dispatch [:set-current-patient-id (:id item)])
+                                       (navigation.navigate "Patient"
+                                                            #js{:patientid (:id item)}))}
    [ui/view {:style {:flex-direction :row :justify-content :space-between}}
     [ui/text {:style {:text-align "left"}} (:id item)]
     [ui/icon {:name "chevron-right" :size 30 :color "#FF485C"}]]])

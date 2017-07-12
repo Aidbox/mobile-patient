@@ -34,7 +34,7 @@
 
 (defn drawer-content [props]
   (let [username @(rf/subscribe [:get-in [:user :name 0 :text]])
-        excluded #{"About App"}]
+        excluded #{"About App" "PatientWrapper"}]
     [ui/view {:style {:background-color "#f4f4f4"
                       :flex 1}}
      [ui/view {:style {:background-color "white"

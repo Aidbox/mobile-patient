@@ -1,7 +1,7 @@
 (ns practitioner.events
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as r]
-            [re-frame.core :refer [dispatch subscribe reg-event-fx]]
+            [re-frame.core :refer [dispatch subscribe reg-event-fx reg-event-db]]
             [mobile-patient.ui :as ui]
             [mobile-patient.lib.jwt :as jwt]
             [clojure.string :as str]
@@ -63,3 +63,7 @@
                              (filter #(pat-ids (get-in % [:ref :id]))))]
      {:db (merge db {:practitioner-patients filtered-users
                      :current-screen :main})})))
+(reg-event-db
+ :set-current-patient-id
+ (fn [db [_ id]]
+      (assoc db :current-patient-id id)))

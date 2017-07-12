@@ -13,7 +13,8 @@
             [mobile-patient.screen.contacts :refer [ContactsScreen]]
             [mobile-patient.screen.chart :refer [ChartScreen]]))
 
-
+(defn dumb-component [text]
+  (r/reactify-component (fn [] [ui/text text])))
 
 (def drawer-routes
   (ui/DrawerNavigator
@@ -59,7 +60,7 @@
                                        :navigationOptions (rh/drawer-nav-opts "Settings")}})}
 
      "About App" {:screen (rh/stack-navigator
-                           {"About App" {:screen (r/reactify-component (fn [] [ui/text "About app"]))
+                           {"About App" {:screen (dumb-component "About App")
                                          :navigationOptions (rh/drawer-nav-opts "About App")}})}})
    (clj->js
     {:drawerWidth 300
