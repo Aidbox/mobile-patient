@@ -19,4 +19,7 @@
              :messages []
              :resource-type-data {}
              :practitioner-patients {}
-             :user nil})
+             :user nil
+             :patient-data {}
+             :practitioner-data {}
+             })

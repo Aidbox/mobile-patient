@@ -70,6 +70,8 @@
 (defn on-navigation-callback [prev-state new-state action]
   (let [action (js->clj action :keywordize-keys true)
         route-name (:routeName action)]
+    (print "route-name" route-name)
     (case route-name
+      "Medications" (rf/dispatch [:get-medication-statements])
       "Vitals Signs" (rf/dispatch [:on-vitals-sign-screen])
       nil)))

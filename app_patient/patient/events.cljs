@@ -19,6 +19,32 @@
             (= "re-frame: overwriting" (first args)) nil
             :else (apply warn args)))})
 
+;; Events flow
+;;
+;;    +-------------------+
+;;    | :login            |
+;;    | :on-login         |
+;;    | :on-user-load     |
+;;    | :set-demographics |
+;;    +-------------------+
+;;            |
+;;     contains required fields?                 no
+;;            +-----------------------------------+
+;;            |                                   |
+;;            |                     +-------------------------------+
+;;            |                     | current-screen :demographics  |
+;;            |                     | :submit-demographics form-data|
+;;            |                     | :on-submit-demographics       |
+;;            |                     +-------------------------------+
+;;            |                                   |
+;;            +------------------------------------
+;;        yes |
+;;    +-------------------------+
+;;    | :set-user-data          |
+;;    | :set-patient-data       |
+;;    |                         |
+;;    +-------------------------+
+;;
 ;; -- Handlers --------------------------------------------------------------
 (reg-event-db
  :on-chats
@@ -127,38 +153,25 @@
     :dispatch [:get-contacts]}))
 
 (reg-event-fx
- :set-user
- (fn [cofx [_ value]]
-   {:db (->  (:db cofx)
-             (assoc :user value)
-             (assoc :chats [])
-             (assoc :contacts [])
-             (assoc :current-screen :main))
-    :dispatch [:on-set-user]}))
+ :set-user-data
+ (fn [cofx [_ user-data]]
+   (print "user-data" user-data)
+   {:db (-> (:db cofx)
+            (assoc :user user-data))
+    :fetch {:uri (str "/Patient/" (get-in user-data [:ref :id]))
+            :success :set-patient-data
+            :opts {:method "GET"}}
+    }))
 
 (reg-event-fx
- :on-set-user
- (fn [_]
-   (let [user-ref @(subscribe [:user-ref])]
-     (case (:resourceType user-ref)
-       "Patient" {:fetch {:uri (str "/Patient/" (:id user-ref))
-                          :success :on-get-patient
-                          :opts {:method "GET"}}}
-       "Practitioner" {:fetch {:uri "/Patient"
-                               :success :on-get-patients
-                               :opts {:method "GET"}}}
-       {}))))
+ :set-patient-data
+ (fn [{:keys [db]} [_ patient-data]]
+   (let []
+     {:dispatch [:get-medication-statements]
+      :db (merge db {:patient-data patient-data
+                     :current-screen :main})})))
 
-(reg-event-fx
- :on-get-patient
- (fn [_ [_ value]]
-   (let [prac-ids (map :id (filter #(= (:resourceType %) "Practitioner") (:generalPractitioner value)))]
-     {:fetch {:uri "/User"
-              :success :set-contacts
-              :success-parms prac-ids
-              :opts {:method "GET"}}})))
-
-(reg-event-fx
+#_(reg-event-fx
  :on-get-patients
  (fn [_ [_ value]]
    (let [pat-ids (map #(-> % :resource :id) (:entry value))]
@@ -172,7 +185,7 @@
  (fn [{:keys [db]} [_ resource-type-data]]
    (if (h/contains-many? resource-type-data :gender :birthDate :address)
      {:db (merge db {:resource-type-data resource-type-data})
-      :dispatch [:set-user (:user db)]}
+      :dispatch [:set-user-data (:user db)]}
 
      {:db (merge db {:resource-type-data resource-type-data
                      :current-screen :demographics})})))
@@ -217,7 +230,7 @@
  :on-submit-demographics
  (fn [{:keys [db]} [_ resource-type-data]]
    {:db (merge db {:resource-type-data resource-type-data})
-    :dispatch [:set-user (:user db)]
+    :dispatch [:set-user-data (:user db)]
     }))
 
 (reg-event-fx

@@ -18,7 +18,7 @@
   [ui/touchable-highlight {:style {:margin-left 10}
                            :on-press #(navigation.navigate "DrawerOpen")
                            :underlay-color color/grey}
-   [ui/icon {:name "menu" :size 36 :color color/grey}]])
+   [ui/icon {:name "menu" :size 24 :color :black}]])
 
 (defn drawer-item
   ([title on-press]
@@ -79,6 +79,8 @@
    (fn [props]
      #js{:title title
          :headerLeft (r/as-element [menu-button props.navigation])
-         :headerTitleStyle #js{:fontWeight "normal"
-                               :color "#6e6e6e"}
+         :headerTitleStyle #js{:paddingLeft 10
+                               :fontSize 19
+                               :fontWeight "bold"
+                               :color color/grey}
          :headerRight (when header-right (r/as-element [header-right props.navigation]))})))
