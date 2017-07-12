@@ -189,19 +189,20 @@
 (reg-event-fx
  :on-login
  (fn [{:keys [db]} [_ resp-body _ resp]]
-   (let [invalid (boolean (re-find #"Wrong credentials" resp-body))]
-     (if invalid
-       (ui/alert "" "Wrong credentials")
-       (let [auth-data (-> (.-url resp) (str/split #"#") second h/query->params)
-             id-token (:id_token auth-data)
-             token-data (jwt/get-data-from-token id-token)
-             user-id  (:user-id token-data)]
-         (assert user-id)
-         {:fetch {:uri (str "/User/" user-id)
-                  :opts {:method "GET"}
-                  :success :on-user-load}
-          :db (merge db {:access-token (:access_token auth-data)})
-          })))))
+   (if resp.ok
+     (let [invalid (boolean (re-find #"Wrong credentials" resp-body))]
+       (if invalid
+         (ui/alert "" "Wrong credentials")
+         (let [auth-data (-> (.-url resp) (str/split #"#") second h/query->params)
+               id-token (:id_token auth-data)
+               token-data (jwt/get-data-from-token id-token)
+               user-id  (:user-id token-data)]
+           (assert user-id)
+           {:fetch {:uri (str "/User/" user-id)
+                    :opts {:method "GET"}
+                    :success :on-user-load}
+            :db (merge db {:access-token (:access_token auth-data)})})))
+     (ui/alert "Error" (str resp.status " " resp.statusText)))))
 
 
 (reg-event-fx

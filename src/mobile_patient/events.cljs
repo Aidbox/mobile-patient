@@ -27,12 +27,13 @@
                                     :method "GET"
                                     :headers {"Content-Type" "application/json"}}
                                    opts)))
-         (.then (fn [x]
-                  (reset! response x)
-                  (if (str/starts-with? (-> x (aget "headers") (.get "content-type"))
-                                        "application/json")
-                    (.json x)
-                    (.text x))))
+         (.then (fn [resp]
+                  (reset! response resp)
+                  (if resp.ok
+                    (if (str/starts-with? (-> resp (aget "headers") (.get "content-type"))
+                                          "application/json")
+                      (.json resp)
+                      (.text resp)))))
          (.then
           (fn [response-body]
             (when success
