@@ -139,12 +139,22 @@
                      :body (.stringify js/JSON (clj->js chat))}}})))
 
 
+(reg-event-fx
+ :load-contacts
+ (fn [_ [_]]
+   (let []
+     {:fetch {:uri "/User"
+              :success :set-contacts
+              :opts {:method "GET"}}})))
+
 (reg-event-db
  :set-contacts
- (fn [db [_ value ids]]
-   (let [users (map :resource (:entry value))
-         contacts (filter #((set ids) (-> % :ref :id)) users)]
+ (fn [db [_ all-users]]
+   (let [gen-pract-ids @(subscribe [:get-patients-general-practitioner-ids])
+         users (map :resource (:entry all-users))
+         contacts (filter #((set gen-pract-ids) (-> % :ref :id)) users)]
      (assoc db :contacts contacts))))
+
 
 (reg-event-fx
  :on-get-users
@@ -170,15 +180,6 @@
      {:dispatch [:get-medication-statements]
       :db (merge db {:patient-data patient-data
                      :current-screen :main})})))
-
-#_(reg-event-fx
- :on-get-patients
- (fn [_ [_ value]]
-   (let [pat-ids (map #(-> % :resource :id) (:entry value))]
-     {:fetch {:uri "/User"
-              :success :set-contacts
-              :success-parms pat-ids
-              :opts {:method "GET"}}})))
 
 (reg-event-fx
  :set-demographics

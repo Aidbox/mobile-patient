@@ -58,6 +58,13 @@
  (fn [db _]
    (:current-screen db)))
 
+(reg-sub
+ :get-patients-general-practitioner-ids
+ (fn [db [_]]
+   (->> (get-in db [:patient-data :generalPractitioner])
+        (filter #(= (:resourceType %) "Practitioner"))
+        (map :id))))
+
 (defmulti get-observation-data #(:id %))
 
 (defmethod get-observation-data "blood-pressure" [item]
