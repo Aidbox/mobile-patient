@@ -157,14 +157,13 @@
 
 (reg-event-fx
  :set-user-data
- (fn [cofx [_ user-data]]
+ (fn [{:keys [db]} [_ user-data]]
    ;;(print "user-data" user-data)
    (let [user-ref (get-in user-data [:ref :id])
          where-to-go :get-medication-statements]
-     {:db (-> (:db cofx)
-              (assoc :user user-data))
-      :dispatch [:get-patient-data user-ref where-to-go]
-      :current-screen :main})))
+     {:db (merge db {:user user-data
+                     :current-screen :main})
+      :dispatch [:get-patient-data user-ref where-to-go]})))
 
 
 
