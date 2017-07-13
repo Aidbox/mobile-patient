@@ -54,14 +54,7 @@
        (assoc db :chats chats)
        db))))
 
-(reg-event-db
- :on-get-medication-statements
- (fn [db [_ value]]
-   (let [medication-statements (sort-by #(-> % :effective :dateTime) (map :resource (:entry value)))
-         groups (group-by #(= (:status %) "active") medication-statements)]
-     (-> db
-         (assoc :active-medication-statements (groups true))
-         (assoc :other-medication-statements (groups false))))))
+
 
 (reg-event-db
  :set-chat
@@ -165,30 +158,24 @@
 (reg-event-fx
  :set-user-data
  (fn [cofx [_ user-data]]
-   (print "user-data" user-data)
-   {:db (-> (:db cofx)
-            (assoc :user user-data))
-    :fetch {:uri (str "/Patient/" (get-in user-data [:ref :id]))
-            :success :set-patient-data
-            :opts {:method "GET"}}
-    }))
+   ;;(print "user-data" user-data)
+   (let [user-ref (get-in user-data [:ref :id])
+         where-to-go :get-medication-statements]
+     {:db (-> (:db cofx)
+              (assoc :user user-data))
+      :dispatch [:get-patient-data user-ref where-to-go]
+      :current-screen :main})))
 
-(reg-event-fx
- :set-patient-data
- (fn [{:keys [db]} [_ patient-data]]
-   (let []
-     {:dispatch [:get-medication-statements]
-      :db (merge db {:patient-data patient-data
-                     :current-screen :main})})))
+
 
 (reg-event-fx
  :set-demographics
- (fn [{:keys [db]} [_ resource-type-data]]
-   (if (h/contains-many? resource-type-data :gender :birthDate :address)
-     {:db (merge db {:resource-type-data resource-type-data})
+ (fn [{:keys [db]} [_ patient-data]]
+   (if (h/contains-many? patient-data :gender :birthDate :address)
+     {:db (merge db {:patient-data patient-data})
       :dispatch [:set-user-data (:user db)]}
 
-     {:db (merge db {:resource-type-data resource-type-data
+     {:db (merge db {:patient-data patient-data
                      :current-screen :demographics})})))
 
 (reg-event-fx
@@ -219,18 +206,11 @@
      (ui/alert "Error" (str resp.status " " resp.statusText)))))
 
 
-(reg-event-fx
- :get-medication-statements
- (fn [_]
-   (let [user-ref @(subscribe [:user-ref])]
-     {:fetch {:uri "/MedicationStatement"
-              :success :on-get-medication-statements
-              :opts {:parms {:subject (:id user-ref)}
-                     :method "GET"}}})))
+
 (reg-event-fx
  :on-submit-demographics
- (fn [{:keys [db]} [_ resource-type-data]]
-   {:db (merge db {:resource-type-data resource-type-data})
+ (fn [{:keys [db]} [_ patient-data]]
+   {:db (merge db {:patient-data patient-data})
     :dispatch [:set-user-data (:user db)]
     }))
 
@@ -238,7 +218,7 @@
  :submit-demographics
  (fn [_ [_ form-data]]
    (let [user @(subscribe [:get-in [:user]])
-         resource-type-data @(subscribe [:get-in [:resource-type-data]])]
+         patient-data @(subscribe [:get-in [:patient-data]])]
      {:fetch {:uri (str "/" (get-in user [:ref :resourceType ])
                         "/" (get-in user [:ref :id ]))
               :success :on-submit-demographics
@@ -246,7 +226,7 @@
                      :headers {"content-type" "application/json"}
                      :body (js/JSON.stringify
                             (clj->js
-                             (merge resource-type-data
+                             (merge patient-data
                                     {:gender (:sex form-data)
                                      :birthDate (:birthday form-data)
                                      :address [{:use "home"

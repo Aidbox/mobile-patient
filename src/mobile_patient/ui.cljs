@@ -2,11 +2,12 @@
   (:require [reagent.core :as r]
             [mobile-patient.color :as color]))
 
+
 (def react-navigation (js/require "react-navigation"))
+(def NavigationActions (.-NavigationActions react-navigation))
 (def StackNavigator (.-StackNavigator react-navigation))
 (def TabNavigator (.-TabNavigator react-navigation))
 (def DrawerNavigator (.-DrawerNavigator react-navigation))
-
 
 (def ReactNative (js/require "react-native"))
 

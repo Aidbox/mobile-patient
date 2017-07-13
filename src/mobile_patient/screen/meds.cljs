@@ -1,8 +1,9 @@
 (ns mobile-patient.screen.meds
   (:require [reagent.core :as r]
-            [re-frame.core :refer [subscribe dispatch]]
+            [re-frame.core :as rf]
             [mobile-patient.ui :as ui]
-            [mobile-patient.color :as color]))
+            [mobile-patient.color :as color]
+            [goog.object :refer [getValueByKeys]]))
 
 (defn medication [med-st]
   (or (-> med-st :medication :CodeableConcept :coding first :display)
@@ -43,20 +44,37 @@
    [ui/view childs]])
 
 (defn MedsScreen [{:keys [navigation]}]
-  (let [active @(subscribe [:active-medication-statements])
-        other @(subscribe [:other-medication-statements])]
-    [ui/scroll-view
-     [section {:title "Active"}
-      (for [[idx med-st] (map-indexed vector active)]
-        ^{:key idx}
-        [section-row {:title (medication med-st)
-                      :description (get-in med-st [:note 0 :text])
-                      :on-press #()}])]
+  (let [t1 (new js/Date)
+        loading (rf/subscribe [:get-in [:spinner :load-patient-data]])
+        user-id (getValueByKeys navigation "state" "params" "patientid")
+        ;;patient-ref @(rf/subscribe [:patient-ref])
+        patient-ref (rf/subscribe [:get-patient-ref-by-id user-id])
+        active (rf/subscribe [:active-medication-statements @patient-ref])
+        other (rf/subscribe [:other-medication-statements @patient-ref])]
+    (fn []
+      ;;(print "t" (- (new js/Date) t1))
+      (if (or @loading (< (- (new js/Date) t1) 300))
+        [ui/activity-indicator]
+        [ui/scroll-view
+         (if-not (empty? @active)
+           [section {:title "Active"}
+            (for [[idx med-st] (map-indexed vector @active)]
+              ^{:key idx}
+              [section-row {:title (medication med-st)
+                            :description (get-in med-st [:note 0 :text])
+                            :on-press #()}])])
 
-     [section {:title "Other"}
-       (for [[idx med-st] (map-indexed vector other)]
-         ^{:key idx}
-         [section-row {:title (medication med-st)
-                       :description (get-in med-st [:note 0 :text])
-                       :on-press #()}])
-       ]]))
+         (if-not (empty? @other)
+           [section {:title "Other"}
+            (for [[idx med-st] (map-indexed vector @other)]
+              ^{:key idx}
+              [section-row {:title (medication med-st)
+                            :description (get-in med-st [:note 0 :text])
+                            :on-press #()}])])
+
+         (if (every? empty? [@active @other])
+           [section-row {:title ""
+                         :description "No data"
+                         :on-press #()}])
+         ])
+      )))

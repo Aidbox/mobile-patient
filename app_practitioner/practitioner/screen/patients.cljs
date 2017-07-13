@@ -21,7 +21,7 @@
 
 (defn PatientsScreen [{:keys [navigation]}]
   (let [patients (rf/subscribe [:get-in [:practitioner-patients]])]
-    [ui/flat-list {:data (clj->js @patients)
+    [ui/flat-list {:data (clj->js (vals @patients))
                    :key-extractor #(.-id %)
                    :render-item (fn [row]
                                   (r/as-element [row-component (js->clj row :keywordize-keys true) navigation]))}]))

@@ -61,7 +61,9 @@
                              :entry
                              (map #(get % :resource))
                              (filter #(pat-ids (get-in % [:ref :id]))))]
-     {:db (merge db {:practitioner-patients filtered-users
+     {:db (merge db {:practitioner-patients (into {}
+                                                  (map #(vector (:id %) %))
+                                                  filtered-users) ; from list to map by id
                      :current-screen :main})})))
 (reg-event-db
  :set-current-patient-id

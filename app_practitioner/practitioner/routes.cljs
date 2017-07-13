@@ -5,7 +5,9 @@
             [mobile-patient.ui :as ui]
             [mobile-patient.color :as color]
             [mobile-patient.route-helpers :as rh]
-            [practitioner.screen.patients :refer [PatientsScreen]]))
+            [practitioner.screen.patients :refer [PatientsScreen]]
+            [mobile-patient.screen.meds :refer [MedsScreen]]
+            ))
 
 (defn dumb-component [text]
   (r/reactify-component (fn [] [ui/text text])))
@@ -32,7 +34,7 @@
     (ui/TabNavigator
      (clj->js
       {
-       "Meds" {:screen (dumb-component "Meds")
+       "Meds" {:screen (r/reactify-component MedsScreen)
                :navigationOptions (tabs-nav-opts "Meds")}
 
        "Vitals" {:screen (dumb-component "Chats")
@@ -42,7 +44,8 @@
                 :navigationOptions (tabs-nav-opts "Chats")}
 
        })
-     (clj->js {:tabBarPosition "top"
+     (clj->js {;;:initialRouteName "Meds"
+               :tabBarPosition "top"
                :tabBarOptions {:activeTintColor "#fff"
                                :inactiveTintColor "#555"
                                :style {:backgroundColor color/light-grey}
@@ -70,7 +73,6 @@
                 {:screen tabs-routes
                  :navigationOptions
                  (fn [props]
-                   ;;(print (getValueByKeys props "navigation" "state" "params" "patientid"))
                    #js {:title (getValueByKeys props "navigation" "state" "params" "patientid")})
                  }})}})
    (clj->js
@@ -84,7 +86,12 @@
 ;; On navigation chnage handler
 (defn on-navigation-callback [prev-state new-state action]
   (let [action (js->clj action :keywordize-keys true)
-        route-name (:routeName action)]
+        route-name (:routeName action)
+        params (:params action)]
     (case route-name
-      ;;"Vitals Signs" (rf/dispatch [:on-vitals-sign-screen])
+      "Patient" (do
+                  (rf/dispatch-sync [:spinner :load-patient-data true])
+                  (rf/dispatch [:get-patient-data
+                              @(rf/subscribe [:get-patient-ref-by-id (:patientid params)])
+                              :get-medication-statements]))
       nil)))

@@ -37,16 +37,16 @@
 
 (reg-sub
  :active-medication-statements
- (fn [db _] (:active-medication-statements db)))
+ (fn [db [_ pat-ref]] (get-in db [:active-medication-statements pat-ref])))
 
 (reg-sub
  :other-medication-statements
- (fn [db _] (:other-medication-statements db)))
+ (fn [db [_ pat-ref]] (get-in db [:other-medication-statements pat-ref])))
 
 (reg-sub
-  :get-greeting
+  :patient-ref
   (fn [db _]
-    (:greeting db)))
+    (get-in db [:patient-data :id])))
 
 (reg-sub
  :get-in
@@ -91,3 +91,10 @@
         (map get-observation-data)
         (apply concat)
         )))
+
+(reg-sub
+ :get-patient-ref-by-id
+ (fn [db [_ user-id]]
+   (-> (:practitioner-patients db)
+       (get user-id)
+       (get-in [:ref :id]))))

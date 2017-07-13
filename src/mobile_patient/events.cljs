@@ -68,3 +68,42 @@
                      :headers {"Content-Type" "application/x-www-form-urlencoded"}
                      :body (str "email=" (js/encodeURIComponent login)
                                 "&password=" (js/encodeURIComponent password))}}})))
+
+;;
+;; get-patient-data
+;;
+(reg-event-fx
+ :get-patient-data
+ (fn [_ [_ user-ref where-to-go]]
+   {:fetch {:uri (str "/Patient/" user-ref)
+            :success :set-patient-data
+            :success-parms where-to-go
+            :opts {:method "GET"}}}))
+
+(reg-event-fx
+ :set-patient-data
+ (fn [{:keys [db]} [_ patient-data where-to-go]]
+   {:db (merge db {:patient-data patient-data})
+    :dispatch [where-to-go]}))
+
+;;
+;; get medications for user
+;;
+(reg-event-fx
+ :get-medication-statements
+ (fn [{:keys [db]}  _]
+   (let [patient-ref @(subscribe [:patient-ref])]
+     {:fetch {:uri "/MedicationStatement"
+              :spinner-id :load-patient-data
+              :success :set-medication-statements
+              :success-parms patient-ref
+              :opts {:parms {:subject patient-ref}
+                     :method "GET"}}})))
+(reg-event-db
+ :set-medication-statements
+ (fn [db [_ med-stms patient-ref]]
+   (let [medication-statements (sort-by #(-> % :effective :dateTime) (map :resource (:entry med-stms)))
+         groups (group-by #(= (:status %) "active") medication-statements)]
+     (-> db
+         (assoc-in [:active-medication-statements patient-ref] (groups true))
+         (assoc-in [:other-medication-statements patient-ref] (groups false))))))
