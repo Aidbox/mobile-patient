@@ -6,7 +6,7 @@
             [mobile-patient.color :as color]
             [mobile-patient.route-helpers :as rh]
             [practitioner.screen.patients :refer [PatientsScreen]]
-            [mobile-patient.screen.meds :refer [MedsScreen]]
+            [practitioner.screen.meds :refer [MedsScreen]]
             ))
 
 (defn dumb-component [text]
@@ -37,7 +37,7 @@
        "Meds" {:screen (r/reactify-component MedsScreen)
                :navigationOptions (tabs-nav-opts "Meds")}
 
-       "Vitals" {:screen (dumb-component "Chats")
+       "Vitals" {:screen (dumb-component "Vitals")
                  :navigationOptions (tabs-nav-opts "Vitals")}
 
        "Chats" {:screen (dumb-component "Chats")

@@ -11,8 +11,8 @@
              :current-screen :login
              :config {:base-url "https://sansara.health-samurai.io"
                       :client-id "sansara"}
-             :active-medication-statements []
-             :other-medication-statements []
+             :active-medication-statements {}
+             :other-medication-statements {}
              :observations []
              :contacts []
              :chats []
