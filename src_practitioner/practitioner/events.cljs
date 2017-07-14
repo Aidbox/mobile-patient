@@ -21,39 +21,66 @@
                user-id  (:user-id token-data)]
            (assert user-id)
            {:db (merge db {:access-token (:access_token auth-data)})
-            :fetch {:uri (str "/User/" user-id)
-                    :opts {:method "GET"}
-                    :success :load-user
-                    }})))
-     (ui/alert "Error" (str resp.status " " resp.statusText)))))
+            :dispatch [:boot user-id]})))
+     (do
+       (ui/alert "Error" (str resp.status " " resp.statusText))))))
 
 (reg-event-fx
- :load-user
- (fn [{:keys [db]} [_ user-data]]
-   {:db (merge db {:user user-data})
-    :fetch {:uri (str "/Practitioner/" (get-in user-data [:ref :id]))
-            :opts {:method "GET"}
-            :success :load-practitioner-patients}}))
+ :boot
+ (fn [_ [_ user-id]]
+   {:async-flow
+    {:first-dispatch [:do-load-user user-id]
+     :rules
+     [
+      {:when     :seen?
+       :events   :success-load-user
+       :dispatch-n '([:do-load-practitioner] [:do-load-all-users])}
 
-(reg-event-fx
- :load-practitioner-patients
- (fn [{:keys [db]} [_ user-data]]
-   {:db (merge db {:user user-data})
-    :fetch {:uri (str "/Patient?general-practitioner=" (get-in db [:user :ref :id]))
-            :success :load-all-users}}))
+      {:when     :seen-both?
+       :events   [:success-load-practitioner :success-load-all-users]
+       :dispatch [:do-load-practitioner-patients]}
+      ]}}))
 
-(reg-event-fx
- :load-all-users
- (fn [{:keys [db]} [_ patients-data]]
-   {:fetch {:uri "/User"
-            :opts {:method "GET"}
-            :success :set-practitioner-patients
-            :success-parms patients-data}}))
 
+;; load-user
 (reg-event-fx
- :set-practitioner-patients
- (fn [{:keys [db]} [_ all-users-data patients-data]]
-   (let [pat-ids (->> patients-data
+ :do-load-user
+ (fn [{:keys [db]} [_ user-id]]
+   {:fetch {:uri (str "/User/" user-id)
+            :success :success-load-user}}))
+
+(reg-event-db
+ :success-load-user
+ (fn [db [_ user-data]]
+   (assoc db :user user-data)))
+
+
+;; load-practitioner
+(reg-event-fx
+ :do-load-practitioner
+ (fn [{:keys [db]} _]
+   {:fetch {:uri (str "/Practitioner/" (get-in db [:user :ref :id]))
+            :success :success-load-practitioner}}))
+
+(reg-event-db
+ :success-load-practitioner
+ (fn [db [_ practitioner-data]]
+   (assoc db :practitioner-data practitioner-data)))
+
+
+;; load-practitioner-patients
+(reg-event-fx
+ :do-load-practitioner-patients
+ (fn [{:keys [db]} _]
+   (print "- " (get-in db [:user :ref :id]))
+   {:fetch {:uri (str "/Patient?general-practitioner=" (get-in db [:user :ref :id]))
+            :success :success-load-practitioner-patients}}))
+
+(reg-event-db
+ :success-load-practitioner-patients
+ (fn [db [_ patients-data]]
+   (let [all-users-data (:all-users db)
+         pat-ids (->> patients-data
                       :entry
                       (map #(get-in % [:resource :id]))
                       set)
@@ -61,11 +88,22 @@
                              :entry
                              (map #(get % :resource))
                              (filter #(pat-ids (get-in % [:ref :id]))))]
-     {:db (merge db {:practitioner-patients (into {}
-                                                  (map #(vector (:id %) %))
-                                                  filtered-users) ; from list to map by id
-                     :current-screen :main})})))
+     ;;(print patients-data)
+     (assoc db :practitioner-patients (into {}
+                                            (map #(vector (:id %) %))
+                                            filtered-users) ; from list to map by id
+            :current-screen :main))))
+
+
+;; load-all-users
+(reg-event-fx
+ :do-load-all-users
+ (fn [_ _]
+   {:fetch {:uri "/User"
+            :opts {:method "GET"}
+            :success :success-load-all-users}}))
+
 (reg-event-db
- :set-current-patient-id
- (fn [db [_ id]]
-      (assoc db :current-patient-id id)))
+ :success-load-all-users
+ (fn [db [_ all-users]]
+   (assoc db :all-users all-users)))

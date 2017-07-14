@@ -39,23 +39,14 @@
 ;;            |                                   |
 ;;            +------------------------------------
 ;;        yes |
-;;    +-------------------------+
-;;    | :set-user-data          |
-;;    | :set-patient-data       |
-;;    |                         |
-;;    +-------------------------+
+;;    +----------------------------+
+;;    | :set-user-data             |
+;;    | :get-patient-data          |
+;;    | :get-medication-statements |
+;;    | :set-medication-statements |
+;;    +----------------------------+
 ;;
 ;; -- Handlers --------------------------------------------------------------
-(reg-event-db
- :on-chats
- (fn [db [_ value]]
-   (let [chats (map :resource (:entry value))]
-     (if (not (= (:chats db) chats))
-       (assoc db :chats chats)
-       db))))
-
-
-
 (reg-event-db
  :set-chat
  (fn [db [_ chat]]
@@ -68,34 +59,16 @@
  (fn [db [_ value]]
    (assoc db :message value)))
 
-(reg-event-db
- :on-messages
- (fn [db [_ value]]
-   (let [messages (map :resource (:entry value))]
-     (if (not (= (:messages db) messages))
-       (assoc db :messages messages)
-       db))))
+
 
 (reg-event-fx
  :on-send-message
  (fn [db [_ value]]
    {}))
 
-(reg-event-fx
- :get-chats
- (fn [_]
-   (let [user (subscribe [:user-id])]
-     {:fetch {:uri "/Chat"
-              :success :on-chats
-              :opts {:parms {:participant @user}}}})))
 
-(reg-event-fx
- :get-messages
- (fn [_ [_ chat-id]]
-   (let [user (subscribe [:user-id])]
-     {:fetch {:uri "/Message"
-              :success :on-messages
-              :opts {:parms {:chat chat-id}}}})))
+
+
 
 (reg-event-fx
  :send-message

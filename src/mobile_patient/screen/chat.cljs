@@ -37,17 +37,6 @@
                     :size 36
                     :color color/pink}]]]))))
 
-(defn dispatch-get-chats-event []
-  (dispatch [:get-chats]))
-
-(defn dispatch-get-messages-event []
-  (let [chat (subscribe [:chat])]
-    (when chat
-      (dispatch [:get-messages (:id @chat)]))))
-
-(defonce do-get-chats (js/setInterval dispatch-get-chats-event 3000))
-(defonce do-get-messages (js/setInterval dispatch-get-messages-event 1000))
-
 (def chat-row-sep
   (r/create-element
    (r/reactify-component

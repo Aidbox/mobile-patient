@@ -5,6 +5,7 @@
             [mobile-patient.ui :as ui]
             [mobile-patient.color :as color]
             [mobile-patient.route-helpers :as rh]
+            [mobile-patient.screen.chat :refer [ChatsScreen ChatScreen]]
             [practitioner.screen.patients :refer [PatientsScreen]]
             [practitioner.screen.meds :refer [MedsScreen]]
             ))
@@ -38,12 +39,7 @@
                :navigationOptions (tabs-nav-opts "Meds")}
 
        "Vitals" {:screen (dumb-component "Vitals")
-                 :navigationOptions (tabs-nav-opts "Vitals")}
-
-       "Chats" {:screen (dumb-component "Chats")
-                :navigationOptions (tabs-nav-opts "Chats")}
-
-       })
+                 :navigationOptions (tabs-nav-opts "Vitals")}})
      (clj->js {;;:initialRouteName "Meds"
                :tabBarPosition "top"
                :tabBarOptions {:activeTintColor "#fff"
@@ -74,7 +70,14 @@
                  :navigationOptions
                  (fn [props]
                    #js {:title (getValueByKeys props "navigation" "state" "params" "patientid")})
-                 }})}})
+                 }})}
+     "Chats"
+     {:screen (rh/stack-navigator
+               {"Chats"
+                {:screen (r/reactify-component ChatsScreen)
+                 :navigationOptions (rh/drawer-nav-opts "Chats" rh/add-chat-button)}})}
+     })
+
    (clj->js
     {:drawerWidth 300
      :contentComponent
