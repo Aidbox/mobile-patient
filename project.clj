@@ -53,9 +53,9 @@
                                                                   :optimizations :simple
                                                                   :closure-defines {"goog.DEBUG" false}}}
                                          #_($PROD_PROFILES$)}}}
-             :patient {:cljsbuild {:builds {:ios {:source-paths ["app_patient"]}
-                                            :android {:source-paths ["app_patient"]}}}}
-             :practitioner {:cljsbuild {:builds {:ios {:source-paths ["app_practitioner"]}
-                                                 :android {:source-paths ["app_practitioner"]}}}}
+             :patient {:cljsbuild {:builds {:ios {:source-paths ["src_patient"]}
+                                            :android {:source-paths ["src_patient"]}}}}
+             :practitioner {:cljsbuild {:builds {:ios {:source-paths ["src_practitioner"]}
+                                                 :android {:source-paths ["src_practitioner"]}}}}
              }
   )
