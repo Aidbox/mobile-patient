@@ -3,27 +3,8 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe reg-event-fx reg-event-db]]
             [mobile-patient.ui :as ui]
-            [mobile-patient.lib.jwt :as jwt]
             [clojure.string :as str]
             [mobile-patient.lib.helper :as h]))
-
-
-(reg-event-fx
- :on-login
- (fn [{:keys [db]} [_ resp-body _ resp]]
-   (if resp.ok
-     (let [invalid (boolean (re-find #"Wrong credentials" resp-body))]
-       (if invalid
-         (ui/alert "" "Wrong credentials")
-         (let [auth-data (-> (.-url resp) (str/split #"#") second h/query->params)
-               id-token (:id_token auth-data)
-               token-data (jwt/get-data-from-token id-token)
-               user-id  (:user-id token-data)]
-           (assert user-id)
-           {:db (merge db {:access-token (:access_token auth-data)})
-            :dispatch [:boot user-id]})))
-     (do
-       (ui/alert "Error" (str resp.status " " resp.statusText))))))
 
 (reg-event-fx
  :boot
@@ -40,19 +21,6 @@
        :events   [:success-load-practitioner :success-load-all-users]
        :dispatch [:do-load-practitioner-patients]}
       ]}}))
-
-
-;; load-user
-(reg-event-fx
- :do-load-user
- (fn [{:keys [db]} [_ user-id]]
-   {:fetch {:uri (str "/User/" user-id)
-            :success :success-load-user}}))
-
-(reg-event-db
- :success-load-user
- (fn [db [_ user-data]]
-   (assoc db :user user-data)))
 
 
 ;; load-practitioner
@@ -95,15 +63,3 @@
             :current-screen :main))))
 
 
-;; load-all-users
-(reg-event-fx
- :do-load-all-users
- (fn [_ _]
-   {:fetch {:uri "/User"
-            :opts {:method "GET"}
-            :success :success-load-all-users}}))
-
-(reg-event-db
- :success-load-all-users
- (fn [db [_ all-users]]
-   (assoc db :all-users all-users)))

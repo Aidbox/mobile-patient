@@ -1,199 +1,75 @@
 (ns patient.events
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as r]
-            [re-frame.core :refer [reg-event-db after reg-event-fx reg-fx
-                                   dispatch subscribe reg-sub-raw reg-sub]]
-            [mobile-patient.color :as color]
-            [re-frame.loggers :as rf.log]
+            [re-frame.core :refer [dispatch subscribe reg-event-fx reg-event-db]]
             [mobile-patient.ui :as ui]
-            [clojure.spec.alpha :as s]
             [clojure.string :as str]
-            [mobile-patient.lib.jwt :as jwt]
             [mobile-patient.lib.helper :as h]))
 
 
-(def warn (js/console.warn.bind js/console))
-(rf.log/set-loggers!
- {:warn (fn [& args]
-          (cond
-            (= "re-frame: overwriting" (first args)) nil
-            :else (apply warn args)))})
+(reg-event-fx
+ :boot
+ (fn [_ [_ user-id]]
+   {:async-flow
+    {:first-dispatch [:do-load-user user-id]
+     :rules
+     [
+      {:when     :seen?
+       :events   :success-load-user
+       :dispatch-n '([:do-load-patient] [:do-load-all-users])}
 
-;; Events flow
+      {:when     :seen-both?
+       :events   [:success-load-patient :success-load-all-users]
+       :dispatch [:do-check-is-set-demographics]}
+
+      {:when :seen-any-of?
+       :events [:success-submit-demographics]
+       :dispatch [:do-load-medication-statements]}
+
+      {:when :seen?
+       :events :success-load-medication-statements
+       :dispatch [:set-current-screen :main]}
+
+      ]}}))
+
 ;;
-;;    +-------------------+
-;;    | :login            |
-;;    | :on-login         |
-;;    | :on-user-load     |
-;;    | :set-demographics |
-;;    +-------------------+
-;;            |
-;;     contains required fields?                 no
-;;            +-----------------------------------+
-;;            |                                   |
-;;            |                     +-------------------------------+
-;;            |                     | current-screen :demographics  |
-;;            |                     | :submit-demographics form-data|
-;;            |                     | :on-submit-demographics       |
-;;            |                     +-------------------------------+
-;;            |                                   |
-;;            +------------------------------------
-;;        yes |
-;;    +----------------------------+
-;;    | :set-user-data             |
-;;    | :get-patient-data          |
-;;    | :get-medication-statements |
-;;    | :set-medication-statements |
-;;    +----------------------------+
+;; load-patient
 ;;
-;; -- Handlers --------------------------------------------------------------
-(reg-event-db
- :set-chat
- (fn [db [_ chat]]
-   (-> db
-       (assoc :chat chat)
-       (assoc :messages []))))
-
-(reg-event-db
- :set-message
- (fn [db [_ value]]
-   (assoc db :message value)))
-
-
-
 (reg-event-fx
- :on-send-message
- (fn [db [_ value]]
-   {}))
-
-
-
-
-
-(reg-event-fx
- :send-message
- (fn [_]
-   (let [message @(subscribe [:get-in [:message]])
-         user @(subscribe [:user-id])
-         chat @(subscribe [:get-in [:chat]])
-         msg {:resourceType "Message"
-              :body message
-              :chat {:id (:id chat)
-                     :resourceType "Chat"}
-              :author {:id user
-                       :resourceType "User"}}]
-     (if (and message (not (clojure.string/blank? message)))
-       {:fetch {:uri "/Message"
-                :success :on-send-message
-                :opts {:method "POST"
-                       :headers {"content-type" "application/json"}
-                       :body (.stringify js/JSON (clj->js msg))}}
-        :dispatch [:set-message ""]}
-       {}))))
-
-(reg-event-fx
- :create-chat
- (fn [_ [_ participants]]
-   (let [user @(subscribe [:user-id])
-         chat-name (first participants) ; todo: correct chat name
-         chat {:resourceType "Chat"
-               :name chat-name
-               :participants (map (fn [p] {:id p :resourceType "User"}) (conj participants user))}]
-     {:fetch {:uri "/Chat"
-              :opts {:method "POST"
-                     :headers {"content-type" "application/json"}
-                     :body (.stringify js/JSON (clj->js chat))}}})))
-
-
-(reg-event-fx
- :load-contacts
+ :do-load-patient
  (fn [_ [_]]
-   (let []
-     {:fetch {:uri "/User"
-              :success :set-contacts
-              :opts {:method "GET"}}})))
+   {:fetch {:uri (str "/Patient/" @(subscribe [:user-ref]))
+            :success :success-load-patient
+            :opts {:method "GET"}}}))
 
 (reg-event-db
- :set-contacts
- (fn [db [_ all-users]]
-   (let [gen-pract-ids @(subscribe [:get-patients-general-practitioner-ids])
-         users (map :resource (:entry all-users))
-         contacts (filter #((set gen-pract-ids) (-> % :ref :id)) users)]
-     (assoc db :contacts contacts))))
+ :success-load-patient
+ (fn [db [_ patient-data]]
+   (assoc db :patient-data patient-data)))
 
-
+;;
+;; check-is-set-demographics
+;;
 (reg-event-fx
- :on-get-users
- (fn [cofx [_ value]]
-   {:db (assoc (:db cofx) :users (map :resource (:entry value)))
-    :dispatch [:get-contacts]}))
+ :do-check-is-set-demographics
+ (fn [{:keys [db]} [_]]
+   (let [patient-data (:patient-data db)]
+     (if-not (h/contains-many? patient-data :gender :birthDate :address)
+       {:dispatch [:set-current-screen :demographics]}
+       {:dispatch [:do-load-medication-statements]}
+       ))))
 
+;;
+;; submit-demographics
+;;
 (reg-event-fx
- :set-user-data
- (fn [{:keys [db]} [_ user-data]]
-   ;;(print "user-data" user-data)
-   (let [user-ref (get-in user-data [:ref :id])
-         where-to-go :get-medication-statements]
-     {:db (merge db {:user user-data
-                     :current-screen :main})
-      :dispatch [:get-patient-data user-ref where-to-go]})))
-
-
-
-(reg-event-fx
- :set-demographics
- (fn [{:keys [db]} [_ patient-data]]
-   (if (h/contains-many? patient-data :gender :birthDate :address)
-     {:db (merge db {:patient-data patient-data})
-      :dispatch [:set-user-data (:user db)]}
-
-     {:db (merge db {:patient-data patient-data
-                     :current-screen :demographics})})))
-
-(reg-event-fx
- :on-user-load
- (fn [{:keys [db]} [_ user-data]]
-   {:fetch {:uri (str "/" (get-in user-data [:ref :resourceType])
-                      "/" (get-in user-data [:ref :id]))
-            :opts {:method "GET"}
-            :success :set-demographics}
-    :db (merge db {:user user-data})}))
-
-(reg-event-fx
- :on-login
- (fn [{:keys [db]} [_ resp-body _ resp]]
-   (if resp.ok
-     (let [invalid (boolean (re-find #"Wrong credentials" resp-body))]
-       (if invalid
-         (ui/alert "" "Wrong credentials")
-         (let [auth-data (-> (.-url resp) (str/split #"#") second h/query->params)
-               id-token (:id_token auth-data)
-               token-data (jwt/get-data-from-token id-token)
-               user-id  (:user-id token-data)]
-           (assert user-id)
-           {:fetch {:uri (str "/User/" user-id)
-                    :opts {:method "GET"}
-                    :success :on-user-load}
-            :db (merge db {:access-token (:access_token auth-data)})})))
-     (ui/alert "Error" (str resp.status " " resp.statusText)))))
-
-
-
-(reg-event-fx
- :on-submit-demographics
- (fn [{:keys [db]} [_ patient-data]]
-   {:db (merge db {:patient-data patient-data})
-    :dispatch [:set-user-data (:user db)]
-    }))
-
-(reg-event-fx
- :submit-demographics
+ :do-submit-demographics
  (fn [_ [_ form-data]]
    (let [user @(subscribe [:get-in [:user]])
          patient-data @(subscribe [:get-in [:patient-data]])]
      {:fetch {:uri (str "/" (get-in user [:ref :resourceType ])
                         "/" (get-in user [:ref :id ]))
-              :success :on-submit-demographics
+              :success :success-submit-demographics
               :opts {:method "PUT"
                      :headers {"content-type" "application/json"}
                      :body (js/JSON.stringify
@@ -205,7 +81,15 @@
                                                 :type "postal"
                                                 :text (:address form-data)
                                                 }]})))}}})))
+(reg-event-db
+ :success-submit-demographics
+ (fn [db [_ patient-data]]
+   (assoc db :patient-data patient-data)))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; delete
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (reg-event-db
  :on-vitals-sign-screen
  (fn [db _]
@@ -541,10 +425,3 @@
                             }
             }])))
 
-#_(reg-event-fx
- :on-vitals-sign-screen
- (fn [_ _]
-   {:fetch {:base-url "http://samurai.demo/"
-            :uri "/observations.json"
-            :success :on-vitals-sign-load
-            }}))

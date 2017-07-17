@@ -1,16 +1,26 @@
 (ns mobile-patient.events
-  (:require [re-frame.core :refer [subscribe dispatch reg-fx reg-event-fx
-                                   reg-event-db reg-sub-raw reg-sub]]
+  (:require [re-frame.core :refer [dispatch subscribe reg-event-fx reg-event-db
+                                   reg-fx]]
+            [re-frame.loggers :as rf.log]
             [day8.re-frame.async-flow-fx]
             [mobile-patient.model.chat :as chat-model]
             [mobile-patient.db :as db :refer [app-db]]
-            [mobile-patient.lib.helper :as h]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [mobile-patient.lib.jwt :as jwt]
+            [mobile-patient.lib.helper :as h]))
 
+
+(def warn (js/console.warn.bind js/console))
+(rf.log/set-loggers!
+ {:warn (fn [& args]
+          (cond
+            (= "re-frame: overwriting" (first args)) nil
+            :else (apply warn args)))})
+
+;; -- Handlers --------------------------------------------------------------
 (reg-event-db
  :initialize-db
  (fn [_ _]
-   (println app-db)
    app-db))
 
 (reg-event-db
@@ -55,6 +65,9 @@
  (fn [db [_ path state]]
    (assoc-in db [:spinner path] state)))
 
+;;
+;; login
+;;
 (reg-event-fx
  :login
  (fn [_ [_ login password]]
@@ -71,26 +84,78 @@
                      :body (str "email=" (js/encodeURIComponent login)
                                 "&password=" (js/encodeURIComponent password))}}})))
 
+(reg-event-fx
+ :on-login
+ (fn [{:keys [db]} [_ resp-body _ resp]]
+   (if resp.ok
+     (let [invalid (boolean (re-find #"Wrong credentials" resp-body))]
+       (if invalid
+         (ui/alert "" "Wrong credentials")
+         (let [auth-data (-> (.-url resp) (str/split #"#") second h/query->params)
+               id-token (:id_token auth-data)
+               token-data (jwt/get-data-from-token id-token)
+               user-id  (:user-id token-data)]
+           (assert user-id)
+           {:db (merge db {:access-token (:access_token auth-data)})
+            :dispatch [:boot user-id]})))
+     (do
+       (ui/alert "Error" (str resp.status " " resp.statusText))))))
+
 ;;
-;; get-patient-data
+;; load-user
 ;;
 (reg-event-fx
- :get-patient-data
- (fn [_ [_ user-ref where-to-go]]
-   {:fetch {:uri (str "/Patient/" user-ref)
-            :success :set-patient-data
-            :success-parms where-to-go
-            :opts {:method "GET"}}}))
+ :do-load-user
+ (fn [{:keys [db]} [_ user-id]]
+   {:fetch {:uri (str "/User/" user-id)
+            :success :success-load-user}}))
 
-(reg-event-fx
- :set-patient-data
- (fn [{:keys [db]} [_ patient-data where-to-go]]
-   {:db (merge db {:patient-data patient-data})
-    :dispatch [where-to-go]}))
+(reg-event-db
+ :success-load-user
+ (fn [db [_ user-data]]
+   (assoc db :user user-data)))
 
 ;;
+;; load-all-users
+;;
+(reg-event-fx
+ :do-load-all-users
+ (fn [_ _]
+   {:fetch {:uri "/User"
+            :opts {:method "GET"}
+            :success :success-load-all-users}}))
+
+(reg-event-db
+ :success-load-all-users
+ (fn [db [_ all-users]]
+   (assoc db :all-users all-users)))
+
+;;
+;; :do-load-medication-statements
+;;
+(reg-event-fx
+ :do-load-medication-statements
+ (fn [{:keys [db]} [_]]
+   (let [patient-ref @(subscribe [:patient-ref])]
+     {:fetch {:uri "/MedicationStatement"
+              :success :success-load-medication-statements
+              :opts {:parms {:subject patient-ref}
+                     :method "GET"}}})))
+
+(reg-event-db
+ :success-load-medication-statements
+ (fn [db [_ med-stms]]
+   (let [patient-ref @(subscribe [:patient-ref])
+         medication-statements (sort-by #(-> % :effective :dateTime) (map :resource (:entry med-stms)))
+         groups (group-by #(= (:status %) "active") medication-statements)]
+     (-> db
+         (assoc-in [:active-medication-statements patient-ref] (groups true))
+         (assoc-in [:other-medication-statements patient-ref] (groups false))))))
+
+
+;; OLD
+
 ;; get medications for user
-;;
 (reg-event-fx
  :get-medication-statements
  (fn [{:keys [db]}  _]
@@ -110,11 +175,27 @@
          (assoc-in [:active-medication-statements patient-ref] (groups true))
          (assoc-in [:other-medication-statements patient-ref] (groups false))))))
 
+;; get-patient-data
+(reg-event-fx
+ :get-patient-data
+ (fn [_ [_ user-ref where-to-go]]
+   {:fetch {:uri (str "/Patient/" user-ref)
+            :success :set-patient-data
+            :success-parms where-to-go
+            :opts {:method "GET"}}}))
+
+(reg-event-fx
+ :set-patient-data
+ (fn [{:keys [db]} [_ patient-data where-to-go]]
+   {:db (merge db {:patient-data patient-data})
+    :dispatch [where-to-go]}))
 
 
-;;
-;; chat related events
-;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CHAT
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn dispatch-get-chats-event []
   (dispatch [:get-chats]))
 
@@ -125,6 +206,84 @@
 
 (defonce do-get-chats (js/setInterval dispatch-get-chats-event 3000))
 (defonce do-get-messages (js/setInterval dispatch-get-messages-event 1000))
+
+
+(reg-event-db
+ :set-chat
+ (fn [db [_ chat]]
+   (-> db
+       (assoc :chat chat)
+       (assoc :messages []))))
+
+(reg-event-db
+ :set-message
+ (fn [db [_ value]]
+   (assoc db :message value)))
+
+(reg-event-fx
+ :on-send-message
+ (fn [db [_ value]]
+   {}))
+
+(reg-event-fx
+ :send-message
+ (fn [_]
+   (let [message @(subscribe [:get-in [:message]])
+         user @(subscribe [:user-id])
+         chat @(subscribe [:get-in [:chat]])
+         msg {:resourceType "Message"
+              :body message
+              :chat {:id (:id chat)
+                     :resourceType "Chat"}
+              :author {:id user
+                       :resourceType "User"}}]
+     (if (and message (not (clojure.string/blank? message)))
+       {:fetch {:uri "/Message"
+                :success :on-send-message
+                :opts {:method "POST"
+                       :headers {"content-type" "application/json"}
+                       :body (.stringify js/JSON (clj->js msg))}}
+        :dispatch [:set-message ""]}
+       {}))))
+
+(reg-event-fx
+ :create-chat
+ (fn [_ [_ participants]]
+   (let [user @(subscribe [:user-id])
+         chat-name (first participants) ; todo: correct chat name
+         chat {:resourceType "Chat"
+               :name chat-name
+               :participants (map (fn [p] {:id p :resourceType "User"}) (conj participants user))}]
+     {:fetch {:uri "/Chat"
+              :opts {:method "POST"
+                     :headers {"content-type" "application/json"}
+                     :body (.stringify js/JSON (clj->js chat))}}})))
+
+
+(reg-event-fx
+ :load-contacts
+ (fn [_ [_]]
+   (let []
+     {:fetch {:uri "/User"
+              :success :set-contacts
+              :opts {:method "GET"}}})))
+
+(reg-event-db
+ :set-contacts
+ (fn [db [_ all-users]]
+   (let [gen-pract-ids @(subscribe [:get-patients-general-practitioner-ids])
+         users (map :resource (:entry all-users))
+         contacts (filter #((set gen-pract-ids) (-> % :ref :id)) users)]
+     (assoc db :contacts contacts))))
+
+
+(reg-event-fx
+ :on-get-users
+ (fn [cofx [_ value]]
+   {:db (assoc (:db cofx) :users (map :resource (:entry value)))
+    :dispatch [:get-contacts]}))
+
+
 
 
 (reg-event-fx

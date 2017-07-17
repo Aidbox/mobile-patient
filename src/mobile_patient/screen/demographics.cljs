@@ -6,7 +6,7 @@
 
 (defn submit-handler [form-data]
   (if (every? #((complement empty?) %) (vals form-data))
-    (rf/dispatch [:submit-demographics form-data])
+    (rf/dispatch [:do-submit-demographics form-data])
     (ui/alert "" "All fields are required")))
 
 (defn get-birthday [birthday]
@@ -18,7 +18,7 @@
              )))))
 
 (defn DemographicsScreen [{:keys [navigation]}]
-  (let [birthday (r/atom "")
+  (let [birthday (r/atom nil)
         sex (r/atom "")
         address (r/atom "")]
     (fn []

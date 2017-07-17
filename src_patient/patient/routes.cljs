@@ -72,7 +72,7 @@
   (let [action (js->clj action :keywordize-keys true)
         route-name (:routeName action)]
     (case route-name
-      "Medications" (rf/dispatch [:get-medication-statements])
+      ;;"Medications" (rf/dispatch [:get-medication-statements])
       "Vitals Signs" (rf/dispatch [:on-vitals-sign-screen])
       "Contacts" (rf/dispatch [:load-contacts])
       nil)))
