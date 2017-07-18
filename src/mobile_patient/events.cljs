@@ -7,7 +7,8 @@
             [mobile-patient.db :as db :refer [app-db]]
             [clojure.string :as str]
             [mobile-patient.lib.jwt :as jwt]
-            [mobile-patient.lib.helper :as h]))
+            [mobile-patient.lib.helper :as h]
+            [mobile-patient.ui :as ui]))
 
 
 (def warn (js/console.warn.bind js/console))
