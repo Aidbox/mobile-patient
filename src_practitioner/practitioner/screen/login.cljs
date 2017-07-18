@@ -5,7 +5,7 @@
 
 
 (defn LoginScreen [{:keys [navigation]}]
-  (let [login (r/atom "practitioner@com")
+  (let [login (r/atom "practitioner@com.com")
         password (r/atom "practitioner")
         loading (rf/subscribe [:get-in [:spinner :login]])]
     (fn []

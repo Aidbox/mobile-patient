@@ -2,9 +2,9 @@
 
 ## Test users
 
-Login: patient@com Password: patient
+Login: patient@com.com Password: patient
 
-Login: practitioner@com Password: practitioner
+Login: practitioner@com.com Password: practitioner
 
 
 ## Development
