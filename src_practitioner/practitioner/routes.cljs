@@ -27,7 +27,7 @@
   (let [action (js->clj action :keywordize-keys true)
         route-name (:routeName action)
         params (:params action)]
-    (case route-name
+    #_(case route-name
       "Patient" (do
                   (rf/dispatch-sync [:spinner :load-patient-data true])
                   (rf/dispatch [:get-patient-data

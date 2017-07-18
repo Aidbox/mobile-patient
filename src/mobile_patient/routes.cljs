@@ -4,8 +4,6 @@
             [mobile-patient.ui :as ui]
             [mobile-patient.color :as color]
             [mobile-patient.route-helpers :as rh]
-            ;; [mobile-patient.screen.login :refer [LoginScreen]]
-            ;; [mobile-patient.screen.demographics :refer [DemographicsScreen]]
             [mobile-patient.screen.patients :refer [PatientsScreen]]
             [mobile-patient.screen.vitals :refer [VitalsScreen]]
             [mobile-patient.screen.meds :refer [MedsScreen]]
@@ -19,14 +17,7 @@
 
 (def routes
   (clj->js
-   {"Patients"
-    {:screen (rh/stack-navigator
-              {"Patients" {:screen (r/reactify-component PatientsScreen)
-                           :navigationOptions (rh/drawer-nav-opts "Patients")}})}
-
-
-
-    "Medications"
+   {"Medications"
     {:screen (rh/stack-navigator
               {"Meds" {:screen (r/reactify-component MedsScreen)
                        :navigationOptions (rh/drawer-nav-opts "Medications")}})}
@@ -79,4 +70,11 @@
     "About App"
     {:screen (rh/stack-navigator
               {"About App" {:screen (dumb-component "About App")
-                            :navigationOptions (rh/drawer-nav-opts "About App")}})}}))
+                            :navigationOptions (rh/drawer-nav-opts "About App")}})}
+
+
+    "Patients"
+    {:screen (rh/stack-navigator
+              {"Patients" {:screen (r/reactify-component PatientsScreen)
+                           :navigationOptions (rh/drawer-nav-opts "Patients")}})}
+    }))
