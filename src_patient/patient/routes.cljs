@@ -5,7 +5,7 @@
             [mobile-patient.color :as color]
             [mobile-patient.route-helpers :as rh]
             [mobile-patient.routes :refer [routes]]
-            [patiient.drawer :refer [Drawer]]))
+            [patient.drawer :refer [Drawer]]))
 
 (defn dumb-component [text]
   (r/reactify-component (fn [] [ui/text text])))
