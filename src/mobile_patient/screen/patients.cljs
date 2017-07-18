@@ -1,21 +1,22 @@
-(ns practitioner.screen.patients
+(ns mobile-patient.screen.patients
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
             [mobile-patient.ui :as ui]))
 
 
 (defn row-component [{:keys [item]} navigation]
-  [ui/touchable-highlight {:style {:border-color "#E9E9EF"
-                                   :border-width 1
-                                   ;;:border-top-width 0
-                                   :padding 10
-                                   :background-color "#ffffff"}
-                           :on-press (fn []
-                                       (rf/dispatch [:set-current-patient-id (:id item)])
-                                       (navigation.navigate "Patient"
-                                                            #js{:patientid (:id item)}))}
+  [ui/touchable-highlight
+   {:style {:border-color "#E9E9EF"
+            :border-width 1
+            ;;:border-top-width 0
+            :padding 10
+            :background-color "#ffffff"}
+    :on-press (fn []
+                (rf/dispatch [:set-current-patient (get-in item [:id])])
+                (navigation.navigate "Medications"))}
    [ui/view {:style {:flex-direction :row :justify-content :space-between}}
-    [ui/text {:style {:text-align "left"}} (:id item)]
+    [ui/text {:style {:text-align "left"
+                      :font-size 20}} (:id item)]
     [ui/icon {:name "chevron-right" :size 30 :color "#FF485C"}]]])
 
 

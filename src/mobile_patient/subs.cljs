@@ -49,6 +49,11 @@
     (get-in db [:patient-data :id])))
 
 (reg-sub
+  :practitioner-ref
+  (fn [db _]
+    (get-in db [:practitioner-data :id])))
+
+(reg-sub
  :get-in
  (fn [db [_ path]]
    (get-in db path)))

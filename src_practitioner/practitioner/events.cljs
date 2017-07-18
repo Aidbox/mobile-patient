@@ -27,8 +27,10 @@
 (reg-event-fx
  :do-load-practitioner
  (fn [{:keys [db]} _]
-   {:fetch {:uri (str "/Practitioner/" (get-in db [:user :ref :id]))
-            :success :success-load-practitioner}}))
+   (let [user-ref @(subscribe [:user-ref])]
+     (assert user-ref)
+     {:fetch {:uri (str "/Practitioner/" user-ref)
+              :success :success-load-practitioner}})))
 
 (reg-event-db
  :success-load-practitioner
@@ -40,9 +42,10 @@
 (reg-event-fx
  :do-load-practitioner-patients
  (fn [{:keys [db]} _]
-   (print "- " (get-in db [:user :ref :id]))
-   {:fetch {:uri (str "/Patient?general-practitioner=" (get-in db [:user :ref :id]))
-            :success :success-load-practitioner-patients}}))
+   (let [user-ref @(subscribe [:user-ref])]
+     (assert user-ref)
+     {:fetch {:uri (str "/Patient?general-practitioner=" user-ref)
+              :success :success-load-practitioner-patients}})))
 
 (reg-event-db
  :success-load-practitioner-patients
@@ -56,10 +59,15 @@
                              :entry
                              (map #(get % :resource))
                              (filter #(pat-ids (get-in % [:ref :id]))))]
-     ;;(print patients-data)
      (assoc db :practitioner-patients (into {}
                                             (map #(vector (:id %) %))
                                             filtered-users) ; from list to map by id
             :current-screen :main))))
 
 
+;;
+(reg-event-db
+ :set-current-patient
+ (fn [db [_ id]]
+   (assoc db :patient-data
+          (get-in db [:practitioner-patients id]))))
