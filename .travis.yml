@@ -49,7 +49,7 @@ before_install:
 
 script:
 #  - for f in $(grep -lR MobilePatient --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/Mobile Patient/g' $f; done
-  - lein do clean, with-profile -dev,+prod,+patient cljsbuild once
+  - lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
   - cd android && ./gradlew assembleRelease && cd ..
   - ls ./android/app/build/outputs/apk/
   - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk
@@ -59,7 +59,7 @@ script:
   - rm ./android/app/build/outputs/apk/*.apk
   - for f in $(grep -lR 'MobilePatient' --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/MobilePractitioner/g' $f; done
   - sed -i 's/com.mobilepatient/com.mobilepractitioner/' android/app/build.gradle
-  - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once
+  - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once || travis_terminate 1
   - cd android && ./gradlew assembleRelease && cd ..
   - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk
   - gsutil acl -r ch -u AllUsers:R $BUCKET

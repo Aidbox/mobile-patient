@@ -17,7 +17,7 @@
                       :font-size 24}} title]]))
 
 (defn Drawer [props]
-  (let [username @(rf/subscribe [:get-in [:user :name 0 :text]])
+  (let [username @(subscribe [:get-in [:user :name 0 :text]])
         excluded #{"About App" "Patients"}]
     [ui/view {:style {:background-color "#f4f4f4"
                       :flex 1}}
@@ -40,6 +40,6 @@
         ^{:key (.-key route)}
         [Drawer (.-routeName route) #(props.navigation.navigate (.-key route))])
       [Drawer "Logout" #(do
-                               (rf/dispatch [:initialize-db])
-                               (rf/dispatch [:set-current-screen :login]))]]
+                               (dispatch [:initialize-db])
+                               (dispatch [:set-current-screen :login]))]]
      [Drawer "About app" #(props.navigation.navigate "About App") {:margin-bottom 60}]]))
