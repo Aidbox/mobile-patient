@@ -2,14 +2,8 @@ language: objective-c
 xcode_project: ios/MobilePatient.xcodeproj # path to your xcodeproj folder
 xcode_scheme: Release
 
-# before_cache:
-#   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-#   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    # - $HOME/.gradle/caches/
-    # - $HOME/.gradle/wrapper/
-    # - $HOME/.android/build-cache
     - $HOME/google-cloud-sdk/
     - $HOME/.m2
     - /home/travis/build/Aidbox/mobile-patient/node_modules
@@ -19,34 +13,14 @@ env:
     - GC_SA=mobile@aidbox-next.iam.gserviceaccount.com
 
 before_install:
-  - nvm install 6
-  - npm install
-  - openssl aes-256-cbc -K $encrypted_df8305bdbb16_key -iv $encrypted_df8305bdbb16_iv -in account.json.enc -out account.json -d
-  - wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-161.0.0-linux-x86_64.tar.gz
-  - tar -xzf google-cloud-sdk-161.0.0-linux-x86_64.tar.gz
-  - chmod +x ./google-cloud-sdk/install.sh 
-  - cd ./google-cloud-sdk
-  - ./install.sh --quiet
-  - cd ..
-  - export PATH=$PATH:$HOME/google-cloud-sdk/bin
-#  - gcloud auth activate-service-account $GC_SA --key-file=account.json
+  # - nvm install 6
+  # - npm install
+  - brew install node
+  - brew install watchman
+  - npm install -g react-native-cli
+  - curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
+  - chmod a+x lein && sudo mv lein /bin
 
 script:
-#  - for f in $(grep -lR MobilePatient --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/Mobile Patient/g' $f; done
   - lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
   - react-native run-ios --configuration Release
-  # - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk
-  # - gsutil acl -r ch -u AllUsers:R $BUCKET
-  # - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk"
-
-  # - rm ./android/app/build/outputs/apk/*.apk
-  # - for f in $(grep -lR 'MobilePatient' --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/MobilePractitioner/g' $f; done
-  # - sed -i 's/com.mobilepatient/com.mobilepractitioner/' android/app/build.gradle
-  # - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once || travis_terminate 1
-  # - cd android && ./gradlew assembleRelease && cd ..
-  # - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk
-  # - gsutil acl -r ch -u AllUsers:R $BUCKET
-  # - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk"
-
-  # - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="MOBILE %0A Patient - https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk %0A Practitioner - https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk" -d chat_id=$T_CHATID
-
