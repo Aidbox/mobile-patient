@@ -27,3 +27,4 @@ before_install:
 script:
   - ./lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
   - react-native run-ios --configuration Release
+  - find . -name '*.app'
