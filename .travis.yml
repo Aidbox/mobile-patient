@@ -20,8 +20,8 @@ before_install:
   # - brew install watchman
   - npm install -g react-native-cli
   - curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
-  - chmod a+x lein && sudo mv lein /bin
+  - chmod a+x lein
 
 script:
-  - lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
+  - ./lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
   - react-native run-ios --configuration Release
