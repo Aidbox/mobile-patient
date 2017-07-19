@@ -18,6 +18,7 @@ cache:
 before_install:
 #  - brew update
 #  - brew install node
+  - npm install
   - brew install watchman
   - npm install -g react-native-cli
   - curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
