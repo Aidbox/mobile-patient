@@ -16,10 +16,9 @@ cache:
 
 
 before_install:
-  - nvm install 6
-  - npm install
-  # - brew install node
-  # - brew install watchman
+  - brew update
+  - brew install node
+  - brew install watchman
   - npm install -g react-native-cli
   - curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
   - chmod a+x lein
