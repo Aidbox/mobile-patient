@@ -1,6 +1,10 @@
 language: objective-c
+
 xcode_project: ios/MobilePatient.xcodeproj # path to your xcodeproj folder
 xcode_scheme: Release
+
+jdk:
+  - oraclejdk8
 
 cache:
   directories:
@@ -8,15 +12,12 @@ cache:
     - $HOME/.m2
     - /home/travis/build/Aidbox/mobile-patient/node_modules
 
-env:
-  global:
-    - GC_SA=mobile@aidbox-next.iam.gserviceaccount.com
 
 before_install:
-  # - nvm install 6
-  # - npm install
-  - brew install node
-  - brew install watchman
+  - nvm install 6
+  - npm install
+  # - brew install node
+  # - brew install watchman
   - npm install -g react-native-cli
   - curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
   - chmod a+x lein && sudo mv lein /bin
