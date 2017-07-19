@@ -1,43 +1,27 @@
-language: android
-jdk:
-  - oraclejdk8
+language: objective-c
+xcode_project: ios/MobilePatient.xcodeproj # path to your xcodeproj folder
+xcode_scheme: Release
 
-before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+# before_cache:
+#   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+#   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
-    - $HOME/.android/build-cache
+    # - $HOME/.gradle/caches/
+    # - $HOME/.gradle/wrapper/
+    # - $HOME/.android/build-cache
     - $HOME/google-cloud-sdk/
     - $HOME/.m2
     - /home/travis/build/Aidbox/mobile-patient/node_modules
 
-android:
-  components:
-  - build-tools-23.0.1
-  - android-23
-  - extra-android-m2repository
-  - extra-google-google_play_services
-  - extra-google-m2repository
-  - addon-google_apis-google-16
-
 env:
   global:
     - GC_SA=mobile@aidbox-next.iam.gserviceaccount.com
-    - BUCKET=gs://aidbox-mobile-patient
-    - secure: UqEVQEcJhu8+Rk9E/K/cDURlaI+SxdUZcgFOMTFVQ4+vGtIWokBgNdXeUFk7yobOJUMOmMIkh6KTytCyMmCNoxpGA0IpXGM2N48c4Mnkm/IvoyD4rDLI5UWa8yRkZn0hKPUhsXP9EEEeb/Ol6nCex+ZLYKiD4jh0HAP+BgmwLwNGGrhgkfI8YQ8z0/LiY3YCFqdP5jpwanpL1FgraHyrOo+yVF65HOWIa+yNt/iiRJiz36Le1I4n2DZ3Cj3UNA7vYDY0fChvpVTd+HGA8pbDpSAc6ROAcODaIsvIDLqJRGLPGNAef0EyBEQFfmnGW5t24nXiRK0BTItrJDtNQSe3ke6HbAyG+0aYztx3cPkQnqubDxQueZZRTpvK3AVhPZhmnukMYE+GRv+Ma4+pzyTgykPvOCPSkncnWRWwGKoVE8ZTwzwHgP2FsKdBuIFBp+dD0nLQ+upBn5VxktVGbW0k9gE+vHzJCMPNBpgbN5Xme5niioMQ0E3BSNS3AjmA7mt+vH6pZiC7M7TcGI6gAXp9vx1lVXYk6aScdka1j7+JrG8Yt5PY+dJrNDzkUD0huXEjLeAeg4dMZ2xfQLOaglniGy+Mb+AOVGr1eFa8R7+PEmTP6uuy8VecN+7mvKjt3g6Vra4Uadch46YoAQxTK1P9cWY5leyZR+JODLGw3nVlNmU=
-    - secure: ZbGiK+h39nk32aJilEgHaVJpsSHSVwnpef5UkwckpKH1yOL+fReVxtmBEZEeW1G+3PgH/v3aEdEA9Yrbvndb/3lwgsJl/6dPzLETYm2RVPOjchun+Ez5pC47ug2D3hHNmctTp6nruqgn2Qm9+EYipgFJRzg62TyHc2ffuGLQDDn0EbkTFtjJn6qv3ehVPwjkTBoRX7r8QjUk4F2AIA5vMbec/3XY4m6dIoM+xWlh2zyF1PfmTigZmy8W9JqOlLIkUCpjkpXJlGP56ryFsIqESq+Edhzg9mzR8WmBJHF2sU+wAgRhud/+43S+nARH42kcl4uFNUrYs5ArIN6DYsyff3pJq1i8beqk8Japq6KxWQPsF8kwHNzeVpLz0S4Bg1CKT/ygleH4YcTieWy1bb6lkJI1EGX0fIH83QEW5p59To8dx0I56p+4fne8s/buAXcb9/3RYiRG5BcQuLn4AAGPe1iLbVPceWBL0sVAx/v7HJ2ucPNWYkXvEUgZ9NVmn0aNesnouSxaDaGY5Gjz/3+RN3qYEskDsAbGBWcXv0dhu28UIFNRR6GGV+8JpAWi2xdqYsm/5SJE8wumOT/OBPNlzFYkVti/S2+cP7G8phwBvueZpKMxwqZQx2ztFWtMl2StihJHu5vLASFuAekMlyq5iMzRk3Xju1nUwAujGtiK650=
 
 before_install:
   - nvm install 6
   - npm install
-  - curl -L  https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
-  - chmod a+x lein && sudo mv lein /bin
   - openssl aes-256-cbc -K $encrypted_df8305bdbb16_key -iv $encrypted_df8305bdbb16_iv -in account.json.enc -out account.json -d
-  - openssl aes-256-cbc -K $encrypted_06308b3b5ec9_key -iv $encrypted_06308b3b5ec9_iv -in android/gradle.properties.enc -out android/gradle.properties -d
-  - openssl aes-256-cbc -K $encrypted_456bb67d1fef_key -iv $encrypted_456bb67d1fef_iv -in android/app/my-release-key.keystore.enc -out android/app/my-release-key.keystore -d
   - wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-161.0.0-linux-x86_64.tar.gz
   - tar -xzf google-cloud-sdk-161.0.0-linux-x86_64.tar.gz
   - chmod +x ./google-cloud-sdk/install.sh 
@@ -45,25 +29,24 @@ before_install:
   - ./install.sh --quiet
   - cd ..
   - export PATH=$PATH:$HOME/google-cloud-sdk/bin
-  - gcloud auth activate-service-account $GC_SA --key-file=account.json
+#  - gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 script:
 #  - for f in $(grep -lR MobilePatient --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/Mobile Patient/g' $f; done
   - lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
-  - cd android && ./gradlew assembleRelease && cd ..
-  - ls ./android/app/build/outputs/apk/
-  - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk
-  - gsutil acl -r ch -u AllUsers:R $BUCKET
-  - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk"
+  - react-native run-ios --configuration Release
+  # - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk
+  # - gsutil acl -r ch -u AllUsers:R $BUCKET
+  # - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk"
 
-  - rm ./android/app/build/outputs/apk/*.apk
-  - for f in $(grep -lR 'MobilePatient' --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/MobilePractitioner/g' $f; done
-  - sed -i 's/com.mobilepatient/com.mobilepractitioner/' android/app/build.gradle
-  - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once || travis_terminate 1
-  - cd android && ./gradlew assembleRelease && cd ..
-  - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk
-  - gsutil acl -r ch -u AllUsers:R $BUCKET
-  - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk"
+  # - rm ./android/app/build/outputs/apk/*.apk
+  # - for f in $(grep -lR 'MobilePatient' --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/MobilePractitioner/g' $f; done
+  # - sed -i 's/com.mobilepatient/com.mobilepractitioner/' android/app/build.gradle
+  # - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once || travis_terminate 1
+  # - cd android && ./gradlew assembleRelease && cd ..
+  # - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk
+  # - gsutil acl -r ch -u AllUsers:R $BUCKET
+  # - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk"
 
-  - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="MOBILE %0A Patient - https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk %0A Practitioner - https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk" -d chat_id=$T_CHATID
+  # - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="MOBILE %0A Patient - https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk %0A Practitioner - https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk" -d chat_id=$T_CHATID
 
