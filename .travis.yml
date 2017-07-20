@@ -35,7 +35,8 @@ before_install:
   - ./install.sh --quiet
   - cd ..
   - export PATH=$PATH:$HOME/google-cloud-sdk/bin
-  - gcloud auth activate-service-account $GC_SA --key-file=account.json
+  - echo $PATH
+  - ./google-cloud-sdk/bin/gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 script:
   - ./lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
@@ -46,6 +47,6 @@ script:
   - mkdir Payload
   - mv ./ios/build/Build/Products/Release-iphonesimulator/MobilePatient.app ./Payload
   - zip -r MobilePatient.ipa Payload
-  - gsutil cp -r  MobilePatient.ipa $BUCKET/mobile-patient/ios/patient-app.ipa
-  - gsutil acl -r ch -u AllUsers:R $BUCKET
+  - ./google-cloud-sdk/bin/gsutil cp -r  MobilePatient.ipa $BUCKET/mobile-patient/ios/patient-app.ipa
+  - ./google-cloud-sdk/bin/gsutil acl -r ch -u AllUsers:R $BUCKET
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/ios/patient-app.ipa"
