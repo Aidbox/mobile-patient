@@ -11,9 +11,11 @@
 
 (def ReactNative (js/require "react-native"))
 
-(def date-picker (.-DatePickerAndroid ReactNative))
 (def Dimensions (.-Dimensions ReactNative))
+(def Platform (.-Platform ReactNative))
 
+(def date-picker (.-DatePickerAndroid ReactNative))
+(def date-picker-ios (r/adapt-react-class (.-DatePickerIOS ReactNative)))
 (def view (r/adapt-react-class (.-View ReactNative)))
 (def modal (r/adapt-react-class (.-Modal ReactNative)))
 (def image (r/adapt-react-class (.-Image ReactNative)))
