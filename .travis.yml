@@ -45,10 +45,8 @@ script:
   - find . -type f -name '*.app'
   - ls -l ./ios/build/Build/Products/Release-iphonesimulator/MobilePatient.app
   - mkdir Payload
-  - cd Payload
-  - zip -qr MobilePatient.app ../ios/build/Build/Products/Release-iphonesimulator/MobilePatient.app
-  - cd ..
-  - zip -qr MobilePatient.ipa Payload
-  - ./google-cloud-sdk/bin/gsutil cp -r  MobilePatient.ipa $BUCKET/mobile-patient/ios/$TRAVIS_COMMIT/patient-app.ipa
+  - mv ./ios/build/Build/Products/Release-iphonesimulator/MobilePatient.app ./Payload
+  - zip -r MobilePatient.ipa Payload
+  - ./google-cloud-sdk/bin/gsutil cp -r  MobilePatient.ipa $BUCKET/mobile-patient/ios/patient-app.ipa
   - ./google-cloud-sdk/bin/gsutil acl -r ch -u AllUsers:R $BUCKET
-  - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/ios/$TRAVIS_COMMIT/patient-app.ipa"
+  - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/ios/patient-app.ipa"
