@@ -38,8 +38,8 @@
                        :margin-top 30}}
       (for [route (-> props .-items) :when (not (excluded (.-key route)))]
         ^{:key (.-key route)}
-        [Drawer (.-routeName route) #(props.navigation.navigate (.-key route))])
-      [Drawer "Logout" #(do
+        [Item (.-routeName route) #(props.navigation.navigate (.-key route))])
+      [Item "Logout" #(do
                                (dispatch [:initialize-db])
                                (dispatch [:set-current-screen :login]))]]
-     [Drawer "About app" #(props.navigation.navigate "About App") {:margin-bottom 60}]]))
+     [Item "About app" #(props.navigation.navigate "About App") {:margin-bottom 60}]]))

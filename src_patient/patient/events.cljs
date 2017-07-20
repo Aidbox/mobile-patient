@@ -22,7 +22,7 @@
        :events   [:success-load-patient :success-load-all-users]
        :dispatch [:do-check-is-set-demographics]}
 
-      {:when :seen-any-of?
+      {:when   :seen?
        :events [:success-submit-demographics]
        :dispatch [:do-load-medication-statements]}
 
