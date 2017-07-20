@@ -1,7 +1,9 @@
 (ns mobile-patient.screen.demographics
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
-            [mobile-patient.ui :as ui]))
+            [mobile-patient.ui :as ui]
+            [cljs-time.core :as time]
+            [cljs-time.format :as format]))
 
 
 (defn submit-handler [form-data]
@@ -28,11 +30,20 @@
         "Demographics"]
 
        ;;birthday
-       [ui/touchable-highlight {:style {:padding 10
-                                        :border-radius 5}
-                                :on-press #(get-birthday birthday)}
-        [ui/text {:style {:font-weight "bold" :font-size 15}}
-         (or @birthday "-- Birthday --")]]
+       (if (= (.-OS ui/Platform) "ios")
+         [ui/view
+          [ui/text " --Birthday--"]
+          [ui/date-picker-ios {:date (js/Date. @birthday)
+                               :on-date-change #(reset! birthday
+                                                        (format/unparse
+                                                         (format/formatter "yyyy-MM-dd")
+                                                         (time/date-time %)))
+                               :mode :date}]]
+         [ui/touchable-highlight {:style {:padding 10
+                                          :border-radius 5}
+                                  :on-press #(get-birthday birthday)}
+            [ui/text {:style {:font-weight "bold" :font-size 15}}
+            (or @birthday "-- Birthday --")]])
 
 
        ;;gender
@@ -43,7 +54,8 @@
         [ui/picker-item {:label "Female" :value "female"}]]
 
        [ui/input {:placeholder "Address"
-                  :on-change-text #(reset! address %)}]
+                  :on-change-text #(reset! address %)
+                  :style {:height 40}}]
 
        [ui/button {:title "Save" :on-press #(submit-handler {:birthday @birthday
                                                              :sex @sex
