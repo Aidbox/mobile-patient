@@ -27,4 +27,6 @@ before_install:
 script:
   - ./lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
   - react-native run-ios --configuration Release
-  - find . -name '*.app'
+  - find . -type d -name '*.app'
+  - find . -type f -name '*.app'
+  - ls -l ./ios/build/Build/Products/Release-iphonesimulator/MobilePatient.app
