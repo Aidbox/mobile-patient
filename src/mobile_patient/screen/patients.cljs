@@ -12,11 +12,13 @@
             :padding 10
             :background-color "#ffffff"}
     :on-press (fn []
-                (rf/dispatch [:set-current-patient (get-in item [:id])])
+                (print (get-in item [:id]))
+                (rf/dispatch-sync [:set-current-patient (get-in item [:id])])
+                (rf/dispatch-sync [:do-load-medication-statements])
                 (navigation.navigate "Medications"))}
    [ui/view {:style {:flex-direction :row :justify-content :space-between}}
     [ui/text {:style {:text-align "left"
-                      :font-size 20}} (:id item)]
+                      :font-size 20}} (-> item :username)]
     [ui/icon {:name "chevron-right" :size 30 :color "#FF485C"}]]])
 
 

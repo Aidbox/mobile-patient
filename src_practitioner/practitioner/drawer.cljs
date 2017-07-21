@@ -33,17 +33,17 @@
       [ui/text {:style {:font-size 20
                         :margin-left 10
                         :color "black"
-                        :align-self :center}} username]]
+                        :align-self :center}} :username]]
 
      [ui/view {:style {:flex 1
                        :margin-top 30}}
-      [Item "Patients" #(props.navigation.navigate "Patients")]
+      [Item "Select patient" #(props.navigation.navigate "Patients")]
 
       ;; patients's specific items
       (when @(subscribe [:patient-ref])
         [ui/view
          [ui/text {:style {:margin-left 50 :margin-top 20 :font-size 24 :color :black}}
-           (str @(subscribe [:get-in [:patient-data :id]])  "'s:")]
+           (str @(subscribe [:get-in [:patient-data :username]])  "'s:")]
          [Item "Medications" #(props.navigation.navigate "Medications")]
          [Item "Vitals Signs" #(props.navigation.navigate "Vitals Signs")]
          [Item "Chats" #(props.navigation.navigate "Chats")]

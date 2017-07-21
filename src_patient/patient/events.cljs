@@ -20,11 +20,11 @@
 
       {:when     :seen-both?
        :events   [:success-load-patient :success-load-all-users]
-       :dispatch [:do-check-is-set-demographics]}
+       :dispatch [:do-check-demographics]}
 
-      {:when   :seen?
-       :events [:success-submit-demographics]
-       :dispatch [:do-load-medication-statements]}
+      {:when   :seen-any-of?
+       :events [:success-check-demographics :success-submit-demographics]
+       :dispatch-n '([:do-load-medication-statements] [:do-load-vitals-sign-screen])}
 
       {:when :seen?
        :events :success-load-medication-statements
@@ -51,14 +51,18 @@
 ;; check-is-set-demographics
 ;;
 (reg-event-fx
- :do-check-is-set-demographics
+ :do-check-demographics
  (fn [{:keys [db]} [_]]
    (let [patient-data (:patient-data db)]
      (if-not (h/contains-many? patient-data :gender :birthDate :address)
        {:dispatch [:set-current-screen :demographics]}
-       {:dispatch [:do-load-medication-statements]}
+       {:dispatch [:success-check-demographics]}
        ))))
 
+(reg-event-fx
+ :success-check-demographics
+ (fn [_ _]
+   ))
 ;;
 ;; submit-demographics
 ;;
@@ -87,11 +91,16 @@
    (assoc db :patient-data patient-data)))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; delete
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; load-vitals-sign-screen
+;;
+(reg-event-fx
+ :do-load-vitals-sign-screen
+ (fn [_ _]
+   {:dispatch [:success-load-vitals-sign-screen]}))
+
 (reg-event-db
- :on-vitals-sign-screen
+ :success-load-vitals-sign-screen
  (fn [db _]
    (assoc db :observations
           [{

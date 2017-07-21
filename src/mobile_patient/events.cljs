@@ -129,10 +129,10 @@
 (reg-event-db
  :success-load-all-users
  (fn [db [_ all-users]]
-   (assoc db :all-users all-users)))
+   (assoc db :all-users (->> all-users :entry (map :resource)))))
 
 ;;
-;; :do-load-medication-statements
+;; do-load-medication-statements
 ;;
 (reg-event-fx
  :do-load-medication-statements
@@ -291,7 +291,6 @@
  :get-chats
  (fn [_]
    (let [user (subscribe [:user-id])]
-     ;;(print @user)
      {:fetch {:uri "/Chat"
               :success :on-chats
               :opts {:parms {:participant @user}}}})))

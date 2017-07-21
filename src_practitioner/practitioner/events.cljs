@@ -20,6 +20,10 @@
       {:when     :seen-both?
        :events   [:success-load-practitioner :success-load-all-users]
        :dispatch [:do-load-practitioner-patients]}
+
+      {:when :seen?
+       :events :success-load-practitioner-patients
+       :dispatch [:set-current-screen :main]}
       ]}}))
 
 
@@ -49,20 +53,18 @@
 
 (reg-event-db
  :success-load-practitioner-patients
- (fn [db [_ patients-data]]
-   (let [all-users-data (:all-users db)
-         pat-ids (->> patients-data
-                      :entry
-                      (map #(get-in % [:resource :id]))
-                      set)
-         filtered-users (->> all-users-data
-                             :entry
-                             (map #(get % :resource))
-                             (filter #(pat-ids (get-in % [:ref :id]))))]
+ (fn [db [_ raw-patients-data]]
+   (let [user-ref->user-name (into {} (map #(vector (get-in % [:ref :id]) (:id %))
+                                           (:all-users db)))
+         patients-data (->> raw-patients-data
+                            :entry
+                            (map :resource)
+                            (map #(assoc % :username
+                                         (user-ref->user-name (:id %)))))]
+     (print "222" user-ref->user-name)
      (assoc db :practitioner-patients (into {}
                                             (map #(vector (:id %) %))
-                                            filtered-users) ; from list to map by id
-            :current-screen :main))))
+                                            patients-data)))))
 
 
 ;;
