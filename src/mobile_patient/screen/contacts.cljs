@@ -14,7 +14,7 @@
                                        (dispatch [:create-chat [(:id item)]])
                                        (navigation.goBack nil))}
    [ui/view {:style {:flex-direction :row :justify-content :space-between}}
-    [ui/text {:style {:text-align "left"}} (:id item)]
+    [ui/text {:style {:text-align "left" :font-size 18}} (:id item)]
     [ui/icon {:name "chevron-right" :size 30 :color "#FF485C"}]]])
 
 

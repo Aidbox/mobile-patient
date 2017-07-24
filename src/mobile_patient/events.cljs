@@ -260,17 +260,19 @@
                      :headers {"content-type" "application/json"}
                      :body (.stringify js/JSON (clj->js chat))}}})))
 
-
+;;
+;; load-contacts
+;;
 (reg-event-fx
- :load-contacts
+ :do-load-contacts
  (fn [_ [_]]
    (let []
      {:fetch {:uri "/User"
-              :success :set-contacts
+              :success :success-load-contacts
               :opts {:method "GET"}}})))
 
 (reg-event-db
- :set-contacts
+ :success-load-contacts
  (fn [db [_ all-users]]
    (let [gen-pract-ids @(subscribe [:get-patients-general-practitioner-ids])
          users (map :resource (:entry all-users))

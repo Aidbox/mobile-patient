@@ -22,8 +22,6 @@
 (defn on-navigation-callback [prev-state new-state action]
   (let [action (js->clj action :keywordize-keys true)
         route-name (:routeName action)]
-    #_(case route-name
-      ;;"Medications" (rf/dispatch [:get-medication-statements])
-      "Vitals Signs" (rf/dispatch [:on-vitals-sign-screen])
-      "Contacts" (rf/dispatch [:load-contacts])
+    (case route-name
+      "Contacts" (rf/dispatch [:do-load-contacts])
       nil)))
