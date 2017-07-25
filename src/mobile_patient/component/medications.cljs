@@ -43,7 +43,7 @@
    [ui/view childs]])
 
 (defn medications-component [{:keys [active other]}]
-  [ui/scroll-view
+  [ui/scroll-view {:style {:background-color :white}}
    (if-not (empty? @active)
      [section {:title "Active"}
       (for [[idx med-st] (map-indexed vector @active)]

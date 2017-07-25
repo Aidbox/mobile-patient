@@ -33,8 +33,7 @@
                                :navigationOptions (fn [props]
                                                     #js{:title "Example Chart"
                                                         :headerLeft (rh/stack-navigator-back-button props)
-                                                        :headerTitleStyle #js{:fontWeight "normal"
-                                                                              :color "#6e6e6e"}})}})}
+                                                        :headerTitleStyle #js{:color "#6e6e6e"}})}})}
 
     "Chats"
     {:screen (rh/stack-navigator
@@ -47,16 +46,14 @@
                          (let [chat-name (-> props .-navigation .-state .-params (aget "chat-name"))]
                            #js {:title chat-name
                                 :headerLeft (rh/stack-navigator-back-button props)
-                                :headerTitleStyle #js{:fontWeight "normal"
-                                                      :color "#6e6e6e"}}))}
+                                :headerTitleStyle #js{:color "#6e6e6e"}}))}
 
                "Contacts" {:screen (r/reactify-component ContactsScreen)
                            :navigationOptions
                            (fn [props]
-                             #js{:title "Contacts"
+                             #js{:title "Add Person"
                                  :headerLeft (rh/stack-navigator-back-button props)
-                                 :headerTitleStyle #js{:fontWeight "normal"
-                                                       :color "#6e6e6e"}})}})}
+                                 :headerTitleStyle #js{:color "#6e6e6e"}})}})}
 
 
 

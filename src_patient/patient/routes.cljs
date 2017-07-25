@@ -14,7 +14,8 @@
   (ui/DrawerNavigator
    routes
    (clj->js
-    {:drawerWidth 300
+    {;;:initialRouteName "Chat" ;;for dev
+     :drawerWidth 250
      :contentComponent (fn [props]
                          (r/as-element [Drawer props]))})))
 
@@ -23,5 +24,4 @@
   (let [action (js->clj action :keywordize-keys true)
         route-name (:routeName action)]
     (case route-name
-      "Contacts" (rf/dispatch [:do-load-contacts])
       nil)))

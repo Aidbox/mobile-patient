@@ -4,11 +4,12 @@
             [mobile-patient.ui :as ui]))
 
 
-(defn row-component [{:keys [item]} navigation]
+(defn row-component [{:keys [item index]} navigation]
   [ui/touchable-highlight
    {:style {:border-color "#E9E9EF"
             :border-width 1
-            ;;:border-top-width 0
+            :border-top-width (if (zero? index) 0 1)
+            :border-bottom-width 0
             :padding 10
             :background-color "#ffffff"}
     :on-press (fn []
@@ -24,7 +25,8 @@
 
 (defn PatientsScreen [{:keys [navigation]}]
   (let [patients (rf/subscribe [:get-in [:practitioner-patients]])]
-    [ui/flat-list {:data (clj->js (vals @patients))
+    [ui/flat-list {:style {:background-color :white}
+                   :data (clj->js (vals @patients))
                    :key-extractor #(.-id %)
                    :render-item (fn [row]
                                   (r/as-element [row-component (js->clj row :keywordize-keys true) navigation]))}]))
