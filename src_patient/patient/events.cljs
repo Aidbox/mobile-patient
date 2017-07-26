@@ -4,7 +4,8 @@
             [re-frame.core :refer [dispatch subscribe reg-event-fx reg-event-db]]
             [mobile-patient.ui :as ui]
             [clojure.string :as str]
-            [mobile-patient.lib.helper :as h]))
+            [mobile-patient.lib.helper :as h]
+            [mobile-patient.lib.services :as service]))
 
 
 (reg-event-fx
@@ -97,11 +98,12 @@
 ;; load-vitals-sign-screen
 ;;
 (reg-event-fx
- :do-load-vitals-sign-screen
- (fn [_ _]
-   {:dispatch [:success-load-vitals-sign-screen]}))
+  :do-load-vitals-sign-screen
+  (fn [_ _]
+    {:dispatch [:fetch-vitals-sign-screen-data
+                {:params {:patient @(subscribe [:user-ref])}}]}))
 
-(reg-event-db
- :success-load-vitals-sign-screen
- (fn [db _]
-   (assoc db :observations [])))
+(service/reg-get-service
+  :fetch-vitals-sign-screen-data
+  [:observations]
+  {:uri "/Observation"})

@@ -13,7 +13,7 @@
                       :client-id "sansara"}
              :active-medication-statements {}
              :other-medication-statements {}
-             :observations []
+             :observations {:status :not-asked}
              :contacts []
              :chats []
              :messages []

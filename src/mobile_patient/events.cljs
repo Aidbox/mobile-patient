@@ -20,6 +20,12 @@
 
 ;; -- Handlers --------------------------------------------------------------
 (reg-event-db
+ :assoc-in
+ (fn [db [_ path value]]
+   (println path)
+   (assoc-in db path value)))
+
+(reg-event-db
  :initialize-db
  (fn [_ _]
    app-db))

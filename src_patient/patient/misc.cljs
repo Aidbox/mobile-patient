@@ -41,20 +41,15 @@
          :value 39.5
          }])
 
-
-
-
-
-
-
-  (-> (setup-vitals
-
+  (-> (setup-temperature
+       {:date "2017-07-07T00:00:00.0Z"
+        :value 39.5}
        )
       (.then #(.text %))
       (.then #(println "Result" %))
       (.catch #(println "Fetch error" (.-message %))))
 
 
-  ;; @(subscribe [:get-in [:user :ref :id]])
+  (:observations @re-frame.db/app-db)
 
   )
