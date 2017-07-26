@@ -11,11 +11,16 @@
                  [day8.re-frame/async-flow-fx "0.0.8"]
                  [com.andrewmcveigh/cljs-time "0.5.0"]]
   :plugins [[lein-cljsbuild "1.1.4"]
-            [lein-figwheel "0.5.10"]]
+            [lein-figwheel "0.5.10"]
+            [cider/cider-nrepl "0.15.0-snapshot"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js" #_($PLATFORM_CLEAN$)]
   :aliases {"prod-build" ^{:doc "Recompile code with prod profile."}
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once"]]}
+  :figwheel
+  {:nrepl-port 7003
+   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"
+                      "cider.nrepl/cider-middleware"]}
   :profiles {:dev {:dependencies [[figwheel-sidecar "0.5.10"]
                                   [com.cemerick/piggieback "0.2.1"]]
                    :source-paths ["src" "env/dev"]
@@ -35,7 +40,8 @@
                                                                     :optimizations :none}}
 
                                            #_($DEV_PROFILES$)}}
-                   :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
+                   :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl
+                                                     cider.nrepl/cider-middleware]}}
              :prod {:cljsbuild {:builds {:ios { ;;:id           "ios"
                                                :source-paths ["src" "env/prod"]
                                                :compiler     {:output-to     "index.ios.js"
