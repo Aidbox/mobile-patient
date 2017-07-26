@@ -12,7 +12,7 @@
                  [com.andrewmcveigh/cljs-time "0.5.0"]]
   :plugins [[lein-cljsbuild "1.1.4"]
             [lein-figwheel "0.5.10"]
-            [cider/cider-nrepl "0.15.0-snapshot"]]
+            [cider/cider-nrepl "0.15.0-SNAPSHOT"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js" #_($PLATFORM_CLEAN$)]
   :aliases {"prod-build" ^{:doc "Recompile code with prod profile."}
             ["do" "clean"
