@@ -90,3 +90,9 @@
                        :shadow-radius 20
                        }}]
         childs))
+
+(defn show-remote-data [remote-data render-fn]
+  (case (:status remote-data)
+    :loading [activity-indicator]
+    :failure [text (:data remote-data)]
+    :succeed (render-fn (:data remote-data))))
