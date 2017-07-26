@@ -4,6 +4,7 @@
 
 
 (def react-navigation (js/require "react-navigation"))
+(def Header (.-Header react-navigation))
 (def NavigationActions (.-NavigationActions react-navigation))
 (def StackNavigator (.-StackNavigator react-navigation))
 (def TabNavigator (.-TabNavigator react-navigation))
@@ -16,6 +17,7 @@
 
 (def date-picker (.-DatePickerAndroid ReactNative))
 (def date-picker-ios (r/adapt-react-class (.-DatePickerIOS ReactNative)))
+(def View (.-View ReactNative))
 (def view (r/adapt-react-class (.-View ReactNative)))
 (def modal (r/adapt-react-class (.-Modal ReactNative)))
 (def image (r/adapt-react-class (.-Image ReactNative)))

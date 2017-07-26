@@ -14,7 +14,7 @@
   (ui/DrawerNavigator
    routes
    (clj->js
-    {;;:initialRouteName "Chat" ;;for dev
+    {;;:initialRouteName "Settings" ;;for dev
      :drawerWidth 250
      :contentComponent (fn [props]
                          (r/as-element [Drawer props]))})))

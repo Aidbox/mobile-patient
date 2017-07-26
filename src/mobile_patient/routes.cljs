@@ -30,10 +30,8 @@
                          :navigationOptions (rh/drawer-nav-opts "Vitals Signs")}
 
                "ExampleChart" {:screen (r/reactify-component ChartScreen)
-                               :navigationOptions (fn [props]
-                                                    #js{:title "Example Chart"
-                                                        :headerLeft (rh/stack-navigator-back-button props)
-                                                        :headerTitleStyle #js{:color "#6e6e6e"}})}})}
+                               :navigationOptions (rh/drawer-nav-opts "Example Chart" nil :back)
+                               }})}
 
     "Chats"
     {:screen (rh/stack-navigator
@@ -41,19 +39,12 @@
                         :navigationOptions (rh/drawer-nav-opts "Chats" rh/add-chat-button)}
 
                "Chat" {:screen (r/reactify-component ChatScreen)
-                       :navigationOptions
-                       (fn [props]
-                         (let [chat-name (-> props .-navigation .-state .-params (aget "chat-name"))]
-                           #js {:title chat-name
-                                :headerLeft (rh/stack-navigator-back-button props)
-                                :headerTitleStyle #js{:color "#6e6e6e"}}))}
+                       :navigationOptions (fn [props]
+                                            (let [chat-name (-> props .-navigation .-state .-params (aget "chat-name"))]
+                                              ((rh/drawer-nav-opts chat-name nil :back) props)))}
 
                "Contacts" {:screen (r/reactify-component ContactsScreen)
-                           :navigationOptions
-                           (fn [props]
-                             #js{:title "Add Person"
-                                 :headerLeft (rh/stack-navigator-back-button props)
-                                 :headerTitleStyle #js{:color "#6e6e6e"}})}})}
+                           :navigationOptions (rh/drawer-nav-opts "Add Person" nil :back)}})}
 
 
 

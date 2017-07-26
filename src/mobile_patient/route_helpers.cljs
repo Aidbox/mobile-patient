@@ -15,16 +15,25 @@
 ;; NAVIGATION ROUTES
 
 (defn menu-button [navigation]
-  [ui/touchable-highlight {:style {:margin-left 10}
+  [ui/touchable-highlight {:style {:margin-left 0}
                            :on-press #(navigation.navigate "DrawerOpen")
                            :underlay-color color/grey}
    [ui/icon {:name "menu" :size 24 :color :black}]])
+
+
+
+(defn header [props]
+  (r/create-element ui/View
+                    #js{:style #js{:backgroundColor "#ffffff"}}
+                    (r/create-element ui/Header props)))
+
 
 
 (defn stack-navigator [routes]
   (r/reactify-component
    (ui/StackNavigator (clj->js routes)
                       (clj->js {;;:initialRouteName "Contacts" ;;for dev
+                                :header header
                                 :headerTitleStyle {:fontWeight :normal}}))))
 
 (defn stack-navigator-back-button [props]
@@ -32,23 +41,29 @@
    [ui/touchable-highlight {:on-press #(props.navigation.goBack nil)
                             :style {:margin-left 5}
                             :underlay-color color/grey}
-    [ui/icon {:name "chevron-left" :size 36 :color color/pink}]]))
+    [ui/icon {:name "chevron-left" :size 36}]]))
 
 
-(defn header [props]
-  (print (js/Object.keys props))
-  [ui/view
-   ])
+
 
 (defn drawer-nav-opts
   ([title]
    (drawer-nav-opts title nil))
+
   ([title header-right]
+   (drawer-nav-opts title header-right :menu))
+
+  ([title header-right left-button-type]
    (fn [props]
      #js{:title title
-         ;;:header (fn [props]  (r/as-element (header props)))
-         :headerLeft (r/as-element [menu-button props.navigation])
-         :headerStyle #js{:padding 20
+         :header header
+         :headerLeft (if (= left-button-type :menu)
+                       (r/as-element [menu-button props.navigation])
+                       (stack-navigator-back-button props))
+         :headerStyle #js{:padding 0
+                          :margin 20
+                          :borderBottomWidth 1
+                          :borderBottomColor "#ddd"
                           :elevation 0
                           :shadowOffset #js {:height 0}
                           :shadowColor "red"
