@@ -15,7 +15,7 @@
 (defn row-component [{:keys [item index header?] :or {header? false}}
                      navigation]
   (let [abnormal? (#{"H" "L"} (:interpretation item))
-        border-color "#333"
+        border-color "#fff"
         cell-style {:flex 2
                     :border-bottom-width 1
                     :border-color border-color
@@ -60,9 +60,10 @@
   (let [data @(rf/subscribe [:get-observations])]
     (if (empty? data)
       [ui/text "No data"]
-      [ui/view {:style {:flex 1 :margin-top 0}}
-       [header-component]
-       [ui/flat-list
-        {:data (clj->js data)
-         :render-item (fn [row] (r/as-element [row-component (js->clj row :keywordize-keys true)
-                                               navigation]))}]])))
+      [ui/view {:style {:background-color :white}}
+       [ui/shadow-box
+        [header-component]
+        [ui/flat-list
+         {:data (clj->js data)
+          :render-item (fn [row] (r/as-element [row-component (js->clj row :keywordize-keys true)
+                                                navigation]))}]]])))

@@ -18,7 +18,7 @@
   [ui/touchable-highlight {:style {:margin-left 0}
                            :on-press #(navigation.navigate "DrawerOpen")
                            :underlay-color color/grey}
-   [ui/icon {:name "menu" :size 24 :color :black}]])
+   [ui/icon {:name "menu" :size 28 :color :black}]])
 
 
 

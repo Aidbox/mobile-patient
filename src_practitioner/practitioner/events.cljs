@@ -61,7 +61,6 @@
                             (map :resource)
                             (map #(assoc % :username
                                          (user-ref->user-name (:id %)))))]
-     (print "222" user-ref->user-name)
      (assoc db :practitioner-patients (into {}
                                             (map #(vector (:id %) %))
                                             patients-data)))))

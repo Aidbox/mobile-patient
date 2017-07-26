@@ -75,3 +75,18 @@
                   ;;:font-weight :bold
                   :text-align :center}}
     title]])
+
+(defn shadow-box [& childs]
+  (into [view {:style {:margin 10
+                       :padding 20
+                       :background-color :white
+                       :border-radius 10
+                       :elevation 20 ;; Android specific
+                       ;; shadows are not supported on RN Android
+                       ;; adjust next lines for iOS
+                       :shadow-offset {:width 0 :height 2}
+                       :shadow-color :black
+                       :shadow-opacity 0.8
+                       :shadow-radius 20
+                       }}]
+        childs))
