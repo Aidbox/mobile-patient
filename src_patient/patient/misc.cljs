@@ -2,7 +2,7 @@
   (:require [re-frame.core :refer [subscribe]]
             [mobile-patient.lib.helper :as h]))
 
-(defn setup-temperature [{:keys date value}]
+(defn setup-temperature [{:keys [date value]}]
   (let [patient-id @(subscribe [:get-in [:user :ref :id]])
         base-url @(subscribe [:get-in [:config :base-url]])
         data (h/vital-observation-data-wrapper patient-id
