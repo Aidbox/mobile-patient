@@ -14,7 +14,7 @@
              :active-medication-statements {}
              :other-medication-statements {}
              :observations {:status :not-asked}
-             :contacts []
+             :all-users []
              :chats []
              :messages []
              :resource-type-data {}

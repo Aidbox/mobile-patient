@@ -56,14 +56,16 @@
                          :color color/pink
                          :font-size font-size}}
         "Practice Groups"]
-       [ui/list-view {:dataSource (.cloneWithRows ds (clj->js source))
-                      :enableEmptySections true
-                      :render-separator (fn [_] chat-row-sep)
-                      :render-row (fn [row]
-                                    (r/create-element
-                                     chat-row-comp
-                                     #js{:row row
-                                         :navigation navigation}))}]])))
+       (if (empty? source)
+         [ui/text {:style {:margin-left 20}} "No chats yet"]
+         [ui/list-view {:dataSource (.cloneWithRows ds (clj->js source))
+                        :enableEmptySections true
+                        :render-separator (fn [_] chat-row-sep)
+                        :render-row (fn [row]
+                                      (r/create-element
+                                       chat-row-comp
+                                       #js{:row row
+                                           :navigation navigation}))}])])))
 
 (def chat-message-row-comp
   (r/reactify-component

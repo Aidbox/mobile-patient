@@ -13,3 +13,10 @@
           (filter (fn [{:keys [participants]}]
                     (clojure.set/subset? #{doctor-username patient-username}
                                          (get-participants-ids participants))))))))
+
+(reg-sub
+ :contacts
+ (fn [db _]
+   (-> db
+       (get :practitioner-patients)
+       vals)))

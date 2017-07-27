@@ -62,6 +62,7 @@
                        (stack-navigator-back-button props))
          :headerStyle #js{:padding 0
                           :margin 20
+                          :marginBottom 5
                           :borderBottomWidth 1
                           :borderBottomColor "#ddd"
                           :elevation 0

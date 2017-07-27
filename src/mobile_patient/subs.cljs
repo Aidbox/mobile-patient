@@ -12,10 +12,6 @@
  (fn [db _] (reaction (get-in @db [:user :ref :id]))))
 
 (reg-sub
- :contacts
- (fn [db _] (:contacts db)))
-
-(reg-sub
  :users
  (fn [db _] (:users db)))
 

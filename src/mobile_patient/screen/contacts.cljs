@@ -6,7 +6,6 @@
 
 
 (defn row-component [{:keys [item index]} navigation]
-  (print item)
   [ui/touchable-highlight {:style {:border-color "#E9E9EF"
                                    :border-width 1
                                    :border-top-width (if (zero? index) 0 1)
@@ -14,7 +13,7 @@
                                    :padding 10
                                    :background-color "#ffffff"}
                            :on-press (fn []
-                                       (dispatch [:create-chat [(:id item)]])
+                                       (dispatch [:create-chat [(:username item)]])
                                        (navigation.goBack nil))}
    [ui/view {:style {:flex-direction :row
                      :justify-content :space-between
@@ -25,7 +24,7 @@
                       :font-size 16
                       :padding-top 4
                       :color "#333"
-                      :font-weight :bold}} (:id item)]
+                      :font-weight :bold}} (:username item)]
     [ui/icon {:name "add" :size 30 :color "#FF485C"}]]])
 
 

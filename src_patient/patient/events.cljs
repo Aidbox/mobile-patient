@@ -26,8 +26,7 @@
       {:when   :seen-any-of?
        :events [:success-check-demographics :success-submit-demographics]
        :dispatch-n '([:do-load-medication-statements]
-                     [:do-load-vitals-sign-screen]
-                     [:do-load-contacts])}
+                     [:do-load-vitals-sign-screen])}
 
       {:when :seen?
        :events :success-load-medication-statements
