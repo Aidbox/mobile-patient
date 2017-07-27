@@ -1,12 +1,13 @@
 (ns mobile-patient.ios.core
   (:require [reagent.core :as r :refer [atom]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [mobile-patient.events]
-            [patient.events]
-            [mobile-patient.subs]
             [patient.routes :refer [drawer-routes on-navigation-callback]]
             [mobile-patient.screen.login :refer [LoginScreen]]
-            [mobile-patient.screen.demographics :refer [DemographicsScreen]]))
+            [mobile-patient.screen.demographics :refer [DemographicsScreen]]
+            [mobile-patient.events]
+            [mobile-patient.subs]
+            [patient.events]
+            [patient.subs]))
 
 (when-not js/goog.DEBUG (enable-console-print!))
 

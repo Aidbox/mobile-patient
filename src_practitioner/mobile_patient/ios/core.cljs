@@ -2,12 +2,12 @@
   (:require [reagent.core :as r :refer [atom]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [practitioner.routes :refer [drawer-routes on-navigation-callback]]
-            [practitioner.events]
+            [mobile-patient.ui :as ui]
+            [practitioner.screen.login :refer [LoginScreen]]
             [mobile-patient.events]
             [mobile-patient.subs]
-            [practitioner.screen.login :refer [LoginScreen]]
-            [mobile-patient.ui :as ui]
-            ))
+            [practitioner.events]
+            [practitioner.subs]))
 
 (when-not js/goog.DEBUG (enable-console-print!))
 

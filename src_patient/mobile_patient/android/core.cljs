@@ -5,8 +5,9 @@
             [mobile-patient.screen.login :refer [LoginScreen]]
             [mobile-patient.screen.demographics :refer [DemographicsScreen]]
             [mobile-patient.events]
+            [mobile-patient.subs]
             [patient.events]
-            [mobile-patient.subs]))
+            [patient.subs]))
 
 (when-not js/goog.DEBUG (enable-console-print!))
 

@@ -20,10 +20,6 @@
  (fn [db _] (:users db)))
 
 (reg-sub
- :chats
- (fn [db _] (:chats db)))
-
-(reg-sub
  :chat
  (fn [db _] (:chat db)))
 
