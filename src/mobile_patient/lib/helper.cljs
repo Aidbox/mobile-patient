@@ -24,15 +24,15 @@
        (apply hash-map)))
 
 (defn wrap-code [code]
-  [{:coding [{:system "http://loinc.org"
+  {:coding [{:system "http://loinc.org"
               :code code
               }]
-    }])
+    })
 
 (defn vital-observation-data-wrapper [patient-id code date-time value]
   {:status :final
    :resourceType :Observation,
-   :category (wrap-code "85353-1")
+   :category [(wrap-code "85353-1")]
    :code (wrap-code code)
    :effective {:dateTime date-time}
    :subject {:id patient-id
