@@ -62,18 +62,15 @@
         (filter #(= (:resourceType %) "Practitioner"))
         (map :id))))
 
-(defn simplify-observation [data]
-  (map #(str (get-in % [:resource :value :Quantity :value])
-              " "
-              (get-in % [:resource :value :Quantity :code]))
-       data))
+(defn prepare-observation [data]
+  (map #(get-in % [:resource :value]) data))
 
 (reg-sub
  :get-observations
  (fn [db _]
    (let [remote-data (:observations db)]
      (if (= (:status remote-data) :succeed)
-       (update-in remote-data [:data] simplify-observation)
+       (update-in remote-data [:data] prepare-observation)
        remote-data))))
 
 (reg-sub
