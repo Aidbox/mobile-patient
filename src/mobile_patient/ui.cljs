@@ -77,7 +77,8 @@
     title]])
 
 (defn shadow-box [& childs]
-  (into [view {:style {:margin 10
+  (into [view {:style {:flex 1
+                       :margin 10
                        :padding 20
                        :background-color :white
                        :border-radius 10

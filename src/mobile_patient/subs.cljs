@@ -1,6 +1,7 @@
 (ns mobile-patient.subs
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [reg-sub reg-sub-raw]]))
+  (:require [re-frame.core :refer [reg-sub reg-sub-raw]]
+            [cljs-time.core :as time]))
 
 ;; -- Subscriptions----------------------------------------------------------
 (reg-sub-raw
@@ -62,8 +63,19 @@
         (filter #(= (:resourceType %) "Practitioner"))
         (map :id))))
 
+(defn extract[item]
+  {:value (:value item)
+   :code (get-in item [:code :coding 0 :code])
+   :date-time (time/date-time (js/Date. (get-in item [:effective :dateTime])))})
+
 (defn prepare-observation [data]
-  (map #(get-in % [:resource :value]) data))
+  (->> data
+       (map :resource)
+       (map extract)
+       (group-by :code)
+       (map (fn [[key values]] [key (sort #(time/after? (:date-time %1) (:date-time %2))values)]))
+       (into {})
+       ))
 
 (reg-sub
  :get-observations
