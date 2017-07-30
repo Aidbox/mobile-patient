@@ -4,6 +4,7 @@
 
 
 (def react-navigation (js/require "react-navigation"))
+
 (def Header (.-Header react-navigation))
 (def NavigationActions (.-NavigationActions react-navigation))
 (def StackNavigator (.-StackNavigator react-navigation))
@@ -54,6 +55,15 @@
 (def table-view (r/adapt-react-class (.-TableView ReactNativeTableviewSimple)))
 (def section (r/adapt-react-class (.-Section ReactNativeTableviewSimple)))
 (def cell (r/adapt-react-class (.-Cell ReactNativeTableviewSimple)))
+
+(def victory-native (js/require "victory-native"))
+(def victory-axis (r/adapt-react-class (.-VictoryAxis victory-native)))
+(def victory-bar (r/adapt-react-class (.-VictoryBar victory-native)))
+(def victory-chart (r/adapt-react-class (.-VictoryChart victory-native)))
+(def victory-line (r/adapt-react-class (.-VictoryLine victory-native)))
+(def victory-scatter (r/adapt-react-class (.-VictoryScatter victory-native)))
+(def victory-group (r/adapt-react-class (.-VictoryGroup victory-native)))
+
 
 (defn button [{:keys [title on-press] :as props}]
   [touchable-highlight {:style {:background-color color/light-grey

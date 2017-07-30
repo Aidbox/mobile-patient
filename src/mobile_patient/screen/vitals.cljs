@@ -1,7 +1,8 @@
 (ns mobile-patient.screen.vitals
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
-            [mobile-patient.ui :as ui]))
+            [mobile-patient.ui :as ui]
+            [mobile-patient.color :as color]))
 
 (def code->title {"9279-1" "Respiratory Rate"
                   "8867-4" "Heart rate"
@@ -21,9 +22,9 @@
     [:Range] (format-range item)))
 
 (defn VitalsScreen [{:keys [navigation]}]
-  [ui/view {:style {:height 150
-                    :background-color "#fff"
-                    }}
+  [ui/scroll-view {:style {:flex 1
+                           :background-color "#fff"
+                           }}
    [ui/shadow-box
     (ui/show-remote-data
      @(rf/subscribe [:get-observations])
@@ -44,4 +45,25 @@
            [ui/text (code->title group)]
            [ui/text (format-value value)]
            ]
-          )]))]])
+          )]))]
+
+   [ui/view {:style {:border-width 1}}
+    [ui/victory-group {:style {:data {:border "1px solid red"}}
+                       :padding 0
+                       :color color/pink
+                       :domain #js {:x #js [0 5]
+                                    :y #js [0 10]}}
+     [ui/victory-scatter {
+                          :size 5
+                          :data #js [#js{:x 1 :y 2}
+                                     #js{:x 2 :y 3}]
+
+                          }]
+     [ui/victory-line {:data [{:x 0 :y 5} {:x 300 :y 5}]
+                       :style {:data {:stroke-dasharray [5 5]
+                                      }}}]
+
+     ]]
+
+
+   ])

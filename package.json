@@ -13,9 +13,11 @@
     "react": "16.0.0-alpha.6",
     "react-native": "0.44.0",
     "react-native-datepicker": "^1.6.0",
+    "react-native-svg": "5.1.8",
     "react-native-tableview-simple": "^0.16.6",
     "react-native-vector-icons": "^4.2.0",
-    "react-navigation": "^1.0.0-beta.11"
+    "react-navigation": "^1.0.0-beta.11",
+    "victory-native": "^0.14.0"
   },
   "devDependencies": {
     "babel-jest": "20.0.3",

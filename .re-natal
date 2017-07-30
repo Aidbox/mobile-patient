@@ -12,7 +12,9 @@
     "react-native-vector-icons/MaterialIcons",
     "react-native-tableview-simple",
     "d3-scale",
-    "d3-shape"
+    "d3-shape",
+    "victory-native",
+    "react-native-svg"
   ],
   "imageDirs": [
     "images"
