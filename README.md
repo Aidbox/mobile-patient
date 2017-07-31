@@ -6,6 +6,26 @@ Login: patient@com.com Password: patient
 
 Login: practitioner@com.com Password: practitioner
 
+## Screenshots
+_Click on image to enlarge it._
+
+* login screen, medications list, list of patients of a practitioner
+
+  <a target="_blank" href="readme_images/login.png"><img src="readme_images/login.png" height=200></a> 
+  <a target="_blank" href="readme_images/medications.png"><img src="readme_images/medications.png" height=200></a> 
+  <a target="_blank" href="readme_images/pract-patients.png"><img src="readme_images/pract-patients.png" height=200></a> 
+
+* main menu (patient's menu, practitioner's menu without the selected patient, practitioner's menu with the selected patient)
+
+  <a target="_blank" href="readme_images/patient-menu.png"> <img src="readme_images/patient-menu.png" height=200></a>
+  <a target="_blank" href="readme_images/pract-menu-1.png"> <img src="readme_images/pract-menu-1.png" height=200></a>
+  <a target="_blank" href="readme_images/pract-menu-2.png"> <img src="readme_images/pract-menu-2.png" height=200></a> 
+
+* chat related (chats list, select person for chatting, chat screen)
+  
+  <a target="_blank" href="readme_images/chats.png"><img src="readme_images/chats.png" height=200></a>
+  <a target="_blank" href="readme_images/contacts.png"> <img src="readme_images/contacts.png" height=200></a>
+  <a target="_blank" href="readme_images/chat.png"> <img src="readme_images/chat.png" height=200></a> 
 
 ## Development
 This instruction is written for MacOS, but you can use Linux for the app development. However, you can run only an Android version on Linux.
