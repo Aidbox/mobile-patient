@@ -27,6 +27,13 @@ _Click on image to enlarge it._
   <a target="_blank" href="readme_images/contacts.png"> <img src="readme_images/contacts.png" height=200></a>
   <a target="_blank" href="readme_images/chat.png"> <img src="readme_images/chat.png" height=200></a> 
 
+## Links to Android apps
+
+[patient-app.apk](https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/patient-app.apk)
+
+[practitioner-app.apk](https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/practitioner-app.apk)
+
+
 ## Development
 This instruction is written for MacOS, but you can use Linux for the app development. However, you can run only an Android version on Linux.
 In case of using Linux, consider using native setup tools such as `apt` or `yum` or whatever else.

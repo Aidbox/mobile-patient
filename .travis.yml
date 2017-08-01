@@ -53,7 +53,8 @@ script:
   - cd android && ./gradlew assembleRelease && cd ..
   - ls ./android/app/build/outputs/apk/
   - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk
-  - gsutil acl -r ch -u AllUsers:R $BUCKET
+  - gsutil cp -r $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk $BUCKET/mobile-patient/
+#  - gsutil acl -r ch -u AllUsers:R $BUCKET
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk"
 
   - rm ./android/app/build/outputs/apk/*.apk
@@ -62,6 +63,7 @@ script:
   - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once || travis_terminate 1
   - cd android && ./gradlew assembleRelease && cd ..
   - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk
+  - gsutil cp -r $BUCKET/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk $BUCKET/mobile-patient/
   - gsutil acl -r ch -u AllUsers:R $BUCKET
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk"
 
