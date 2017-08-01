@@ -17,7 +17,8 @@
                       :font-size 18}} title]]))
 
 (defn Drawer [props]
-  (let [username @(subscribe [:get-in [:user :id]])
+  (let [username @(subscribe [:user-name])
+        user-picture @(subscribe [:user-picture])
         patient @(subscribe [:get-in [:patient]])]
     [ui/view {:style {:background-color "#f4f4f4"
                       :flex 1}}
@@ -26,13 +27,10 @@
                        :flex-direction :row
                        :justify-content :flex-start
                        :padding-left 30}}
-      [ui/view {:style {:width 36
-                        :height 36
-                        :border-radius 18
-                        :background-color "#9e9e9e"
-                        :align-self :center}}]
+
+      [ui/avatar (str "data:image/png;base64," user-picture)]
       [ui/text {:style {:font-size 18
-                        :margin-left 20
+                        :margin-left 15
                         :color "#333"
                         :align-self :center}} username]]
 

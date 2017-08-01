@@ -97,3 +97,15 @@
     :loading [activity-indicator]
     :failure [text (:data remote-data)]
     :succeed (render-fn (:data remote-data))))
+
+(defn avatar [img-uri]
+  (if img-uri
+      [image {:style {:width 38
+                         :height 38
+                         :align-self :center}
+                 :source {:uri img-uri}}]
+      [view {:style {:width 38
+                        :height 38
+                        :border-radius 19
+                        :background-color "#9e9e9e"
+                        :align-self :center}}]))
