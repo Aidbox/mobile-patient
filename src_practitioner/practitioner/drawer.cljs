@@ -42,7 +42,7 @@
       (when @(subscribe [:patient-ref])
         [ui/view
          [ui/text {:style {:margin-left 35 :margin-top 20 :font-size 18 :color color/pink}}
-           (str @(subscribe [:get-in [:patient-data :username]])  "'s:")]
+           (str @(subscribe [:patient-name])  "'s:")]
          [Item "Medications" #(props.navigation.navigate "Medications")]
          [Item "Vitals Signs" #(props.navigation.navigate "Vitals Signs")]
          [Item "Chats" #(props.navigation.navigate "Chats")]

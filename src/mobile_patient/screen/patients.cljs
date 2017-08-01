@@ -1,7 +1,8 @@
 (ns mobile-patient.screen.patients
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
-            [mobile-patient.ui :as ui]))
+            [mobile-patient.ui :as ui]
+            [mobile-patient.model.patient :as patient-model]))
 
 
 (defn row-component [{:keys [item index]} navigation]
@@ -19,7 +20,7 @@
                 (navigation.navigate "Medications"))}
    [ui/view {:style {:flex-direction :row :justify-content :space-between}}
     [ui/text {:style {:text-align "left"
-                      :font-size 20}} (-> item :username)]
+                      :font-size 20}} (patient-model/get-official-name item)]
     [ui/icon {:name "chevron-right" :size 30 :color "#FF485C"}]]])
 
 

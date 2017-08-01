@@ -1,15 +1,13 @@
 (ns patient.subs
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [subscribe reg-sub reg-sub-raw]]))
+  (:require [re-frame.core :refer [subscribe reg-sub reg-sub-raw]])
+  (:require [mobile-patient.model.patient :as patient-model]))
 
 
 (reg-sub
  :user-name
  (fn [db _]
-   (->> (get-in db [:patient-data :name])
-        (filter #(= (:use %) "official"))
-        first
-        :text)))
+   (patient-model/get-official-name (:patient-data db))))
 
 (reg-sub
  :user-picture

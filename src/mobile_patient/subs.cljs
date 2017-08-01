@@ -1,7 +1,8 @@
 (ns mobile-patient.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [reg-sub reg-sub-raw]]
-            [cljs-time.core :as time]))
+            [cljs-time.core :as time]
+            [mobile-patient.model.patient :as patient-model]))
 
 ;; -- Subscriptions----------------------------------------------------------
 (reg-sub-raw
@@ -11,6 +12,11 @@
 (reg-sub-raw
  :user-ref
  (fn [db _] (reaction (get-in @db [:user :ref :id]))))
+
+(reg-sub
+ :patient-name
+ (fn [db _]
+   (patient-model/get-official-name (:patient-data db))))
 
 (reg-sub
  :users
