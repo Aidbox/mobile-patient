@@ -1,7 +1,7 @@
 (ns patient.subs
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [subscribe reg-sub reg-sub-raw]])
-  (:require [mobile-patient.model.patient :as patient-model]))
+  (:require [re-frame.core :refer [subscribe reg-sub reg-sub-raw]]
+            [mobile-patient.model.patient :as patient-model]))
 
 
 (reg-sub
