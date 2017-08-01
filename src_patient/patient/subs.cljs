@@ -12,7 +12,7 @@
 (reg-sub
  :user-picture
  (fn [db _]
-   (get-in db [:patient-data :photo 0 :data])))
+   (patient-model/get-photo (:patient-data db))))
 
 (reg-sub
  :chats

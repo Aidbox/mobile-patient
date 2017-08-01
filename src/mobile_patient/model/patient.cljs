@@ -6,3 +6,6 @@
        (filter #(= (:use %) "official"))
        first
        :text))
+
+(defn get-photo [patient]
+  (get-in patient [:photo 0 :data]))
