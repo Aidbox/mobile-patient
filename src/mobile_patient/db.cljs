@@ -14,10 +14,9 @@
              :active-medication-statements {}
              :other-medication-statements {}
              :observations {:status :not-asked}
-             :all-users []
+             :users {}
              :chats []
              :messages []
-             :resource-type-data {}
              :practitioner-patients {}
              :user nil
              :patient-data {}

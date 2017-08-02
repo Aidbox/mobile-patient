@@ -20,7 +20,8 @@
 
 (reg-sub
  :users
- (fn [db _] (:users db)))
+ (fn [db _]
+   (vals (:users db))))
 
 (reg-sub
  :chat

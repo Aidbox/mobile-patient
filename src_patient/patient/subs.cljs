@@ -23,7 +23,7 @@
  :contacts
  (fn [db _]
    (let [gen-pract-ids @(subscribe [:get-patients-general-practitioner-ids])]
-     (->> (:all-users db)
+     (->> (:asers db)
           (filter #((set gen-pract-ids) (-> % :ref :id)))
           (map #(hash-map :username (:id %)
                           :id (:id %)))

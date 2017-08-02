@@ -8,7 +8,8 @@
             [clojure.string :as str]
             [mobile-patient.lib.jwt :as jwt]
             [mobile-patient.lib.helper :as h]
-            [mobile-patient.ui :as ui]))
+            [mobile-patient.ui :as ui]
+            [mobile-patient.model.core :refer [list-to-map-by-id]]))
 
 
 (def warn (js/console.warn.bind js/console))
@@ -134,7 +135,10 @@
 (reg-event-db
  :success-load-all-users
  (fn [db [_ all-users]]
-   (assoc db :all-users (->> all-users :entry (map :resource)))))
+   (assoc db :asers (->> all-users
+                         :entry
+                         (map :resource)
+                         list-to-map-by-id))))
 
 ;;
 ;; do-load-medication-statements
@@ -264,15 +268,6 @@
               :opts {:method "POST"
                      :headers {"content-type" "application/json"}
                      :body (.stringify js/JSON (clj->js chat))}}})))
-
-
-(reg-event-fx
- :on-get-users
- (fn [cofx [_ value]]
-   {:db (assoc (:db cofx) :users (map :resource (:entry value)))
-    :dispatch [:get-contacts]}))
-
-
 
 
 (reg-event-fx

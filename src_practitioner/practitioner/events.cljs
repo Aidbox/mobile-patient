@@ -4,7 +4,8 @@
             [re-frame.core :refer [dispatch subscribe reg-event-fx reg-event-db]]
             [mobile-patient.ui :as ui]
             [clojure.string :as str]
-            [mobile-patient.lib.helper :as h]))
+            [mobile-patient.lib.helper :as h]
+            [mobile-patient.model.core :refer [list-to-map-by-id]]))
 
 (reg-event-fx
  :boot
@@ -55,15 +56,13 @@
  :success-load-practitioner-patients
  (fn [db [_ raw-patients-data]]
    (let [user-ref->user-name (into {} (map #(vector (get-in % [:ref :id]) (:id %))
-                                           (:all-users db)))
+                                           (:users db)))
          patients-data (->> raw-patients-data
                             :entry
                             (map :resource)
                             (map #(assoc % :username
                                          (user-ref->user-name (:id %)))))]
-     (assoc db :practitioner-patients (into {}
-                                            (map #(vector (:id %) %))
-                                            patients-data)))))
+     (assoc db :practitioner-patients (list-to-map-by-id patients-data)))))
 
 
 ;;
