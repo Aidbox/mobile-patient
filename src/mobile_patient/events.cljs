@@ -93,9 +93,8 @@
 (reg-event-fx
  :on-login
  (fn [{:keys [db]} [_ resp-body _ resp]]
-   ;;(print (js/JSON.stringify resp))
-   ;;(if resp.ok
-     (let [invalid (boolean (re-find #"Wrong credentials" (str resp-body)))]
+   (if resp.ok
+     (let [invalid (boolean (re-find #"Wrong credentials" resp-body))]
        (if invalid
          (ui/alert "" "Wrong credentials")
          (let [auth-data (-> (.-url resp) (str/split #"#") second h/query->params)
@@ -105,10 +104,8 @@
            (assert user-id)
            {:db (merge db {:access-token (:access_token auth-data)})
             :dispatch [:boot user-id]})))
-     #_(do
-         (ui/alert "Error" (str resp.status " " resp.statusText)))
-   ;;  )
-   ))
+     (do
+       (ui/alert "Error" (str resp.status " " resp.statusText))))))
 
 ;;
 ;; load-user
