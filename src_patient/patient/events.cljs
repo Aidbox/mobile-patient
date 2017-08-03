@@ -79,10 +79,9 @@
 (reg-event-fx
  :do-submit-demographics
  (fn [_ [_ form-data]]
-   (let [user @(subscribe [:get-in [:user]])
-         patient-data @(subscribe [:get-in [:patient-data]])]
-     {:fetch {:uri (str "/" (get-in user [:ref :resourceType ])
-                        "/" (get-in user [:ref :id ]))
+   (let [user @(subscribe [:user])
+         patient-data @(subscribe [:patient])]
+     {:fetch {:uri (str "/Patient/" (get-in user [:ref :id]))
               :success :success-submit-demographics
               :opts {:method "PUT"
                      :headers {"content-type" "application/json"}

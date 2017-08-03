@@ -7,12 +7,13 @@
 (reg-sub
  :user-name
  (fn [db _]
-   (patient-model/get-official-name (:patient-data db))))
+   (print db)
+   (patient-model/get-official-name @(subscribe [:patient]))))
 
 (reg-sub
  :user-picture
  (fn [db _]
-   (patient-model/get-photo (:patient-data db))))
+   (patient-model/get-photo @(subscribe [:patient]))))
 
 (reg-sub
  :chats

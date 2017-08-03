@@ -1,22 +1,43 @@
 (ns mobile-patient.subs
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [reg-sub reg-sub-raw]]
+  (:require [re-frame.core :refer [subscribe reg-sub reg-sub-raw]]
             [cljs-time.core :as time]
             [mobile-patient.model.patient :as patient-model]))
 
 ;; -- Subscriptions----------------------------------------------------------
-(reg-sub-raw
+#_(reg-sub-raw
  :user-id
  (fn [db _] (reaction (get-in @db [:user :id]))))
 
-(reg-sub-raw
+(reg-sub
+ :user-id
+ (fn [db _]
+   (:user-id db)))
+
+(reg-sub
+ :user
+ (fn [db _]
+   (get (:users db) (:user-id db))))
+
+#_(reg-sub-raw
  :user-ref
  (fn [db _] (reaction (get-in @db [:user :ref :id]))))
 
 (reg-sub
+ :user-ref
+ (fn [db _]
+   (get-in @(subscribe [:user]) [:ref :id])))
+
+(reg-sub
+ :patient
+ (fn [db _]
+   (get (:patients db) (:patient-id db))))
+
+
+(reg-sub
  :patient-name
  (fn [db _]
-   (patient-model/get-official-name (:patient-data db))))
+   (patient-model/get-official-name @(subscribe [:patient]))))
 
 (reg-sub
  :users
