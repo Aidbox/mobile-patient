@@ -2,6 +2,7 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe reg-event-fx reg-event-db]]
+            [mobile-patient.events :refer [validate-spec]]
             [mobile-patient.ui :as ui]
             [clojure.string :as str]
             [mobile-patient.lib.helper :as h]
@@ -40,14 +41,21 @@
 (reg-event-fx
  :do-load-patient
  (fn [_ [_]]
-   {:fetch {:uri (str "/Patient/" @(subscribe [:user-ref]))
-            :success :success-load-patient
-            :opts {:method "GET"}}}))
+   (let [user-ref @(subscribe [:user-ref])]
+     (print "user-ref" user-ref)
+     (assert user-ref)
+     {:fetch {:uri (str "/Patient/" user-ref)
+                    :success :success-load-patient
+                    :opts {:method "GET"}}})))
 
 (reg-event-db
  :success-load-patient
+ validate-spec
  (fn [db [_ patient-data]]
-   (assoc db :patient-data patient-data)))
+   (-> db
+       (assoc :patient-data patient-data)
+       (assoc :patient-id (:id patient-data))
+       (assoc-in [:patients (:id patient-data)] patient-data))))
 
 ;;
 ;; check-is-set-demographics
@@ -90,7 +98,9 @@
 (reg-event-db
  :success-submit-demographics
  (fn [db [_ patient-data]]
-   (assoc db :patient-data patient-data)))
+   (-> db
+       (assoc :patient-data patient-data)
+       (assoc-in [:patients (:id patient-data)] patient-data))))
 
 
 ;;

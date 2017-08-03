@@ -1,10 +1,16 @@
 (ns mobile-patient.db
-  (:require [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as s]
+            [mobile-patient.model.user :as user-model]))
 
 ;; spec of app-db
-(s/def ::greeting string?)
+(s/def ::user-id string?)
+
+(s/def ::users
+  (s/map-of string? ::user-model/user-spec ))
+
 (s/def ::app-db
-  (s/keys :req-un [::greeting]))
+  (s/keys :req-un [::user-id
+                   ::users]))
 
 ;; initial state of app-db
 (def app-db {:spinner {}
@@ -21,4 +27,8 @@
              :user nil
              :patient-data {}
              :practitioner-data {}
+
+             :user-id ""
+             :patients {}
+             :patient-id ""
              })

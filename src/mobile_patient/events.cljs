@@ -1,5 +1,6 @@
 (ns mobile-patient.events
-  (:require [re-frame.core :refer [dispatch subscribe reg-event-fx reg-event-db
+  (:require [clojure.spec.alpha :as s ]
+            [re-frame.core :refer [after dispatch subscribe reg-event-fx reg-event-db
                                    reg-fx]]
             [re-frame.loggers :as rf.log]
             [day8.re-frame.async-flow-fx]
@@ -18,6 +19,22 @@
           (cond
             (= "re-frame: overwriting" (first args)) nil
             :else (apply warn args)))})
+;; -- Interceptors ------------------------------------------------------------
+;;
+;; See https://github.com/Day8/re-frame/blob/master/docs/Interceptors.md
+;;
+(defn check-and-throw
+  "Throw an exception if db doesn't have a valid spec."
+  [spec db [event]]
+  (when-not (s/valid? spec db)
+    (let [explain-data (s/explain-data spec db)]
+      (throw (ex-info (str "Spec check after " event " failed: " explain-data) explain-data)))))
+
+(def validate-spec
+  (if goog.DEBUG
+    (after (partial check-and-throw ::db/app-db))
+    []))
+
 
 ;; -- Handlers --------------------------------------------------------------
 (reg-event-db
@@ -27,6 +44,7 @@
 
 (reg-event-db
  :initialize-db
+ validate-spec
  (fn [_ _]
    app-db))
 
@@ -119,8 +137,12 @@
 
 (reg-event-db
  :success-load-user
+ validate-spec
  (fn [db [_ user-data]]
-   (assoc db :user user-data)))
+   (-> db
+       (assoc :user user-data)
+       (assoc :user-id (:id user-data))
+       (assoc-in [:users (:id user-data)] user-data))))
 
 ;;
 ;; load-all-users
@@ -134,8 +156,9 @@
 
 (reg-event-db
  :success-load-all-users
+ validate-spec
  (fn [db [_ all-users]]
-   (assoc db :asers (->> all-users
+   (assoc db :users (->> all-users
                          :entry
                          (map :resource)
                          list-to-map-by-id))))
