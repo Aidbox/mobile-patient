@@ -7,7 +7,6 @@
 (reg-sub
  :user-name
  (fn [db _]
-   (print db)
    (patient-model/get-official-name @(subscribe [:patient]))))
 
 (reg-sub
@@ -29,4 +28,4 @@
           (filter #((set gen-pract-ids) (-> % :ref :id)))
           (map #(hash-map :username (:id %)
                           :id (:id %)))
-          ))))
+          )))))
