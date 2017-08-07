@@ -22,10 +22,16 @@
 (reg-sub
  :contacts
  (fn [db _]
-   (let [gen-pract-ids @(subscribe [:get-patients-general-practitioner-ids])]
-     (->> (:asers db)
-     (->> (:users db)
-          (filter #((set gen-pract-ids) (-> % :ref :id)))
-          (map #(hash-map :username (:id %)
-                          :id (:id %)))
-          )))))
+   (let [gen-pract-ids @(subscribe [:get-patients-general-practitioner-ids])
+         {:keys [status data]}  (:practitioners db)
+         practs (->> data
+                     vals
+                     (map :resource)
+                     (filter #((set gen-pract-ids) (:id %)))
+                     )]
+     (if (= status :succeed)
+       {:status status
+        :data practs}
+       {:status status
+        :data data})
+     )))

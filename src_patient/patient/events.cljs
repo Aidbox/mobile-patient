@@ -6,7 +6,9 @@
             [mobile-patient.ui :as ui]
             [clojure.string :as str]
             [mobile-patient.lib.helper :as h]
-            [mobile-patient.lib.services :as service]))
+            [mobile-patient.lib.services :as service]
+            [mobile-patient.model.core :refer [list-to-map-by-id]]
+            [mobile-patient.events :refer [validate-spec]]))
 
 
 (reg-event-fx
@@ -27,7 +29,8 @@
       {:when   :seen-any-of?
        :events [:success-check-demographics :success-submit-demographics]
        :dispatch-n '([:do-load-medication-statements]
-                     [:do-load-vitals-sign-screen])}
+                     [:do-load-vitals-sign-screen]
+                     [:do-load-practitioners])}
 
       {:when :seen?
        :events :success-load-medication-statements
@@ -100,6 +103,20 @@
        (assoc :patient-data patient-data)
        (assoc-in [:patients (:id patient-data)] patient-data))))
 
+;;
+;; load-practitioners
+;;
+(reg-event-fx
+  :do-load-practitioners
+  (fn [_ _]
+    {:dispatch [:fetch-practitioners-data
+                {}]}))
+
+(service/reg-get-service
+  :fetch-practitioners-data
+  [:practitioners]
+  {:uri "/Practitioner"}
+  :mutator list-to-map-by-id)
 
 ;;
 ;; load-vitals-sign-screen

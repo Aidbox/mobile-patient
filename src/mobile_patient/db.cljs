@@ -2,6 +2,7 @@
   (:require [clojure.spec.alpha :as s]
             [mobile-patient.model.user :as user-model]
             [mobile-patient.model.patient :as patient-model]
+            [mobile-patient.model.practitioner :as practitioner-model]
             ))
 
 ;; spec of app-db
@@ -14,11 +15,16 @@
 (s/def ::patients
   (s/map-of string? ::patient-model/patient-spec))
 
+(s/def ::practitioners
+  (s/map-of string? ::practitioner-model/practitioner-spec))
+
 (s/def ::app-db
   (s/keys :req-un [::user-id
                    ::patient-id
                    ::users
-                   ::patients]
+                   ::patients
+                   ::practitioners
+                   ]
           :opt-un []))
 
 ;; initial state of app-db
@@ -39,4 +45,5 @@
              :user-id ""
              :patient-id ""
              :patients {}
+             :practitioners {}
              })
