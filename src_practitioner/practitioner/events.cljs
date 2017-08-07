@@ -62,12 +62,12 @@
                             (map :resource)
                             (map #(assoc % :username
                                          (user-ref->user-name (:id %)))))]
-     (assoc db :practitioner-patients (list-to-map-by-id patients-data)))))
+     (assoc db :patients (list-to-map-by-id patients-data)))))
 
 
 ;;
 (reg-event-db
  :set-current-patient
  (fn [db [_ id]]
-   (assoc db :patient-data
-          (get-in db [:practitioner-patients id]))))
+   (assoc db :patient-data (get-in db [:patients id])
+             :patient-id id)))

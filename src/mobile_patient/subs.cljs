@@ -65,9 +65,10 @@
  (fn [db [_ pat-ref]] (get-in db [:other-medication-statements pat-ref])))
 
 (reg-sub
-  :patient-ref
+  :patient-id
   (fn [db _]
-    (get-in db [:patient-data :id])))
+    #_(get-in db [:patient-data :id])
+    (get db :patient-id)))
 
 (reg-sub
   :practitioner-ref
@@ -116,6 +117,6 @@
 (reg-sub
  :get-patient-ref-by-id
  (fn [db [_ user-id]]
-   (-> (:practitioner-patients db)
+   (-> (:patients db)
        (get user-id)
        (get-in [:ref :id]))))

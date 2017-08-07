@@ -9,9 +9,9 @@
   (let [t1 (new js/Date)
         loading (rf/subscribe [:get-in [:spinner :load-patient-data]])
         ;;user-id (getValueByKeys navigation "state" "params" "patientid")
-        patient-ref (rf/subscribe [:patient-ref])
-        active (rf/subscribe [:active-medication-statements @patient-ref])
-        other (rf/subscribe [:other-medication-statements @patient-ref])]
+        patient-id (rf/subscribe [:patient-id])
+        active (rf/subscribe [:active-medication-statements @patient-id])
+        other (rf/subscribe [:other-medication-statements @patient-id])]
     (fn []
       [medications-component {:active active
                               :other other}]

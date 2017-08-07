@@ -168,21 +168,22 @@
 (reg-event-fx
  :do-load-medication-statements
  (fn [{:keys [db]} [_]]
-   (let [patient-ref @(subscribe [:patient-ref])]
+   (let [patient-id @(subscribe [:patient-id])]
+     (assert patient-id)
      {:fetch {:uri "/MedicationStatement"
               :success :success-load-medication-statements
-              :opts {:parms {:subject patient-ref}
+              :opts {:parms {:subject patient-id}
                      :method "GET"}}})))
 
 (reg-event-db
  :success-load-medication-statements
  (fn [db [_ med-stms]]
-   (let [patient-ref @(subscribe [:patient-ref])
+   (let [patient-id @(subscribe [:patient-id])
          medication-statements (sort-by #(-> % :effective :dateTime) (map :resource (:entry med-stms)))
          groups (group-by #(= (:status %) "active") medication-statements)]
      (-> db
-         (assoc-in [:active-medication-statements patient-ref] (groups true))
-         (assoc-in [:other-medication-statements patient-ref] (groups false))))))
+         (assoc-in [:active-medication-statements patient-id] (groups true))
+         (assoc-in [:other-medication-statements patient-id] (groups false))))))
 
 
 ;; OLD
@@ -191,21 +192,21 @@
 (reg-event-fx
  :get-medication-statements
  (fn [{:keys [db]}  _]
-   (let [patient-ref @(subscribe [:patient-ref])]
+   (let [patient-id @(subscribe [:patient-id])]
      {:fetch {:uri "/MedicationStatement"
               :spinner-id :load-patient-data
               :success :set-medication-statements
-              :success-parms patient-ref
-              :opts {:parms {:subject patient-ref}
+              :success-parms patient-id
+              :opts {:parms {:subject patient-id}
                      :method "GET"}}})))
 (reg-event-db
  :set-medication-statements
- (fn [db [_ med-stms patient-ref]]
+ (fn [db [_ med-stms patient-id]]
    (let [medication-statements (sort-by #(-> % :effective :dateTime) (map :resource (:entry med-stms)))
          groups (group-by #(= (:status %) "active") medication-statements)]
      (-> db
-         (assoc-in [:active-medication-statements patient-ref] (groups true))
-         (assoc-in [:other-medication-statements patient-ref] (groups false))))))
+         (assoc-in [:active-medication-statements patient-id] (groups true))
+         (assoc-in [:other-medication-statements patient-id] (groups false))))))
 
 ;; get-patient-data
 (reg-event-fx

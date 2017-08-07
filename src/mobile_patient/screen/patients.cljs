@@ -38,7 +38,7 @@
 
 
 (defn PatientsScreen [{:keys [navigation]}]
-  (let [patients (rf/subscribe [:get-in [:practitioner-patients]])]
+  (let [patients (rf/subscribe [:get-in [:patients]])]
     [ui/flat-list {:style {:background-color :white}
                    :data (clj->js (vals @patients))
                    :key-extractor #(.-id %)

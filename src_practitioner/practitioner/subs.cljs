@@ -18,7 +18,7 @@
  :contacts
  (fn [db _]
    (-> db
-       (get :practitioner-patients)
+       (get :patients)
        vals)))
 
 (reg-sub

@@ -32,7 +32,6 @@
              :users {}
              :chats []
              :messages []
-             :practitioner-patients {}
              :user nil
              :patient-data {}
              :practitioner-data {}

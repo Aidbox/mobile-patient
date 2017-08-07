@@ -42,7 +42,6 @@
  :do-load-patient
  (fn [_ [_]]
    (let [user-ref @(subscribe [:user-ref])]
-     (print "user-ref" user-ref)
      (assert user-ref)
      {:fetch {:uri (str "/Patient/" user-ref)
                     :success :success-load-patient
