@@ -2,7 +2,8 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [mobile-patient.ui :as ui]
-            [mobile-patient.color :as color]))
+            [mobile-patient.color :as color]
+            [mobile-patient.model.patient :as patient-model]))
 
 
 (defn row-component [{:keys [item index]} navigation]
@@ -16,15 +17,20 @@
                                        (dispatch [:create-chat [(:username item)]])
                                        (navigation.goBack nil))}
    [ui/view {:style {:flex-direction :row
+                     :flex 1
                      :justify-content :space-between
-                     :padding-left 20
-                     :padding-right 15
+                     :padding-left 15
+                     :padding-right 10
                      }}
-    [ui/text {:style {:text-align "left"
+    [ui/avatar (str "data:image/png;base64," (patient-model/get-photo item))
+               20]
+    [ui/text {:style {:flex 1
+                      :margin-left 15
+                      :text-align "left"
                       :font-size 16
                       :padding-top 4
                       :color "#333"
-                      :font-weight :bold}} (:username item)]
+                      :font-weight :bold}} (patient-model/get-official-name item)]
     [ui/icon {:name "add" :size 30 :color "#FF485C"}]]])
 
 
@@ -36,6 +42,7 @@
 
 (defn ContactsScreen [{:keys [navigation]}]
   (let [contacts (subscribe [:contacts])]
+    (print "contacts" (first @contacts))
     [ui/flat-list {:style {:background-color :white}
                    :data (clj->js @contacts)
                    :key-extractor #(.-id %)

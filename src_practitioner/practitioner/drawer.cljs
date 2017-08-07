@@ -39,7 +39,7 @@
       [Item "Select patient" #(props.navigation.navigate "Patients")]
 
       ;; patients's specific items
-      (when @(subscribe [:patient-id])
+      (when-not (empty? @(subscribe [:patient-id]))
         [ui/view
          [ui/text {:style {:margin-left 35 :margin-top 20 :font-size 18 :color color/pink}}
            (str @(subscribe [:patient-name])  "'s:")]

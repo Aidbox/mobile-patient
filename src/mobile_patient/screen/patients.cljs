@@ -9,8 +9,8 @@
   [ui/touchable-highlight
    {:style {:border-color "#E9E9EF"
             :border-width 1
-            :border-top-width 0 ;;(if (zero? index) 0 0)
-            :border-bottom-width 1 ;;0
+            :border-top-width (if (zero? index) 0 1)
+            :border-bottom-width 0
             :padding 10
             :background-color "#ffffff"}
     :on-press (fn []
