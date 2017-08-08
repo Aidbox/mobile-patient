@@ -19,13 +19,14 @@
   (s/map-of string? ::practitioner-model/practitioner-spec))
 
 (s/def ::app-db
-  (s/keys :req-un [::user-id
-                   ::patient-id
-                   ::users
-                   ::patients
-                   ::practitioners
-                   ]
-          :opt-un []))
+  (s/and (s/keys :req-un [::user-id
+                          ::patient-id
+                          ::users
+                          ::patients
+                          ::practitioners
+                          ]
+                 :opt-un [])
+         #(not (contains? % nil))))
 
 ;; initial state of app-db
 (def app-db {:spinner {}
