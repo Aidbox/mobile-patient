@@ -93,10 +93,16 @@
         childs))
 
 (defn show-remote-data [remote-data render-fn]
-  (case (:status remote-data)
-    :loading [activity-indicator]
-    :failure [text (:data remote-data)]
-    :succeed (render-fn (:data remote-data))))
+  (let [data-key (->> remote-data
+                      keys
+                      (map name)
+                      (filter #(clojure.string/ends-with? % "-data"))
+                      first
+                      keyword)]
+   (case (:status remote-data)
+     :loading [activity-indicator]
+     :failure [text (data-key remote-data)]
+     :succeed (render-fn (data-key remote-data)))))
 
 (defn avatar
   ([img-url]

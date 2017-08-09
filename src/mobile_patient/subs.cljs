@@ -109,9 +109,15 @@
 (reg-sub
  :get-observations
  (fn [db _]
-   (let [remote-data (:observations db)]
+   (let [remote-data (:observations db)
+         data-key (->> remote-data
+                      keys
+                      (map name)
+                      (filter #(clojure.string/ends-with? % "-data"))
+                      first
+                      keyword)]
      (if (= (:status remote-data) :succeed)
-       (update-in remote-data [:data] prepare-observation)
+       (update-in remote-data [data-key] prepare-observation)
        remote-data))))
 
 (reg-sub

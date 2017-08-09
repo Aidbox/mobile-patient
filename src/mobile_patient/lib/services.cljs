@@ -12,7 +12,8 @@
    validate-spec
    (fn [_ [_ extra-opts]]
      (let [base-url @(subscribe [:get-in [:config :base-url]])
-           opts (merge default-opts extra-opts)]
+           opts (merge default-opts extra-opts)
+           data-path (keyword (str (name (first db-path)) "-data"))]
        (dispatch [:assoc-in (concat db-path [:status]) :loading])
        (-> (js/fetch (str base-url (:uri opts) (h/parms->query (:params opts)))
                      (clj->js (merge {:redirect "manual"
@@ -21,9 +22,9 @@
                                      opts)))
            (.then #(.json %))
            (.then #(dispatch [:assoc-in db-path {:status :succeed
-                                                 :data (-> (js->clj % :keywordize-keys true)
+                                                 data-path (-> (js->clj % :keywordize-keys true)
                                                            accessor
                                                            mutator)}]))
            (.catch #(dispatch [:assoc-in db-path {:status :failure
-                                                  :data (.-message %)}])))
+                                                  data-path (.-message %)}])))
        {}))))
