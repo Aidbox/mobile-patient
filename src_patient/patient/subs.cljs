@@ -1,6 +1,7 @@
 (ns patient.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [subscribe reg-sub reg-sub-raw]]
+            [mobile-patient.model.core :refer [get-data-key]]
             [mobile-patient.model.patient :as patient-model]))
 
 
@@ -23,15 +24,14 @@
  :contacts
  (fn [db _]
    (let [gen-pract-ids @(subscribe [:get-patients-general-practitioner-ids])
-         {:keys [status data]}  (:practitioners db)
-         practs (->> data
+         remote-data (:practitioners db)
+         data-key (get-data-key remote-data)
+         practs (->> (get remote-data data-key)
                      vals
                      (map :resource)
                      (filter #((set gen-pract-ids) (:id %)))
                      )]
      (if (= status :succeed)
-       {:status status
-        :data practs}
-       {:status status
-        :data data})
+       (assoc remote-data data-key practs)
+       remote-data)
      )))

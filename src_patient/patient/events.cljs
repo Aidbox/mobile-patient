@@ -116,7 +116,7 @@
   :fetch-practitioners-data
   [:practitioners]
   {:uri "/Practitioner"}
-  :mutator list-to-map-by-id)
+  :mutator #(list-to-map-by-id (map :resource %)))
 
 ;;
 ;; load-vitals-sign-screen

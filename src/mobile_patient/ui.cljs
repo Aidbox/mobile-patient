@@ -102,7 +102,7 @@
    (case (:status remote-data)
      :loading [activity-indicator]
      :failure [text (data-key remote-data)]
-     :succeed (render-fn (data-key remote-data)))))
+     :succeed (render-fn (get remote-data data-key)))))
 
 (defn avatar
   ([img-url]

@@ -43,10 +43,10 @@
 (defn ContactsScreen [{:keys [navigation]}]
   (let [contacts @(subscribe [:contacts])]
     (ui/show-remote-data
-     @(subscribe [:contacts])
+     contacts
      (fn [data]
        [ui/flat-list {:style {:background-color :white}
-                           :data (clj->js data)
+                           :data (clj->js (vals data))
                            :key-extractor #(.-id %)
                            :ListHeaderComponent (r/reactify-component header-component)
                            :render-item (fn [row] (r/as-element [row-component (js->clj row :keywordize-keys true) navigation]))}]))))
