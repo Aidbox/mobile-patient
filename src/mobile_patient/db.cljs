@@ -6,17 +6,31 @@
             ))
 
 ;; spec of app-db
+(s/def ::status #{:not-asked :loading :succeed :failure})
+
 (s/def ::user-id string?)
 (s/def ::patient-id string?)
 
 (s/def ::users
   (s/map-of string? ::user-model/user-spec))
 
-(s/def ::patients
+
+(s/def ::patients-data
   (s/map-of string? ::patient-model/patient-spec))
 
-(s/def ::practitioners
+(s/def ::patients
+  (s/keys :req-un [::status
+                   ::patients-data]))
+
+
+(s/def ::practitioners-data
   (s/map-of string? ::practitioner-model/practitioner-spec))
+
+(s/def ::practitioners
+  (s/keys :req-un [::status
+                   ::practitioners-data]))
+
+
 
 (s/def ::app-db
   (s/and (s/keys :req-un [::user-id
@@ -45,6 +59,6 @@
 
              :user-id ""
              :patient-id ""
-             :patients {}
-             :practitioners {}
+             :patients {:status :not-asked :patients-data {}}
+             :practitioners {:status :not-asked :practitioners-data {}}
              })

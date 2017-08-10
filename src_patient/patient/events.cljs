@@ -55,9 +55,10 @@
  validate-spec
  (fn [db [_ patient-data]]
    (-> db
-       (assoc :patient-data patient-data)
+       (assoc :patient-data patient-data) ;; legacy
        (assoc :patient-id (:id patient-data))
-       (assoc-in [:patients (:id patient-data)] patient-data))))
+       (assoc :patients{:status :succeed
+                        :patients-data {(:id patient-data) patient-data}})))) ;; redo as service
 
 ;;
 ;; check-is-set-demographics

@@ -46,7 +46,7 @@
      contacts
      (fn [data]
        [ui/flat-list {:style {:background-color :white}
-                           :data (clj->js (vals data))
-                           :key-extractor #(.-id %)
-                           :ListHeaderComponent (r/reactify-component header-component)
-                           :render-item (fn [row] (r/as-element [row-component (js->clj row :keywordize-keys true) navigation]))}]))))
+                      :data (clj->js data)
+                      :key-extractor #(.-id %)
+                      :ListHeaderComponent (r/reactify-component header-component)
+                      :render-item (fn [row] (r/as-element [row-component (js->clj row :keywordize-keys true) navigation]))}]))))

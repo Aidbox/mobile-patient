@@ -4,6 +4,7 @@
             [re-frame.core :refer [dispatch subscribe reg-event-fx reg-event-db]]
             [mobile-patient.ui :as ui]
             [clojure.string :as str]
+            [mobile-patient.lib.services :as service]
             [mobile-patient.lib.helper :as h]
             [mobile-patient.model.core :refer [list-to-map-by-id]]))
 
@@ -16,15 +17,14 @@
      [
       {:when     :seen?
        :events   :success-load-user
-       :dispatch-n '([:do-load-practitioner] [:do-load-all-users])}
+       :dispatch-n '([:do-load-practitioner]
+                     [:do-load-all-users])}
 
       {:when     :seen-both?
        :events   [:success-load-practitioner :success-load-all-users]
-       :dispatch [:do-load-practitioner-patients]}
+       :dispatch-n '([:do-load-practitioner-patients]
+                     [:set-current-screen :main])}
 
-      {:when :seen?
-       :events :success-load-practitioner-patients
-       :dispatch [:set-current-screen :main]}
       ]}}))
 
 
@@ -40,29 +40,46 @@
 (reg-event-db
  :success-load-practitioner
  (fn [db [_ practitioner-data]]
-   (assoc db :practitioner-data practitioner-data)))
+   (-> db
+       (assoc :practitioner-data practitioner-data) ;; legacy
+       (assoc :practitioner-id (:id practitioner-data))
+       (assoc-in [:practitioners (:id practitioner-data)]
+                 {:status :succeed
+                  :practitioner-data practitioner-data})))) ;; redo as service
 
 
 ;; load-practitioner-patients
 (reg-event-fx
  :do-load-practitioner-patients
  (fn [{:keys [db]} _]
-   (let [user-ref @(subscribe [:user-ref])]
-     (assert user-ref)
-     {:fetch {:uri (str "/Patient?general-practitioner=" user-ref)
-              :success :success-load-practitioner-patients}})))
+   {:dispatch [:fetch-patients-data
+               {:params {:general-practitioner @(subscribe [:user-ref])}}]}))
 
-(reg-event-db
- :success-load-practitioner-patients
- (fn [db [_ raw-patients-data]]
-   (let [user-ref->user-name (into {} (map #(vector (get-in % [:ref :id]) (:id %))
-                                           (:users db)))
-         patients-data (->> raw-patients-data
-                            :entry
-                            (map :resource)
-                            (map #(assoc % :username
-                                         (user-ref->user-name (:id %)))))]
-     (assoc db :patients (list-to-map-by-id patients-data)))))
+(service/reg-get-service
+  :fetch-patients-data
+  [:patients]
+  {:uri "/Patient"}
+  :mutator #(list-to-map-by-id (map :resource %)))
+
+;; (reg-event-fx
+;;  :do-load-practitioner-patients
+;;  (fn [{:keys [db]} _]
+;;    (let [user-ref @(subscribe [:user-ref])]
+;;      (assert user-ref)
+;;      {:fetch {:uri (str "/Patient?general-practitioner=" user-ref)
+;;               :success :success-load-practitioner-patients}})))
+
+;; (reg-event-db
+;;  :success-load-practitioner-patients
+;;  (fn [db [_ raw-patients-data]]
+;;    (let [user-ref->user-name (into {} (map #(vector (get-in % [:ref :id]) (:id %))
+;;                                            (:users db)))
+;;          patients-data (->> raw-patients-data
+;;                             :entry
+;;                             (map :resource)
+;;                             (map #(assoc % :username
+;;                                          (user-ref->user-name (:id %)))))]
+;;      (assoc db :patients (list-to-map-by-id patients-data)))))
 
 
 ;;

@@ -92,6 +92,12 @@
                        }}]
         childs))
 
+(defn screen-activity-indicator []
+  [view {:style {:flex 1
+                 :justify-content :center
+                 :background-color :white}}
+   [activity-indicator]])
+
 (defn show-remote-data [remote-data render-fn]
   (let [data-key (->> remote-data
                       keys
@@ -99,10 +105,10 @@
                       (filter #(clojure.string/ends-with? % "-data"))
                       first
                       keyword)]
-   (case (:status remote-data)
-     :loading [activity-indicator]
-     :failure [text (data-key remote-data)]
-     :succeed (render-fn (get remote-data data-key)))))
+    (case (:status remote-data)
+      :loading [screen-activity-indicator]
+      :failure [text (get remote-data data-key)]
+      :succeed (render-fn (get remote-data data-key)))))
 
 (defn avatar
   ([img-url]

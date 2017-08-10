@@ -38,9 +38,12 @@
 
 
 (defn PatientsScreen [{:keys [navigation]}]
-  (let [patients (rf/subscribe [:get-in [:patients]])]
-    [ui/flat-list {:style {:background-color :white}
-                   :data (clj->js (vals @patients))
-                   :key-extractor #(.-id %)
-                   :render-item (fn [row]
-                                  (r/as-element [row-component (js->clj row :keywordize-keys true) navigation]))}]))
+  (let [patients @(rf/subscribe [:patients])]
+    (ui/show-remote-data
+     patients
+     (fn [data]
+       [ui/flat-list {:style {:background-color :white}
+                      :data (clj->js (vals data))
+                      :key-extractor #(.-id %)
+                      :render-item (fn [row]
+                                     (r/as-element [row-component (js->clj row :keywordize-keys true) navigation]))}]))))

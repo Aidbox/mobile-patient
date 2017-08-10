@@ -1,6 +1,7 @@
 (ns practitioner.subs
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [reg-sub reg-sub-raw]]))
+  (:require [re-frame.core :refer [subscribe reg-sub reg-sub-raw]]
+            [mobile-patient.model.core :refer [get-data-key]]))
 
 (reg-sub
  :domain-user
@@ -21,9 +22,12 @@
 (reg-sub
  :contacts
  (fn [db _]
-   (-> db
-       (get :patients)
-       vals)))
+   (let [remote-data (:patients db)
+         data-key (get-data-key remote-data)
+         patients (vals (get remote-data data-key))]
+     (if (= (:status remote-data) :succeed)
+       (assoc remote-data data-key patients)
+       remote-data))))
 
 (reg-sub
  :user-name

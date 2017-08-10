@@ -36,7 +36,7 @@
                      (map :resource)
                      (filter #((set gen-pract-ids) (:id %)))
                      )]
-     (if (= status :succeed)
+     (if (= (:status remote-data) :succeed)
        (assoc remote-data data-key practs)
        remote-data)
      )))
