@@ -279,7 +279,7 @@
         :dispatch [:set-message ""]}
        {}))))
 
-(reg-event-fx
+#_(reg-event-fx
  :create-chat
  (fn [_ [_ participants]]
    (let [user @(subscribe [:user-id])
@@ -292,14 +292,30 @@
                      :headers {"content-type" "application/json"}
                      :body (.stringify js/JSON (clj->js chat))}}})))
 
+(reg-event-fx
+ :create-chat
+ (fn [_ [_ other-domain-user]]
+   (let [this-domain-user @(subscribe [:domain-user])
+         chat-name "Personal chat"
+         chat {:resourceType "Chat"
+               :name chat-name
+               :participants [{:id (:id this-domain-user)
+                               :resourceType (:resourceType this-domain-user)}
+                              {:id (:id other-domain-user)
+                               :resourceType (:resourceType other-domain-user)}]}]
+     {:fetch {:uri "/Chat"
+             :opts {:method "POST"
+                    :headers {"content-type" "application/json"}
+                    :body (.stringify js/JSON (clj->js chat))}}})))
+
 
 (reg-event-fx
  :get-chats
  (fn [_]
-   (let [user (subscribe [:user-id])]
+   (let [user (subscribe [:domain-user])]
      {:fetch {:uri "/Chat"
               :success :on-chats
-              :opts {:parms {:participant @user}}}})))
+              :opts {:parms {:participant (:id @user)}}}})))
 
 (reg-event-db
  :on-chats

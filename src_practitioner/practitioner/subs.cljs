@@ -2,6 +2,10 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [reg-sub reg-sub-raw]]))
 
+(reg-sub
+ :domain-user
+ (fn [db _]
+   @(subscribe [:practitioner])))
 
 (reg-sub
  :chats

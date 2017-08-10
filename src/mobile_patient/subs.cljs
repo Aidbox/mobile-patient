@@ -126,3 +126,22 @@
    (-> (:patients db)
        (get user-id)
        (get-in [:ref :id]))))
+
+(reg-sub
+ :patients
+ (fn [db [_]]
+   (print "PATIENTS" (:patients db))
+   (:patients db)))
+
+(reg-sub
+ :practitioners
+ (fn [db [_]]
+   (print "PRACTITIONERS" (:practitioners db))
+   (get-in db [:practitioners :practitioners-data])))
+
+(reg-sub
+ :user-by-id
+ (fn [db [_ id]]
+   (or (get @(subscribe [:patients]) id)
+       (get @(subscribe [:practitioners]) id))
+   ))

@@ -14,7 +14,7 @@
                                    :padding 10
                                    :background-color "#ffffff"}
                            :on-press (fn []
-                                       (dispatch [:create-chat [(:username item)]])
+                                       (dispatch [:create-chat item])
                                        (navigation.goBack nil))}
    [ui/view {:style {:flex-direction :row
                      :flex 1

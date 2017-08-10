@@ -6,6 +6,11 @@
 
 
 (reg-sub
+ :domain-user
+ (fn [db _]
+   @(subscribe [:patient])))
+
+(reg-sub
  :user-name
  (fn [db _]
    (patient-model/get-official-name @(subscribe [:patient]))))

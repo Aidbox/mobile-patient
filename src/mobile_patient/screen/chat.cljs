@@ -3,7 +3,10 @@
             [mobile-patient.ui :as ui]
             [reagent.core :as r]
             [clojure.string :as str]
-            [mobile-patient.color :as color]))
+            [mobile-patient.color :as color]
+            [mobile-patient.model.chat :as chat-model]
+            [mobile-patient.model.user :as user-model]
+            ))
 
 (def ds (ui/ReactNative.ListView.DataSource. #js{:rowHasChanged (fn[a b] false)}))
 (def font-size 18)
@@ -13,7 +16,10 @@
    (fn [props]
      (let [row (props :row)
            navigation (props :navigation)
-           chat @row]
+           chat @row
+           other-id (chat-model/other-participant-id chat @(subscribe [:domain-user]))
+           other-user @(subscribe [:user-by-id other-id])
+           chat-name (user-model/get-official-name other-user)]
        [ui/touchable-highlight {:on-press #(do
                                              (dispatch [:set-chat chat])
                                              (navigation.navigate "Chat" #js{:chat-name (:name chat)}))
@@ -27,8 +33,8 @@
           [ui/text {:style {:color "black"
                             :font-weight :bold
                             :font-size font-size}}
-           (:name chat)]
-          [ui/text {:style {:color "#919291"
+           chat-name]
+          #_[ui/text {:style {:color "#919291"
                             :font-size font-size}}
            (str/join ", " (map :id (:participants chat)))]]
           [ui/icon {:style {:flex 0.1
@@ -45,9 +51,9 @@
    #js{}))
 
 (defn ChatsScreen [{:keys [navigation]}]
-  (fn [_]
-    (let [chats (subscribe [:chats])
-          source (map #(r/atom %) @chats)]
+  (let [chats (subscribe [:chats])
+        source (map #(r/atom %) @chats)]
+    (fn [_]
       [ui/view {:style {:background-color "white"
                         :flex 1}}
        [ui/text {:style {:margin-left 20
@@ -55,7 +61,7 @@
                          :margin-bottom 20
                          :color color/pink
                          :font-size font-size}}
-        "Practice Groups"]
+        "Practitioners"]
        (if (empty? source)
          [ui/text {:style {:margin-left 20}} "No chats yet"]
          [ui/list-view {:dataSource (.cloneWithRows ds (clj->js source))
