@@ -33,9 +33,7 @@
          data-key (get-data-key remote-data)
          practs (->> (get remote-data data-key)
                      vals
-                     (map :resource)
-                     (filter #((set gen-pract-ids) (:id %)))
-                     )]
+                     #_(filter #((set gen-pract-ids) (:id %))))]
      (if (= (:status remote-data) :succeed)
        (assoc remote-data data-key practs)
        remote-data)
