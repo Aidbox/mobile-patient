@@ -46,8 +46,8 @@
 (def chat-row-sep
   (r/create-element
    (r/reactify-component
-    (fn [_] [ui/view {:style {:border-width 1
-                              :border-color "#d7d7d7"}}]))
+    (fn [_] [ui/view {:style {:border-bottom-width 1
+                              :border-color "#eee"}}]))
    #js{}))
 
 (defn ChatsScreen [{:keys [navigation]}]

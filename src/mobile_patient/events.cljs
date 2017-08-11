@@ -296,9 +296,8 @@
  :create-chat
  (fn [_ [_ other-domain-user]]
    (let [this-domain-user @(subscribe [:domain-user])
-         chat-name "Personal chat"
          chat {:resourceType "Chat"
-               :name chat-name
+               :name "Personal chat"
                :participants [{:id (:id this-domain-user)
                                :resourceType (:resourceType this-domain-user)}
                               {:id (:id other-domain-user)

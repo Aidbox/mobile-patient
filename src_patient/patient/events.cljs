@@ -20,7 +20,8 @@
      [
       {:when     :seen?
        :events   :success-load-user
-       :dispatch-n '([:do-load-patient] [:do-load-all-users])}
+       :dispatch-n '([:do-load-patient]
+                     [:do-load-all-users])}
 
       {:when     :seen-both?
        :events   [:success-load-patient :success-load-all-users]
@@ -28,9 +29,12 @@
 
       {:when   :seen-any-of?
        :events [:success-check-demographics :success-submit-demographics]
-       :dispatch-n '([:do-load-medication-statements]
-                     [:do-load-vitals-sign-screen]
-                     [:do-load-practitioners])}
+       :dispatch-n '([:do-load-practitioners]
+                     [:do-load-medication-statements]
+                     [:do-load-vitals-sign-screen])}
+      {:when :seen?
+       :events [:success-fetch-practitioners]
+       :dispatch [:do-check-practice-group-exists]}
 
       {:when :seen?
        :events :success-load-medication-statements
@@ -105,16 +109,70 @@
        (assoc-in [:patients (:id patient-data)] patient-data))))
 
 ;;
+;; check-practice-group-exists
+;;
+(reg-event-fx
+ :do-check-practice-group-exists
+ (fn [_ _]
+   {:fetch {:uri "/Chat"
+            :success :do-check-practice-group-exists-2
+            :opts {:params {:participant @(subscribe [:domain-user])}}}}))
+
+
+(reg-event-fx
+ :do-check-practice-group-exists-2
+ (fn [_ [_ chats-resp]]
+   (let [chats (->> chats-resp :entry (map :resource))
+         practice-group (->> chats (filter #(= "Practice Group" (:name %))) first)]
+     (if practice-group
+       {:dispatch [:success-check-practice-group-exists]}
+       {:dispatch [:do-create-practice-group]}
+       ))))
+
+(reg-event-db
+ :success-check-practice-group-exists
+ (fn [db _]
+   db))
+
+
+;;
+;; create-practice-group
+;;
+(reg-event-fx
+ :do-create-practice-group
+ (fn [_ _]
+   (let [patient @(subscribe [:domain-user])
+         practitioners @(subscribe [:practitioners-data])
+         participants (concat [patient] (vals practitioners))
+         group {:resourceType "Chat"
+                :name "Practice Group"
+                :participants (map #(hash-map :id (:id %)
+                                              :resourceType (:resourceType %))
+                                   participants)}]
+     {:fetch {:uri "/Chat"
+              :success :success-create-practice-group
+              :opts {:method "POST"
+                     :headers {"content-type" "application/json"}
+                     :body (js/JSON.stringify (clj->js group))}}})))
+
+(reg-event-db
+ :success-create-practice-group
+ (fn [db [_ resp]]
+   db))
+
+
+
+;;
 ;; load-practitioners
 ;;
 (reg-event-fx
   :do-load-practitioners
   (fn [_ _]
-    {:dispatch [:fetch-practitioners-data
+    {:dispatch [:fetch-practitioners
                 {}]}))
 
 (service/reg-get-service
-  :fetch-practitioners-data
+  :fetch-practitioners
   [:practitioners]
   {:uri "/Practitioner"}
   :mutator #(list-to-map-by-id (map :resource %)))
