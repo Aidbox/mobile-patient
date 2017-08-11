@@ -123,7 +123,7 @@
  :do-check-practice-group-exists-2
  (fn [_ [_ chats-resp]]
    (let [chats (->> chats-resp :entry (map :resource))
-         practice-group (->> chats (filter #(= "Practice Group" (:name %))) first)]
+         practice-group (->> chats (filter #(= "practice-group" (:name %))) first)]
      (if practice-group
        {:dispatch [:success-check-practice-group-exists]}
        {:dispatch [:do-create-practice-group]}
@@ -145,7 +145,7 @@
          practitioners @(subscribe [:practitioners-data])
          participants (concat [patient] (vals practitioners))
          group {:resourceType "Chat"
-                :name "Practice Group"
+                :name "practice-group"
                 :participants (map #(hash-map :id (:id %)
                                               :resourceType (:resourceType %))
                                    participants)}]

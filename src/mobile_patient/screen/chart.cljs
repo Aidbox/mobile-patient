@@ -75,7 +75,6 @@
   (let [line-graph (create-line-graph props)
         tick-x-format (-> line-graph :scale :x (.tickFormat nil "%b %d"))
         ]
-    ;;(print line-graph)
     (fn []
       [ui/view {:style {:background-color "white"}}
 

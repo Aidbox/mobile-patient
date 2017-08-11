@@ -2,7 +2,9 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [subscribe reg-sub reg-sub-raw]]
             [mobile-patient.model.core :refer [get-data-key]]
-            [mobile-patient.model.patient :as patient-model]))
+            [mobile-patient.model.patient :as patient-model]
+            [mobile-patient.model.chat :as chat-model]
+            ))
 
 
 (reg-sub
@@ -38,3 +40,20 @@
        (assoc remote-data data-key practs)
        remote-data)
      )))
+
+(reg-sub
+ :practice-groups
+ (fn [db _]
+   (filter #(= "practice-group" (:name %))
+             (:chats db))))
+
+(reg-sub
+ :personal-chats
+ (fn [db _]
+   (let [domain-user @(subscribe [:domain-user])
+         chats (->> (:chats db)
+                    (filter #(= "personal-chat" (:name %))))
+         practitioners @(subscribe [:practitioners-data])
+         persons-with-chat (map #(assoc (get practitioners (chat-model/other-participant-id % domain-user)) :chat %)
+                                chats)]
+     persons-with-chat)))

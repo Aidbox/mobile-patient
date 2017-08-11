@@ -3,6 +3,7 @@
             [mobile-patient.model.user :as user-model]
             [mobile-patient.model.patient :as patient-model]
             [mobile-patient.model.practitioner :as practitioner-model]
+            [mobile-patient.model.chat :as chat-model]
             ))
 
 ;; spec of app-db
@@ -30,7 +31,8 @@
   (s/keys :req-un [::status
                    ::practitioners-data]))
 
-
+(s/def ::chats
+  (s/coll-of ::chat-model/chat-spec))
 
 (s/def ::app-db
   (s/and (s/keys :req-un [::user-id
@@ -38,6 +40,7 @@
                           ::users
                           ::patients
                           ::practitioners
+                          ::chats
                           ]
                  :opt-un [])
          #(not (contains? % nil))))
