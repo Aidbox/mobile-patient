@@ -7,7 +7,8 @@
             [mobile-patient.screen.patients :refer [PatientsScreen]]
             [mobile-patient.screen.vitals :refer [VitalsScreen]]
             [mobile-patient.screen.meds :refer [MedsScreen]]
-            [mobile-patient.screen.chat :refer [ChatsScreen ChatScreen]]
+            [mobile-patient.screen.chat :refer [ChatScreen]]
+            [mobile-patient.screen.chats :refer [ChatsScreen]]
             [mobile-patient.screen.settings :refer [SettingsScreen]]
             [mobile-patient.screen.contacts :refer [ContactsScreen]]
             [mobile-patient.screen.chart :refer [ChartScreen]]))
