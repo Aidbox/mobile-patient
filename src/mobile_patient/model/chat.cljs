@@ -11,10 +11,10 @@
                                     ::participants
                                     ::name]))
 
-(defn get-participants-set [chat]
+(defn get-participants-id-set [chat]
   (->> chat
        :participants
-       (filter #(= "User" (:resourceType %)))
+       (filter #(#{"Patient" "Practitioner"} (:resourceType %)))
        (map :id)
        set))
 

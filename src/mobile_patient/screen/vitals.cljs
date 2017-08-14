@@ -22,25 +22,25 @@
 
 (defn VitalsScreen [{:keys [navigation]}]
   [ui/view {:style {:height 150}}
-    [ui/shadow-box
-      (ui/show-remote-data
-      @(rf/subscribe [:get-observations])
-      (fn [data]
-        [ui/view
+   [ui/shadow-box
+    (ui/show-remote-data
+     @(rf/subscribe [:get-observations])
+     (fn [data]
+       [ui/view
         {:style {:flex 1
-                  :flex-direction :column
-                  }
-          }
+                 :flex-direction :column
+                 }
+         }
         (for [[group values] data
               :let [value (:value (first values))]]
           [ui/view
-            {:key group
+           {:key group
             :style {:flex 1
                     :flex-direction :row
                     :justify-content :space-between
                     }
             }
-            [ui/text (code->title group)]
-            [ui/text (format-value value)]
-          ]
+           [ui/text (code->title group)]
+           [ui/text (format-value value)]
+           ]
           )]))]])

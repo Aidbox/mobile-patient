@@ -3,6 +3,7 @@
             [mobile-patient.model.user :as user-model]
             [mobile-patient.model.patient :as patient-model]
             [mobile-patient.model.practitioner :as practitioner-model]
+            [mobile-patient.model.observation :as observation-model]
             [mobile-patient.model.chat :as chat-model]
             ))
 
@@ -31,6 +32,14 @@
   (s/keys :req-un [::status
                    ::practitioners-data]))
 
+(s/def ::observations-data
+  (s/and vector?
+         (s/coll-of ::observation-model/observation-spec)))
+
+(s/def ::observations
+  (s/keys :req-un [::status
+                   ::observations-data]))
+
 (s/def ::chats
   (s/coll-of ::chat-model/chat-spec))
 
@@ -41,6 +50,7 @@
                           ::patients
                           ::practitioners
                           ::chats
+                          ::observations
                           ]
                  :opt-un [])
          #(not (contains? % nil))))
@@ -52,7 +62,7 @@
                       :client-id "sansara"}
              :active-medication-statements {}
              :other-medication-statements {}
-             :observations {:status :not-asked}
+             :observations {:status :not-asked :observations-data []}
              :users {}
              :chats []
              :messages []

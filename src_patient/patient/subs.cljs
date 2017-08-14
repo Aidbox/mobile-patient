@@ -42,12 +42,6 @@
      )))
 
 (reg-sub
- :practice-groups
- (fn [db _]
-   (filter #(= "practice-group" (:name %))
-             (:chats db))))
-
-(reg-sub
  :personal-chats
  (fn [db _]
    (let [domain-user @(subscribe [:domain-user])

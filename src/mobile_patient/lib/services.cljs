@@ -1,7 +1,7 @@
 (ns mobile-patient.lib.services
   (:require [re-frame.core :refer [subscribe dispatch reg-event-fx reg-event-db]]
             [mobile-patient.lib.helper :as h]
-            [mobile-patient.events :refer [validate-spec]]))
+            [mobile-patient.lib.interceptor :refer [validate-spec]]))
 
 
 (defn reg-get-service [event-name db-path default-opts &
@@ -21,12 +21,13 @@
                                       :headers {"Content-Type" "application/json"}}
                                      opts)))
            (.then #(.json %))
-           (.then #(dispatch [(keyword (str "success-" (name event-name)))
-                              db-path
-                              {:status :succeed
-                               data-path (-> (js->clj % :keywordize-keys true)
-                                             accessor
-                                             mutator)}]))
+           (.then (fn [resp]
+                    (dispatch [(keyword (str "success-" (name event-name)))
+                               db-path
+                               {:status :succeed
+                                data-path (-> (js->clj resp :keywordize-keys true)
+                                              accessor
+                                              mutator)}])))
            (.catch #(dispatch [:assoc-in db-path {:status :failure
                                                   data-path (.-message %)}])))
        {})))

@@ -1,9 +1,11 @@
 (ns mobile-patient.events
-  (:require [clojure.spec.alpha :as s ]
+  (:require [clojure.spec.alpha :as s]
             [re-frame.core :refer [after dispatch subscribe reg-event-fx reg-event-db
                                    reg-fx]]
             [re-frame.loggers :as rf.log]
             [day8.re-frame.async-flow-fx]
+            [mobile-patient.lib.services :as service]
+            [mobile-patient.lib.interceptor :refer [validate-spec]]
             [mobile-patient.model.chat :as chat-model]
             [mobile-patient.db :as db :refer [app-db]]
             [clojure.string :as str]
@@ -19,22 +21,6 @@
           (cond
             (= "re-frame: overwriting" (first args)) nil
             :else (apply warn args)))})
-;; -- Interceptors ------------------------------------------------------------
-;;
-;; See https://github.com/Day8/re-frame/blob/master/docs/Interceptors.md
-;;
-(defn check-and-throw
-  "Throw an exception if db doesn't have a valid spec."
-  [spec db [event]]
-  (when-not (s/valid? spec db)
-    (let [explain-data (s/explain-data spec db)]
-      (throw (ex-info (str "Spec check after " event " failed: " explain-data) explain-data)))))
-
-(def validate-spec
-  (if goog.DEBUG
-    (after (partial check-and-throw ::db/app-db))
-    []))
-
 
 ;; -- Handlers --------------------------------------------------------------
 (reg-event-db
@@ -185,6 +171,20 @@
          (assoc-in [:active-medication-statements patient-id] (groups true))
          (assoc-in [:other-medication-statements patient-id] (groups false))))))
 
+;;
+;; load-vitals-sign-screen
+;;
+(reg-event-fx
+  :do-load-vitals-sign
+  (fn [_ _]
+    {:dispatch [:fetch-vitals-sign-data
+                {:params {:patient @(subscribe [:patient-id])}}]}))
+
+(service/reg-get-service
+  :fetch-vitals-sign-data
+  [:observations]
+  {:uri "/Observation"}
+  :mutator #(vec (map :resource %)))
 
 ;; OLD
 
@@ -230,7 +230,7 @@
 ;; CHAT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn dispatch-get-chats-event []
-  (dispatch [:get-chats]))
+  (dispatch [:do-get-chats]))
 
 (defn dispatch-get-messages-event []
   (let [chat (subscribe [:chat])]
@@ -309,15 +309,15 @@
 
 
 (reg-event-fx
- :get-chats
+ :do-get-chats
  (fn [_]
    (let [user (subscribe [:domain-user])]
      {:fetch {:uri "/Chat"
-              :success :on-chats
+              :success :success-get-chats
               :opts {:parms {:participant (:id @user)}}}})))
 
 (reg-event-db
- :on-chats
+ :success-get-chats
  (fn [db [_ value]]
    (let [chats (map :resource (:entry value))]
      (if (not (= (:chats db) chats))

@@ -16,7 +16,7 @@
    routes
 
    (clj->js
-    {:initialRouteName "Patients"
+    {:initialRouteName "PractitionerMedications"
      :drawerWidth 250
      :contentComponent
      (fn [props]

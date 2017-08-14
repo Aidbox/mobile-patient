@@ -106,6 +106,7 @@
                       first
                       keyword)]
     (case (:status remote-data)
+      :not-asked [text]
       :loading [screen-activity-indicator]
       :failure [text (get remote-data data-key)]
       :succeed (render-fn (get remote-data data-key)))))

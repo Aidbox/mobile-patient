@@ -105,7 +105,7 @@
 
 (defn prepare-observation [data]
   (->> data
-       (map :resource)
+       ;;(map :resource)
        (map extract)
        (group-by :code)
        (map (fn [[key values]] [key (sort #(time/after? (:date-time %1) (:date-time %2))values)]))
@@ -161,3 +161,9 @@
    (or (get @(subscribe [:patients-data]) id)
        (get @(subscribe [:practitioners-data]) id))
    ))
+
+(reg-sub
+ :practice-groups
+ (fn [db _]
+   (filter #(= "practice-group" (:name %))
+             (:chats db))))

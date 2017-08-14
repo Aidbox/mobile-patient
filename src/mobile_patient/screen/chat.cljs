@@ -5,6 +5,9 @@
             [clojure.string :as str]
             [mobile-patient.color :as color]))
 
+(def ds (ui/ReactNative.ListView.DataSource. #js{:rowHasChanged (fn[a b] false)}))
+
+
 (def chat-message-row-comp
   (r/reactify-component
    (fn [props]
@@ -49,10 +52,10 @@
 (defn ChatScreen [_]
   (let [this (r/current-component)
         input (atom nil)
-        lv (atom nil)]
+        lv (atom nil)
+        messages (subscribe [:messages])]
     (fn [_]
-      (let [messages (subscribe [:messages])
-            source (map #(r/atom %) @messages)]
+      (let [source (map #(r/atom %) @messages)]
         [ui/view {:style {:flex 1
                           :background-color "#f4f4f4"}}
          [ui/list-view {:style {:flex 1}

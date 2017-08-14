@@ -36,17 +36,9 @@
 
      [ui/view {:style {:flex 1
                        :margin-top 30}}
-      [Item "Select patient" #(props.navigation.navigate "Patients")]
-
-      ;; patients's specific items
-      (when-not (empty? @(subscribe [:patient-id]))
-        [ui/view
-         [ui/text {:style {:margin-left 35 :margin-top 20 :font-size 18 :color color/pink}}
-           (str @(subscribe [:patient-name])  "'s:")]
-         [Item "Medications" #(props.navigation.navigate "Medications")]
-         [Item "Vitals Signs" #(props.navigation.navigate "Vitals Signs")]
-         [Item "Chats" #(props.navigation.navigate "Chats")]
-         ])
+      [Item "Medications" #(props.navigation.navigate "PractitionerMedications")]
+      [Item "Vitals Signs" #(props.navigation.navigate "PractitionerVitals")]
+      [Item "Chats" #(props.navigation.navigate "Chats")]
       ]
      [Item "Logout" #(dispatch [:initialize-db])]
      [Item "About app" #(props.navigation.navigate "About App") {:margin-bottom 60}]

@@ -23,6 +23,7 @@
       {:when     :seen-both?
        :events   [:success-load-practitioner :success-load-all-users]
        :dispatch-n '([:do-load-practitioner-patients]
+                     [:do-get-chats]
                      [:set-current-screen :main])}
 
       ]}}))

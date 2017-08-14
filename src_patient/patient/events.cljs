@@ -2,13 +2,12 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe reg-event-fx reg-event-db]]
-            [mobile-patient.events :refer [validate-spec]]
+            [mobile-patient.lib.interceptor :refer [validate-spec]]
             [mobile-patient.ui :as ui]
             [clojure.string :as str]
             [mobile-patient.lib.helper :as h]
             [mobile-patient.lib.services :as service]
-            [mobile-patient.model.core :refer [list-to-map-by-id]]
-            [mobile-patient.events :refer [validate-spec]]))
+            [mobile-patient.model.core :refer [list-to-map-by-id]]))
 
 
 (reg-event-fx
@@ -30,14 +29,15 @@
       {:when   :seen-any-of?
        :events [:success-check-demographics :success-submit-demographics]
        :dispatch-n '([:do-load-practitioners]
+                     [:do-get-chats]
                      [:do-load-medication-statements]
-                     [:do-load-vitals-sign-screen])}
+                     [:do-load-vitals-sign])}
       {:when :seen?
        :events [:success-fetch-practitioners]
        :dispatch [:do-check-practice-group-exists]}
 
-      {:when :seen?
-       :events :success-load-medication-statements
+      {:when :seen-both?
+       :events [:success-load-medication-statements :success-get-chats]
        :dispatch [:set-current-screen :main]}
 
       ]}}))
@@ -177,16 +177,3 @@
   {:uri "/Practitioner"}
   :mutator #(list-to-map-by-id (map :resource %)))
 
-;;
-;; load-vitals-sign-screen
-;;
-(reg-event-fx
-  :do-load-vitals-sign-screen
-  (fn [_ _]
-    {:dispatch [:fetch-vitals-sign-screen-data
-                {:params {:patient @(subscribe [:user-ref])}}]}))
-
-(service/reg-get-service
-  :fetch-vitals-sign-screen-data
-  [:observations]
-  {:uri "/Observation"})

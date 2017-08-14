@@ -7,6 +7,8 @@
             [mobile-patient.screen.patients :refer [PatientsScreen]]
             [mobile-patient.screen.vitals :refer [VitalsScreen]]
             [mobile-patient.screen.meds :refer [MedsScreen]]
+            [mobile-patient.screen.practitioner-meds :refer [PractitionerMedsScreen]]
+            [mobile-patient.screen.practitioner-vitals :refer [PractitionerVitalsScreen]]
             [mobile-patient.screen.chat :refer [ChatScreen]]
             [mobile-patient.screen.chats :refer [ChatsScreen]]
             [mobile-patient.screen.settings :refer [SettingsScreen]]
@@ -66,4 +68,26 @@
     {:screen (rh/stack-navigator
               {"Patients" {:screen (r/reactify-component PatientsScreen)
                            :navigationOptions (rh/drawer-nav-opts "Patients")}})}
+
+
+    "PractitionerMedications"
+    {:screen (rh/stack-navigator
+              {"Patients" {:screen (r/reactify-component PractitionerMedsScreen)
+                           :navigationOptions (rh/drawer-nav-opts "Medications")}
+               "Meds" {:screen (r/reactify-component MedsScreen)
+                       :navigationOptions (fn [props]
+                                            (let [name (-> props .-navigation .-state .-params (aget "patient-name"))]
+                                              ((rh/drawer-nav-opts name nil :back) props)))}
+               })}
+
+    "PractitionerVitals"
+    {:screen (rh/stack-navigator
+              {"Patients" {:screen (r/reactify-component PractitionerVitalsScreen)
+                           :navigationOptions (rh/drawer-nav-opts "Vital Signs")}
+               "Vitals" {:screen (r/reactify-component VitalsScreen)
+                         :navigationOptions (fn [props]
+                                              (let [name (-> props .-navigation .-state .-params (aget "patient-name"))]
+                                                ((rh/drawer-nav-opts name nil :back) props)))}
+               })}
+
     }))

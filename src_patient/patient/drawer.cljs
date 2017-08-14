@@ -18,8 +18,7 @@
 
 (defn Drawer [props]
   (let [username @(subscribe [:user-name])
-        user-picture @(subscribe [:user-picture])
-        excluded #{"About App" "Patients"}]
+        user-picture @(subscribe [:user-picture])]
     [ui/view {:style {:background-color "#f4f4f4"
                       :flex 1}}
      [ui/view {:style {:background-color "white"
@@ -35,10 +34,11 @@
                         :align-self :center}} username]]
      [ui/view {:style {:flex 1
                        :margin-top 30}}
-      (for [route (-> props .-items) :when (not (excluded (.-key route)))]
-        ^{:key (.-key route)}
-        [Item (.-routeName route) #(props.navigation.navigate (.-key route))])
-      [Item "Logout" #(do
-                               (dispatch [:initialize-db])
-                               (dispatch [:set-current-screen :login]))]]
+      [Item "Medications" #(props.navigation.navigate "Medications")]
+      [Item "Vitals Signs" #(props.navigation.navigate "Vitals Signs")]
+      [Item "Chats" #(props.navigation.navigate "Chats")]
+      [Item "Settings" #(props.navigation.navigate "Settings")]]
+
+     [Item "Logout" #(do (dispatch [:initialize-db])
+                         (dispatch [:set-current-screen :login]))]
      [Item "About app" #(props.navigation.navigate "About App") {:margin-bottom 60}]]))

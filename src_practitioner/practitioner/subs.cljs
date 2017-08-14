@@ -41,3 +41,9 @@
  :user-picture
  (fn [db _]
    (get-in db [:practitioner-data :photo 0 :data])))
+
+(reg-sub
+ :personal-chats
+ (fn [db _]
+   []
+   ))
