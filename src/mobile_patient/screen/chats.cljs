@@ -65,7 +65,7 @@
                     :margin-top 20
                     :margin-bottom 20
                     :color color/pink
-                    :font-size font-size
+                    :font-size 14
                     :font-weight :bold}}
         text])
 
