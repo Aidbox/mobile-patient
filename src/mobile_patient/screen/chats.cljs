@@ -19,7 +19,7 @@
         patient @(subscribe [:user-by-id patient-id])
         chat-name (str (user-model/get-official-name patient) " PG")]
     [ui/touchable-highlight {:style {:padding 10}
-                             :on-press #(on-press item navigation)
+                             :on-press #(on-press item navigation chat-name)
                              :underlay-color "white"}
      [ui/view {:style {:flex 1
                        :flex-direction :row
@@ -49,15 +49,15 @@
                  :color color/pink}]]]]))
 
 
-(defn on-group-press-callback [group navigation]
+(defn on-group-press-callback [group navigation chat-name]
   (let [chat group]
     (dispatch-sync [:set-chat chat])
-    (navigation.navigate "Chat" #js{:chat-name (:name chat)})))
+    (navigation.navigate "Chat" #js{:chat-name chat-name})))
 
-(defn on-person-press-callback [person navigation]
+(defn on-person-press-callback [person navigation chat-name]
   (let [chat (:chat person)]
     (dispatch [:set-chat chat])
-    (navigation.navigate "Chat" #js{:chat-name (:name chat)})))
+    (navigation.navigate "Chat" #js{:chat-name chat-name})))
 
 
 (defn Header [text]
