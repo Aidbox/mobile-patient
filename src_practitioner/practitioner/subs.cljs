@@ -1,7 +1,8 @@
 (ns practitioner.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [subscribe reg-sub reg-sub-raw]]
-            [mobile-patient.model.core :refer [get-data-key]]))
+            [mobile-patient.model.core :refer [get-data-key]]
+            [mobile-patient.model.chat :as chat-model]))
 
 (reg-sub
  :domain-user
@@ -11,6 +12,8 @@
 (reg-sub
  :chats
  (fn [db _]
+   (:chats db))
+ #_(fn [db _]
    (let [get-participants-ids #(set (map :id %))
          doctor-username (get-in db [:user :id])
          patient-username (get-in db [:patient-data :username])]
@@ -45,5 +48,10 @@
 (reg-sub
  :personal-chats
  (fn [db _]
-   []
-   ))
+   (let [domain-user @(subscribe [:domain-user])
+         chats (->> (:chats db)
+                    (filter #(= "personal-chat" (:name %))))
+         patients @(subscribe [:patients-data])
+         persons-with-chat (map #(assoc (get patients (chat-model/other-participant-id % domain-user)) :chat %)
+                                chats)]
+     persons-with-chat)))

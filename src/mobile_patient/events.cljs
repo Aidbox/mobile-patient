@@ -229,16 +229,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CHAT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn dispatch-get-chats-event []
-  (dispatch [:do-get-chats]))
-
 (defn dispatch-get-messages-event []
   (let [chat (subscribe [:chat])]
     (when chat
       (dispatch [:get-messages (:id @chat)]))))
 
-(defonce do-get-chats (js/setInterval dispatch-get-chats-event 3000))
-(defonce do-get-messages (js/setInterval dispatch-get-messages-event 1000))
+#_(defonce do-get-messages (js/setInterval dispatch-get-messages-event 1000))
 
 
 (reg-event-db
@@ -262,14 +258,14 @@
  :send-message
  (fn [_]
    (let [message @(subscribe [:get-in [:message]])
-         user @(subscribe [:user-id])
+         user @(subscribe [:domain-user])
          chat @(subscribe [:get-in [:chat]])
          msg {:resourceType "Message"
               :body message
               :chat {:id (:id chat)
                      :resourceType "Chat"}
-              :author {:id user
-                       :resourceType "User"}}]
+              :author {:id (:id user)
+                       :resourceType (:resourceType user)}}]
      (if (and message (not (clojure.string/blank? message)))
        {:fetch {:uri "/Message"
                 :success :on-send-message
@@ -279,18 +275,6 @@
         :dispatch [:set-message ""]}
        {}))))
 
-#_(reg-event-fx
- :create-chat
- (fn [_ [_ participants]]
-   (let [user @(subscribe [:user-id])
-         chat-name (first participants) ; todo: correct chat name
-         chat {:resourceType "Chat"
-               :name chat-name
-               :participants (map (fn [p] {:id p :resourceType "User"}) (conj participants user))}]
-     {:fetch {:uri "/Chat"
-              :opts {:method "POST"
-                     :headers {"content-type" "application/json"}
-                     :body (.stringify js/JSON (clj->js chat))}}})))
 
 (reg-event-fx
  :create-chat
@@ -311,13 +295,16 @@
 (reg-event-fx
  :do-get-chats
  (fn [_]
-   (let [user (subscribe [:domain-user])]
+   (let [user @(subscribe [:domain-user])
+         id (:id user)]
+     (assert id "No user id to get chats")
      {:fetch {:uri "/Chat"
               :success :success-get-chats
-              :opts {:parms {:participant (:id @user)}}}})))
+              :opts {:parms {:participant id}}}})))
 
 (reg-event-db
  :success-get-chats
+ validate-spec
  (fn [db [_ value]]
    (let [chats (map :resource (:entry value))]
      (if (not (= (:chats db) chats))

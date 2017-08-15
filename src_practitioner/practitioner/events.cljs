@@ -40,13 +40,13 @@
 
 (reg-event-db
  :success-load-practitioner
+ validate-spec
  (fn [db [_ practitioner-data]]
    (-> db
        (assoc :practitioner-data practitioner-data) ;; legacy
        (assoc :practitioner-id (:id practitioner-data))
-       (assoc-in [:practitioners (:id practitioner-data)]
-                 {:status :succeed
-                  :practitioner-data practitioner-data})))) ;; redo as service
+       (assoc :practitioners {:status :succeed
+                              :practitioners-data {(:id practitioner-data) practitioner-data}})))) ;; redo as service
 
 
 ;; load-practitioner-patients
@@ -86,6 +86,7 @@
 ;;
 (reg-event-db
  :set-current-patient
+ validate-spec
  (fn [db [_ id]]
    (assoc db :patient-data (get-in db [:patients id])
              :patient-id id)))

@@ -23,3 +23,10 @@
   (let [participants (->> (:participants chat) (map :id) set)]
     (first (disj participants (:id domain-user)))))
 
+(defn get-patient-id [chat]
+  {:post [(string? %)]}
+  (->> chat
+       :participants
+       (filter #(= "Patient" (:resourceType %)))
+       first
+       :id))

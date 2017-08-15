@@ -37,8 +37,8 @@
 (reg-sub
  :practitioner
  (fn [db _]
-   (get (:practitioners db) (:practitioner-id db))))
-
+   (get @(subscribe [:practitioners-data])
+        (:practitioner-id db))))
 
 (reg-sub
  :patient-name
