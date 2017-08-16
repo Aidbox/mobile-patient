@@ -19,11 +19,10 @@
      [
       {:when     :seen?
        :events   :success-load-user
-       :dispatch-n '([:do-load-patient]
-                     [:do-load-all-users])}
+       :dispatch [:do-load-patient]}
 
-      {:when     :seen-both?
-       :events   [:success-load-patient :success-load-all-users]
+      {:when     :seen?
+       :events   [:success-load-patient]
        :dispatch [:do-check-demographics]}
 
       {:when   :seen-any-of?
@@ -39,7 +38,6 @@
       {:when :seen-both?
        :events [:success-load-medication-statements :success-get-chats]
        :dispatch [:set-current-screen :main]}
-
       ]}}))
 
 ;;

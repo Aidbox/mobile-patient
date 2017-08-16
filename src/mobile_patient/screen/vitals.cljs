@@ -21,15 +21,16 @@
     [:Range] (format-range item)))
 
 (defn VitalsScreen [{:keys [navigation]}]
-  [ui/view {:style {:height 150}}
+  [ui/view {:style {:height 150
+                    :background-color "#fff"
+                    }}
    [ui/shadow-box
     (ui/show-remote-data
      @(rf/subscribe [:get-observations])
      (fn [data]
        [ui/view
         {:style {:flex 1
-                 :flex-direction :column
-                 }
+                 :flex-direction :column}
          }
         (for [[group values] data
               :let [value (:value (first values))]]

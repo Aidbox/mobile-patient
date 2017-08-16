@@ -17,11 +17,10 @@
      [
       {:when     :seen?
        :events   :success-load-user
-       :dispatch-n '([:do-load-practitioner]
-                     [:do-load-all-users])}
+       :dispatch [:do-load-practitioner]}
 
-      {:when     :seen-both?
-       :events   [:success-load-practitioner :success-load-all-users]
+      {:when     :seen?
+       :events   [:success-load-practitioner]
        :dispatch-n '([:do-load-practitioner-patients]
                      [:do-get-chats]
                      [:set-current-screen :main])}

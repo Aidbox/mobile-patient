@@ -130,25 +130,6 @@
        (assoc-in [:users (:id user-data)] user-data))))
 
 ;;
-;; load-all-users
-;;
-(reg-event-fx
- :do-load-all-users
- (fn [_ _]
-   {:fetch {:uri "/User"
-            :opts {:method "GET"}
-            :success :success-load-all-users}}))
-
-(reg-event-db
- :success-load-all-users
- validate-spec
- (fn [db [_ all-users]]
-   (assoc db :users (->> all-users
-                         :entry
-                         (map :resource)
-                         list-to-map-by-id))))
-
-;;
 ;; do-load-medication-statements
 ;;
 (reg-event-fx
