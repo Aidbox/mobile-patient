@@ -78,9 +78,7 @@
     (r/create-class
      {:display-name "ChatsScreen"
       :component-did-mount (fn [] (reset! timer (js/setInterval #(dispatch [:do-get-chats]) 3000)))
-      :component-will-unmount (fn []
-                                (print "timer" @timer)
-                                (js/clearInterval @timer))
+      :component-will-unmount (fn [] (js/clearInterval @timer))
       :reagent-render
       (fn [_]
         [ui/scroll-view {:style {:background-color "white"
