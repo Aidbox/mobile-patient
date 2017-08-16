@@ -27,9 +27,13 @@
  (fn [db _]
    (let [remote-data (:patients db)
          data-key (get-data-key remote-data)
-         patients (vals (get remote-data data-key))]
+         all-patients (get remote-data data-key)
+         patients-ids (set (keys all-patients))
+         personal-chats @(subscribe [:personal-chats])
+         personal-chats-ids (map :id personal-chats)
+         patients (select-keys all-patients (apply disj patients-ids personal-chats-ids))]
      (if (= (:status remote-data) :succeed)
-       (assoc remote-data data-key patients)
+       (assoc remote-data data-key (vals patients))
        remote-data))))
 
 (reg-sub
