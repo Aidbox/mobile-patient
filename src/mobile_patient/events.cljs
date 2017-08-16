@@ -229,14 +229,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CHAT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn dispatch-get-messages-event []
-  (let [chat (subscribe [:chat])]
-    (when chat
-      (dispatch [:get-messages (:id @chat)]))))
-
-#_(defonce do-get-messages (js/setInterval dispatch-get-messages-event 1000))
-
-
 (reg-event-db
  :set-chat
  (fn [db [_ chat]]
@@ -326,11 +318,3 @@
      {:fetch {:uri "/Message"
               :success :on-messages
               :opts {:parms {:chat chat-id}}}})))
-
-(reg-event-db
- :get-chats-by-participants
- (fn [db [_ participants]]
-   (->> (:chats db)
-        (filter #(clojure.set/subset? (set participants)
-                                      (chat-model/get-participants-set %)))
-        )))
