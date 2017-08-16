@@ -7,10 +7,15 @@
 ;; NAVIGATION BUTTONS
 
 (defn add-chat-button [navigation]
-  [ui/touchable-highlight {:on-press #(navigation.navigate "Contacts")
-                           :style {:margin-right 20}
-                           :underlay-color color/grey}
-   [ui/icon {:name "add-circle" :size 36 :color color/pink}]])
+  (let [contacts @(rf/subscribe [:contacts])
+        no-contacts (empty? (:patients-data contacts))]
+    (if no-contacts
+      [ui/view]
+      [ui/touchable-highlight {:on-press #(navigation.navigate "Contacts")
+                              :style {:margin-right 20}
+                              :underlay-color color/grey}
+       [ui/icon {:name "add-circle" :size 36 :color color/pink}]]
+      )))
 
 ;; NAVIGATION ROUTES
 
