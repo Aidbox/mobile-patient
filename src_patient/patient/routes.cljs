@@ -18,10 +18,3 @@
      :drawerWidth 250
      :contentComponent (fn [props]
                          (r/as-element [Drawer props]))})))
-
-;; On navigation chnage handler
-(defn on-navigation-callback [prev-state new-state action]
-  (let [action (js->clj action :keywordize-keys true)
-        route-name (:routeName action)]
-    (case route-name
-      nil)))

@@ -22,16 +22,3 @@
      (fn [props]
        (r/as-element [Drawer props]))})))
 
-
-;; On navigation chnage handler
-(defn on-navigation-callback [prev-state new-state action]
-  (let [action (js->clj action :keywordize-keys true)
-        route-name (:routeName action)
-        params (:params action)]
-    #_(case route-name
-      "Patient" (do
-                  (rf/dispatch-sync [:spinner :load-patient-data true])
-                  (rf/dispatch [:get-patient-data
-                              @(rf/subscribe [:get-patient-ref-by-id (:patientid params)])
-                              :get-medication-statements]))
-      nil)))

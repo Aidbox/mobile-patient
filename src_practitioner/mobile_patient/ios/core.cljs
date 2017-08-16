@@ -1,7 +1,7 @@
 (ns mobile-patient.ios.core
   (:require [reagent.core :as r :refer [atom]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [practitioner.routes :refer [drawer-routes on-navigation-callback]]
+            [practitioner.routes :refer [drawer-routes]]
             [mobile-patient.ui :as ui]
             [practitioner.screen.login :refer [LoginScreen]]
             [mobile-patient.events]
@@ -20,7 +20,7 @@
     (let [screen (subscribe [:get-current-screen])]
       (case @screen
          :login [LoginScreen]
-         :main [(r/adapt-react-class drawer-routes) {:onNavigationStateChange on-navigation-callback}]))))
+         :main [(r/adapt-react-class drawer-routes)]))))
 
 (defn init []
   (dispatch-sync [:initialize-db])
