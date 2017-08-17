@@ -61,27 +61,6 @@
   {:uri "/Patient"}
   :mutator #(list-to-map-by-id (map :resource %)))
 
-;; (reg-event-fx
-;;  :do-load-practitioner-patients
-;;  (fn [{:keys [db]} _]
-;;    (let [user-ref @(subscribe [:user-ref])]
-;;      (assert user-ref)
-;;      {:fetch {:uri (str "/Patient?general-practitioner=" user-ref)
-;;               :success :success-load-practitioner-patients}})))
-
-;; (reg-event-db
-;;  :success-load-practitioner-patients
-;;  (fn [db [_ raw-patients-data]]
-;;    (let [user-ref->user-name (into {} (map #(vector (get-in % [:ref :id]) (:id %))
-;;                                            (:users db)))
-;;          patients-data (->> raw-patients-data
-;;                             :entry
-;;                             (map :resource)
-;;                             (map #(assoc % :username
-;;                                          (user-ref->user-name (:id %)))))]
-;;      (assoc db :patients (list-to-map-by-id patients-data)))))
-
-
 ;;
 (reg-event-db
  :set-current-patient
