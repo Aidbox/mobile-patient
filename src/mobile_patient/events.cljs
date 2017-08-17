@@ -234,6 +234,7 @@
          user @(subscribe [:domain-user])
          chat @(subscribe [:get-in [:chat]])
          msg {:resourceType "Message"
+              :sendtime (.toISOString (js/Date.))
               :body message
               :chat {:id (:id chat)
                      :resourceType "Chat"}
