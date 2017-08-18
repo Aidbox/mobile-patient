@@ -44,7 +44,7 @@
    (let [base-url (or base-url @(subscribe [:get-in [:config :base-url]]))
          response (atom nil)]
      (if spinner-id (dispatch [:spinner spinner-id true]))
-     (-> (js/fetch (str base-url uri (h/parms->query (:parms opts)))
+     (-> (js/fetch (str base-url uri (h/parms->query (:params opts)))
                    (clj->js (merge {:redirect "manual"
                                     :method "GET"
                                     :headers {"Content-Type" "application/json"}}
@@ -85,7 +85,7 @@
      {:fetch {:uri "/oauth2/authorize"
               :spinner-id :login
               :success :on-login
-              :opts {:parms {:response_type "id_token token"
+              :opts {:params {:response_type "id_token token"
                              :client_id "sansara"
                              :state "state"
                              :scope "openid"}
@@ -139,7 +139,7 @@
      (assert patient-id)
      {:fetch {:uri "/MedicationStatement"
               :success :success-load-medication-statements
-              :opts {:parms {:subject patient-id}
+              :opts {:params {:subject patient-id}
                      :method "GET"}}})))
 
 (reg-event-db
@@ -178,7 +178,7 @@
               :spinner-id :load-patient-data
               :success :set-medication-statements
               :success-parms patient-id
-              :opts {:parms {:subject patient-id}
+              :opts {:params {:subject patient-id}
                      :method "GET"}}})))
 (reg-event-db
  :set-medication-statements
@@ -274,7 +274,7 @@
      (assert id "No user id to get chats")
      {:fetch {:uri "/Chat"
               :success :success-get-chats
-              :opts {:parms {:participant id}}}})))
+              :opts {:params {:participant id}}}})))
 
 (reg-event-db
  :success-get-chats
@@ -299,4 +299,4 @@
    (let [user (subscribe [:user-id])]
      {:fetch {:uri "/Message"
               :success :on-messages
-              :opts {:parms {:chat chat-id}}}})))
+              :opts {:params {:chat chat-id}}}})))

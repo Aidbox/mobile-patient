@@ -27,16 +27,17 @@
 
       {:when   :seen-any-of?
        :events [:success-check-demographics :success-submit-demographics]
-       :dispatch-n '([:do-load-practitioners]
-                     [:do-get-chats]
+       :dispatch-n '([:do-get-chats]
                      [:do-load-medication-statements]
+                     [:do-load-practitioners]
                      [:do-load-vitals-sign])}
-      {:when :seen?
-       :events [:success-fetch-practitioners]
-       :dispatch [:do-check-practice-group-exists]}
 
-      {:when :seen-both?
-       :events [:success-load-medication-statements :success-get-chats]
+      {:when :seen?
+       :events [:success-get-chats]
+       :dispatch [:do-check-practice-group-chat-exists]}
+
+      {:when :seen?
+       :events [:success-load-medication-statements]
        :dispatch [:set-current-screen :main]}
       ]}}))
 
@@ -110,17 +111,9 @@
 ;; check-practice-group-exists
 ;;
 (reg-event-fx
- :do-check-practice-group-exists
+ :do-check-practice-group-chat-exists
  (fn [_ _]
-   {:fetch {:uri "/Chat"
-            :success :do-check-practice-group-exists-2
-            :opts {:params {:participant @(subscribe [:domain-user])}}}}))
-
-
-(reg-event-fx
- :do-check-practice-group-exists-2
- (fn [_ [_ chats-resp]]
-   (let [chats (->> chats-resp :entry (map :resource))
+   (let [chats @(subscribe [:chats])
          practice-group (->> chats (filter #(= "practice-group" (:name %))) first)]
      (if practice-group
        {:dispatch [:success-check-practice-group-exists]}
