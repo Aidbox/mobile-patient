@@ -19,14 +19,16 @@
         patient @(subscribe [:user-by-id patient-id])
         chat-name (str (user-model/get-official-name patient) " PG")
         unread (get-in item [:chat :unread])]
-    [ui/touchable-highlight {:style {:padding 10}
+    [ui/touchable-highlight {:style {:border-color "#E9E9EF"
+                                     :border-width 1
+                                     :border-top-width (if (zero? index) 0 1)
+                                     :border-bottom-width 0
+                                     :padding 10}
                              :on-press #(on-press item navigation chat-name)
                              :underlay-color "white"}
      [ui/view {:style {:flex 1
                        :flex-direction :row
                        :justify-content :space-between
-                       :margin-top 10
-                       :margin-bottom 10
                        :padding-left 15
                        :padding-right 10}}
 
