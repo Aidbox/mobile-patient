@@ -41,13 +41,8 @@
        remote-data)
      )))
 
+
 (reg-sub
- :personal-chats
+ :domain-user-contragents-data
  (fn [db _]
-   (let [domain-user @(subscribe [:domain-user])
-         chats (->> (:chats db)
-                    (filter #(= "personal-chat" (:name %))))
-         practitioners @(subscribe [:practitioners-data])
-         persons-with-chat (map #(assoc (get practitioners (chat-model/other-participant-id % domain-user)) :chat %)
-                                chats)]
-     persons-with-chat)))
+   @(subscribe [:practitioners-data])))

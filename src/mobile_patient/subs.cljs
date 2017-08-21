@@ -2,7 +2,9 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [subscribe reg-sub reg-sub-raw]]
             [cljs-time.core :as time]
-            [mobile-patient.model.patient :as patient-model]))
+            [mobile-patient.model.patient :as patient-model]
+            [mobile-patient.model.chat :as chat-model]
+            ))
 
 ;; -- Subscriptions----------------------------------------------------------
 #_(reg-sub-raw
@@ -167,3 +169,28 @@
  (fn [db _]
    (filter #(= "practice-group" (:name %))
              (:chats db))))
+
+(reg-sub
+ :personal-chats
+ (fn [db _]
+   (let [domain-user @(subscribe [:domain-user])
+         chats (->> (:chats db)
+                    (filter #(= "personal-chat" (:name %))))
+         contragents @(subscribe [:domain-user-contragents-data])
+         persons-with-chat (->> chats
+                                (map #(assoc % :unread @(subscribe [:get-unread-count (:id %)])))
+                                (map #(assoc (get contragents (chat-model/other-participant-id % domain-user)) :chat %))
+                                )]
+     persons-with-chat)))
+
+(reg-sub
+ :last-time
+ (fn [db _]
+   (:last-time db)))
+
+(reg-sub
+ :get-unread-count
+ (fn [db [_ chat-id]]
+   (let [unread (count (get-in db [:unread-messages chat-id]))]
+     (if (pos? unread)
+       unread))))

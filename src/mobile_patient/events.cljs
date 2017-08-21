@@ -106,7 +106,8 @@
                token-data (jwt/get-data-from-token id-token)
                user-id  (:user-id token-data)]
            (assert user-id)
-           {:db (merge db {:access-token (:access_token auth-data)})
+           {:db (merge db {:access-token (:access_token auth-data)
+                           :last-time (.toISOString (js/Date.))})
             :dispatch [:boot user-id]})))
      (do
        (ui/alert "Error" (str resp.status " " resp.statusText))))))
@@ -300,3 +301,29 @@
      {:fetch {:uri "/Message"
               :success :on-messages
               :opts {:params {:chat chat-id}}}})))
+
+;; new-messages
+(reg-event-fx
+ :do-get-new-messages
+ (fn [_ _]
+   (let [time @(subscribe [:last-time])]
+     {:fetch {:uri "/Message"
+              :success :success-get-new-messages
+              :opts {:params {:sendtime (str "gt" time)}}}})))
+(reg-event-db
+ :success-get-new-messages
+ (fn [db [_ value]]
+   (let [messages (map :resource (:entry value))]
+     (if-not (empty? messages)
+       (let [messages-by-chat-id (group-by #(get-in % [:chat :id]) messages)
+             last-time (:sendtime (last messages))]
+         (as-> db x
+           (assoc x :last-time last-time)
+           (merge-with into x {:unread-messages messages-by-chat-id})))
+       db))))
+
+;; mark-read
+(reg-event-db
+ :mark-read
+ (fn [db [_ chat-id]]
+   (assoc-in db [:unread-messages chat-id] [])))

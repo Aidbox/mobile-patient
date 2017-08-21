@@ -49,13 +49,8 @@
  (fn [db _]
    (get-in db [:practitioner-data :photo 0 :data])))
 
+
 (reg-sub
- :personal-chats
+ :domain-user-contragents-data
  (fn [db _]
-   (let [domain-user @(subscribe [:domain-user])
-         chats (->> (:chats db)
-                    (filter #(= "personal-chat" (:name %))))
-         patients @(subscribe [:patients-data])
-         persons-with-chat (map #(assoc (get patients (chat-model/other-participant-id % domain-user)) :chat %)
-                                chats)]
-     persons-with-chat)))
+   @(subscribe [:patients-data])))

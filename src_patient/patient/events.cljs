@@ -27,13 +27,13 @@
 
       {:when   :seen-any-of?
        :events [:success-check-demographics :success-submit-demographics]
-       :dispatch-n '([:do-get-chats]
+       :dispatch-n '([:do-load-practitioners]
+                     [:do-get-chats]
                      [:do-load-medication-statements]
-                     [:do-load-practitioners]
                      [:do-load-vitals-sign])}
 
-      {:when :seen?
-       :events [:success-get-chats]
+      {:when :seen-both?
+       :events [:success-load-practitioners :success-get-chats]
        :dispatch [:do-check-practice-group-chat-exists]}
 
       {:when :seen?
@@ -140,6 +140,7 @@
                 :participants (map #(hash-map :id (:id %)
                                               :resourceType (:resourceType %))
                                    participants)}]
+     (assert (not-empty practitioners))
      {:fetch {:uri "/Chat"
               :success :success-create-practice-group
               :opts {:method "POST"
@@ -159,11 +160,11 @@
 (reg-event-fx
   :do-load-practitioners
   (fn [_ _]
-    {:dispatch [:fetch-practitioners
+    {:dispatch [:load-practitioners
                 {}]}))
 
 (service/reg-get-service
-  :fetch-practitioners
+  :load-practitioners
   [:practitioners]
   {:uri "/Practitioner"}
   :mutator #(list-to-map-by-id (map :resource %)))

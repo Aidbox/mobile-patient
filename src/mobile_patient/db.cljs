@@ -57,6 +57,8 @@
 
 ;; initial state of app-db
 (def app-db {:spinner {}
+             :last-time nil
+             :unread-messages {}
              :current-screen :login
              :config {:base-url "https://sansara.health-samurai.io"
                       :client-id "sansara"}

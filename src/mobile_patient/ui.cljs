@@ -126,3 +126,18 @@
                     :border-radius 19
                     :background-color "#9e9e9e"
                     :align-self :center}}])))
+
+(defn badge [txt]
+  [view {:style {:border-width 1
+                    :border-radius 5
+                    ;;:border-color color/pink
+                    :height 22
+                    :padding-left 4
+                    :padding-right 4
+                    :margin-left 4
+                    :margin-right 4
+                    }}
+   [text {:style { ;;:color color/pink
+                     :font-size 14
+                     :font-weight :bold}}
+    txt]])
