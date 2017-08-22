@@ -18,7 +18,7 @@
         patient-id (chat-model/get-patient-id chat)
         patient @(subscribe [:user-by-id patient-id])
         chat-name (str (user-model/get-official-name patient) " PG")
-        unread (get-in item [:chat :unread])]
+        unread (get-in item [:unread])]
     [ui/touchable-highlight {:style {:border-color "#E9E9EF"
                                      :border-width 1
                                      :border-top-width (if (zero? index) 0 1)
@@ -35,7 +35,8 @@
       [ui/view {:style {:flex 0.9}}
 
        [ui/view {:flex-direction :row}
-        [ui/text {:style {:color "black"
+        [ui/text {:style {:margin-right 5
+                          :color "black"
                           :font-weight :bold
                           :font-size font-size}} chat-name]
         (if unread

@@ -30,7 +30,7 @@
        [ui/avatar (str "data:image/png;base64," (patient-model/get-photo item))
         20]
        [ui/text {:style {:margin-left 15
-                         :margin-right 15
+                         :margin-right 5
                          :text-align "left"
                          :font-size 16
                          :color "#333"

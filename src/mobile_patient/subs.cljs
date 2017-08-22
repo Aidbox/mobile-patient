@@ -167,8 +167,9 @@
 (reg-sub
  :practice-groups
  (fn [db _]
-   (filter #(= "practice-group" (:name %))
-             (:chats db))))
+   (->> (:chats db)
+        (filter #(= "practice-group" (:name %)))
+        (map #(assoc % :unread @(subscribe [:get-unread-count (:id %)]))))))
 
 (reg-sub
  :personal-chats
@@ -191,6 +192,10 @@
 (reg-sub
  :get-unread-count
  (fn [db [_ chat-id]]
-   (let [unread (count (get-in db [:unread-messages chat-id]))]
+   (let [domain-user-id (:id @(subscribe [:domain-user]))
+         unread (->> (get-in db [:unread-messages chat-id])
+                     (remove #(= (get-in % [:author :id])
+                                 domain-user-id))
+                     count)]
      (if (pos? unread)
        unread))))
