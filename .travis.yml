@@ -50,7 +50,9 @@ before_install:
 script:
   - yes | sdkmanager --licenses
   - lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
-  - cd android && ./gradlew assembleRelease && cd ..
+  - cd android
+  - ./gradlew assembleRelease || travis_terminate 1
+  - cd ..
   - ls ./android/app/build/outputs/apk/
   - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk
   - gsutil acl -r ch -u AllUsers:R $BUCKET
