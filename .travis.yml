@@ -52,16 +52,16 @@ before_install:
   - gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 script:
-  - lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
-  - cd android && ./gradlew assembleRelease || travis_terminate 1 && cd ..
-  - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk
-  - gsutil acl -r ch -u AllUsers:R $BUCKET
-  - gsutil rm $BUCKET/mobile-patient/patient-app.apk
-  - gsutil cp -r $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk $BUCKET/mobile-patient/
-  - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk"
+# - lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
+# - cd android && ./gradlew assembleRelease || travis_terminate 1 && cd ..
+# - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk
+# - gsutil acl -r ch -u AllUsers:R $BUCKET
+# - gsutil rm $BUCKET/mobile-patient/patient-app.apk
+# - gsutil cp -r $BUCKET/mobile-patient/$TRAVIS_COMMIT/patient-app.apk $BUCKET/mobile-patient/
+# - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk"
 
-  - rm ./android/app/build/outputs/apk/*.apk
-  - rm -R $HOME/android/.gradle
+#  - rm ./android/app/build/outputs/apk/*.apk
+#  - rm -R $HOME/android/.gradle
   - for f in $(grep -lR 'MobilePatient' --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/MobilePractitioner/g' $f; done
   - sed -i 's/com.mobilepatient/com.mobilepractitioner/' android/app/build.gradle
   
