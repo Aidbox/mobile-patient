@@ -49,9 +49,9 @@ before_install:
 
 script:
   - echo $PATH
-  - whereis sdkmanager
+  - which sdkmanager
   - ls -l
-  - find . -name sdkmanager
+  - find / -name sdkmanager
   - yes | sdkmanager --licenses
   - lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
   - cd android
