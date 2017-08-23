@@ -61,9 +61,9 @@ script:
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk"
 
   - rm ./android/app/build/outputs/apk/*.apk
+  - rm -R .gradle
   - for f in $(grep -lR 'MobilePatient' --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/MobilePractitioner/g' $f; done
   - sed -i 's/com.mobilepatient/com.mobilepractitioner/' android/app/build.gradle
-  - find $HOME/.gradle -name "localJarClasspathSnapshot.bin" -delete
   
   - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once || travis_terminate 1
   - cd android && ./gradlew --stacktrace --debug assembleRelease  || travis_terminate 1 && cd ..
