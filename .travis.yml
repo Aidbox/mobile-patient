@@ -48,8 +48,7 @@ before_install:
   - gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 script:
-  - cat /usr/local/android-sdk/tools/package.xml
-  - cat /usr/local/android-sdk/tools/source.properties
+  - ls /usr/local/android-sdk/tools
   - yes | sdkmanager --licenses
   - lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
   - cd android
