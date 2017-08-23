@@ -48,8 +48,8 @@ before_install:
   - gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 script:
-  - ls /usr/local/android-sdk/tools
-  - yes | sdkmanager --licenses
+  - echo $ANDROID_HOME
+  - yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
   - lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
   - cd android
   - ./gradlew assembleRelease || travis_terminate 1
