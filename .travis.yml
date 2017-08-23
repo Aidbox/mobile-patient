@@ -7,7 +7,7 @@ before_cache:
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-#    - $HOME/android/.gradle/caches/
+    - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
     - $HOME/google-cloud-sdk/
@@ -75,5 +75,5 @@ script:
   - gsutil cp -r $BUCKET/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk $BUCKET/mobile-patient/
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk"
   
-#  - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="MOBILE %0A Patient - https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk %0A Practitioner - https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk" -d chat_id=$T_CHATID
+  - curl -s -X POST https://api.telegram.org/bot$T_TOKEN/sendMessage -d text="MOBILE %0A Patient - https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk %0A Practitioner - https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk" -d chat_id=$T_CHATID
 
