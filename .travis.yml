@@ -67,7 +67,7 @@ script:
   - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once || travis_terminate 1
   - cd android
   - rm -R .gradle
-  - ./gradlew --info assembleRelease  || travis_terminate 1
+  - ./gradlew assembleRelease || travis_terminate 1
   - cd ..
   - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk
   - gsutil acl -r ch -u AllUsers:R $BUCKET
