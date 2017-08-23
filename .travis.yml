@@ -61,12 +61,12 @@ script:
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk"
 
   - rm ./android/app/build/outputs/apk/*.apk
-  - rm -R .gradle
+  - rm -R $HOME/.gradle
   - for f in $(grep -lR 'MobilePatient' --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/MobilePractitioner/g' $f; done
   - sed -i 's/com.mobilepatient/com.mobilepractitioner/' android/app/build.gradle
   
   - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once || travis_terminate 1
-  - cd android && ./gradlew --stacktrace --debug assembleRelease  || travis_terminate 1 && cd ..
+  - cd android && ./gradlew --debug assembleRelease  || travis_terminate 1 && cd ..
   - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk
   - gsutil acl -r ch -u AllUsers:R $BUCKET
   - gsutil rm $BUCKET/mobile-patient/practitioner-app.apk
