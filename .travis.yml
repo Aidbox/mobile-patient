@@ -48,6 +48,8 @@ before_install:
   - gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 script:
+  - echo $PATH
+  - whereis sdkmanager
   - yes | sdkmanager --licenses
   - lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
   - cd android
