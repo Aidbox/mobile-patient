@@ -3,12 +3,12 @@ jdk:
   - oraclejdk8
 
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -f  $HOME/android/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/android/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-#    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+#    - $HOME/android/.gradle/caches/
+    - $HOME/android/.gradle/wrapper/
     - $HOME/.android/build-cache
     - $HOME/google-cloud-sdk/
     - $HOME/.m2
@@ -61,12 +61,12 @@ script:
   - echo "https://storage.googleapis.com/aidbox-mobile-patient/mobile-patient/$TRAVIS_COMMIT/patient-app.apk"
 
   - rm ./android/app/build/outputs/apk/*.apk
-  - rm -R $HOME/.gradle
+  - rm -R $HOME/android/.gradle
   - for f in $(grep -lR 'MobilePatient' --exclude-dir=.git --exclude=*.yml .); do sed -i 's/MobilePatient/MobilePractitioner/g' $f; done
   - sed -i 's/com.mobilepatient/com.mobilepractitioner/' android/app/build.gradle
   
   - lein do clean, with-profile -dev,+prod,+practitioner cljsbuild once || travis_terminate 1
-  - cd android && ./gradlew --debug assembleRelease  || travis_terminate 1 && cd ..
+  - cd android && ./gradlew --stacktrace assembleRelease  || travis_terminate 1 && cd ..
   - gsutil cp -r ./android/app/build/outputs/apk/app-release.apk $BUCKET/mobile-patient/$TRAVIS_COMMIT/practitioner-app.apk
   - gsutil acl -r ch -u AllUsers:R $BUCKET
   - gsutil rm $BUCKET/mobile-patient/practitioner-app.apk
