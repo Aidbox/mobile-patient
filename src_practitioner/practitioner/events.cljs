@@ -2,6 +2,7 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe reg-event-fx reg-event-db]]
+            [mobile-patient.lib.interceptor :refer [validate-spec]]
             [mobile-patient.ui :as ui]
             [clojure.string :as str]
             [mobile-patient.lib.services :as service]
