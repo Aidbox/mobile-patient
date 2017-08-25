@@ -15,7 +15,8 @@
     "d3-shape",
     "victory-native",
     "react-native-svg",
-    "react-native-swipe-gestures"
+    "react-native-swipe-gestures",
+    "react-native-gesture-view"
   ],
   "imageDirs": [
     "images"

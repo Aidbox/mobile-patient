@@ -13,6 +13,7 @@
     "react": "16.0.0-alpha.6",
     "react-native": "0.44.0",
     "react-native-datepicker": "^1.6.0",
+    "react-native-gesture-view": "^0.1.2",
     "react-native-svg": "5.1.8",
     "react-native-swipe-gestures": "^1.0.2",
     "react-native-tableview-simple": "^0.16.6",

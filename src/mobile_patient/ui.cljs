@@ -66,6 +66,10 @@
 (def react-native-swipe-gestures (js/require "react-native-swipe-gestures"))
 (def gesture-recognizer (r/adapt-react-class (aget react-native-swipe-gestures "default")))
 
+(def react-native-gesture-view (js/require "react-native-gesture-view"))
+(def gesture-view (r/adapt-react-class (aget react-native-gesture-view "default")))
+
+
 (defn button [{:keys [title on-press] :as props}]
   [touchable-highlight {:style {:background-color color/light-grey
                                 :border-width 1

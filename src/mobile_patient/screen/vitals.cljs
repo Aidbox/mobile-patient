@@ -51,12 +51,12 @@
              ]
             )]))]
 
-   [ui/gesture-recognizer {:on-swipe-left (fn [_]
+   [ui/gesture-view {:on-swipe-left (fn [_]
                                             (swap! state1 inc))
                            :style {:flex 1}}
     [vital-chart [{:x @state1 :y @state1} ]]]
 
-   [ui/gesture-recognizer {:on-swipe-left (fn [_]
+   [ui/gesture-view {:on-swipe-left (fn [_]
                                             (swap! state2 inc))
                            :style {:flex 1}}
     [vital-chart [{:x @state2 :y @state2} ]]]
