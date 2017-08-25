@@ -35,7 +35,6 @@
 (def activity-indicator (r/adapt-react-class (.-ActivityIndicator ReactNative)))
 
 (def ART (.-ART ReactNative))
-
 (def surface (r/adapt-react-class (.-Surface ART)))
 (def group (r/adapt-react-class (.-Group ART)))
 (def shape (r/adapt-react-class (.-Shape ART)))
@@ -64,6 +63,8 @@
 (def victory-scatter (r/adapt-react-class (.-VictoryScatter victory-native)))
 (def victory-group (r/adapt-react-class (.-VictoryGroup victory-native)))
 
+(def react-native-swipe-gestures (js/require "react-native-swipe-gestures"))
+(def gesture-recognizer (r/adapt-react-class (aget react-native-swipe-gestures "default")))
 
 (defn button [{:keys [title on-press] :as props}]
   [touchable-highlight {:style {:background-color color/light-grey

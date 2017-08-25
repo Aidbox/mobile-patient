@@ -14,7 +14,8 @@
     "d3-scale",
     "d3-shape",
     "victory-native",
-    "react-native-svg"
+    "react-native-svg",
+    "react-native-swipe-gestures"
   ],
   "imageDirs": [
     "images"
