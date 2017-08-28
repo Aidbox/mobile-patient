@@ -3,7 +3,9 @@
             [re-frame.core :as rf]
             [mobile-patient.ui :as ui]
             [mobile-patient.color :as color]
-            [mobile-patient.component.vital-chart :refer [vital-chart]]))
+            [mobile-patient.component.vital-chart :refer [vital-chart]]
+            [mobile-patient.component.gesture-view :refer [gesture-view]]
+            ))
 
 (def code->title {"9279-1" "Respiratory Rate"
                   "8867-4" "Heart rate"
@@ -51,14 +53,8 @@
              ]
             )]))]
 
-   [ui/gesture-view {:on-swipe-left (fn [_]
-                                            (swap! state1 inc))
-                           :style {:flex 1}}
+   [gesture-view
     [vital-chart [{:x @state1 :y @state1} ]]]
 
-   [ui/gesture-view {:on-swipe-left (fn [_]
-                                            (swap! state2 inc))
-                           :style {:flex 1}}
-    [vital-chart [{:x @state2 :y @state2} ]]]
-
+   #_[vital-chart [{:x @state2 :y @state2} ]]
    ])

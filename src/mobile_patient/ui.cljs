@@ -20,6 +20,7 @@
 (def date-picker-ios (r/adapt-react-class (.-DatePickerIOS ReactNative)))
 (def View (.-View ReactNative))
 (def view (r/adapt-react-class (.-View ReactNative)))
+(def pan-responder (.-PanResponder ReactNative))
 (def modal (r/adapt-react-class (.-Modal ReactNative)))
 (def image (r/adapt-react-class (.-Image ReactNative)))
 (def text (r/adapt-react-class (.-Text ReactNative)))
