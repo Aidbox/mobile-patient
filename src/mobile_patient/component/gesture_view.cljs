@@ -8,8 +8,8 @@
   (let [e1 (first (.. e -touchHistory -touchBank))
         dx (- (.-currentPageX e1) (.-startPageX e1))]
     (cond
-      (> dx 1) :right
-      (< dx -1) :left)))
+      (> dx 20) :right
+      (< dx -20) :left)))
 
 (defn log [e]
   (print (first (.. e -touchHistory -touchBank))))
