@@ -1,0 +1,29 @@
+{
+    "taken": "unk",
+    "resourceType": "MedicationStatement",
+    "note": [
+        {
+            "text": "Patient indicated that they thought it was Amoxicillin they were taking but it was really Erythromycin"
+        }
+    ],
+    "status": "entered-in-error",
+    "effective": {
+        "dateTime": "2014-01-23T00:00:00.000Z"
+    },
+    "dateAsserted": "2015-02-22T00:00:00.000Z",
+    "subject": {
+        "id": "fe0ecce6-a577-4cde-8c02-f7c482111de8",
+        "resourceType": "Patient"
+    },
+    "medication": {
+        "CodeableConcept": {
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "27658006",
+                    "display": "Amoxicillin (product)"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+ "resourceType": "User",
+ "id": "practitioner",
+ "password": "$s0$f0801$JzvLT/eVEgoQDpSEsWwlCA==$u6vtCFkvFxqbpCcli/uGXvpMvkys7bInsekWG5JUHmI=",
+ "module": "oauth",
+ "email": "practitioner@com.com",
+ "ref": {
+         "resourceType": "Practitioner",
+         "id": "26fa1663-e8a2-4ee8-90d5-de632fc2f68a"
+         }
+ }

@@ -1,0 +1,23 @@
+{
+    "taken": "y",
+    "resourceType": "MedicationStatement",
+    "note": [
+        {
+            "text": "Patient can not remember the name of the tablet, but takes it every day in the morning for water retention"
+        }
+    ],
+    "status": "active",
+    "effective": {
+        "dateTime": "2014-02-01T00:00:00.000Z"
+    },
+    "dateAsserted": "2014-02-22T00:00:00.000Z",
+    "subject": {
+        "id": "fe0ecce6-a577-4cde-8c02-f7c482111de8",
+        "resourceType": "Patient"
+    },
+    "medication": {
+        "CodeableConcept": {
+            "text": "Little Pink Pill for water retention"
+        }
+    }
+}

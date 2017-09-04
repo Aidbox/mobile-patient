@@ -1,0 +1,11 @@
+{
+ "resourceType": "User",
+ "id": "patient",
+ "password": "$s0$f0801$NSdO/I/Cfo6IWfTtge1yug==$2YboaesgqTgEeKAI3R6p0tdyqUSlMlADWQVP9xwntss=",
+ "module": "oauth",
+ "email": "patient@com.com",
+ "ref": {
+         "resourceType": "Patient",
+         "id": "fe0ecce6-a577-4cde-8c02-f7c482111de8"
+         }
+ }

@@ -1,0 +1,40 @@
+{
+    "taken": "y",
+    "reasonCode": [
+        {
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "65363002",
+                    "display": "Otitis Media"
+                }
+            ]
+        }
+    ],
+    "resourceType": "MedicationStatement",
+    "note": [
+        {
+            "text": "Patient indicates they miss the occasional dose"
+        }
+    ],
+    "status": "completed",
+    "effective": {
+        "dateTime": "2014-01-23T00:00:00.000Z"
+    },
+    "dateAsserted": "2015-02-22T00:00:00.000Z",
+    "subject": {
+        "id": "fe0ecce6-a577-4cde-8c02-f7c482111de8",
+        "resourceType": "Patient"
+    },
+    "medication": {
+        "CodeableConcept": {
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "27658006",
+                    "display": "Amoxicillin (product)"
+                }
+            ]
+        }
+    }
+}

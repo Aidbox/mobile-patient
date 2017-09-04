@@ -1,0 +1,29 @@
+{
+    "taken": "n",
+    "resourceType": "MedicationStatement",
+    "note": [
+        {
+            "text": "Father indicates they miss the occasional dose"
+        }
+    ],
+    "status": "active",
+    "effective": {
+        "dateTime": "2014-02-01T00:00:00.000Z"
+    },
+    "dateAsserted": "2014-02-22T00:00:00.000Z",
+    "subject": {
+        "id": "fe0ecce6-a577-4cde-8c02-f7c482111de8",
+        "resourceType": "Patient"
+    },
+    "medication": {
+        "CodeableConcept": {
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "27658006",
+                    "display": "Amoxicillin (product)"
+                }
+            ]
+        }
+    }
+}

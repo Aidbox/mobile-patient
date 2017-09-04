@@ -1,0 +1,25 @@
+{
+    "taken": "y",
+    "resourceType": "MedicationStatement",
+    "note": [
+        {
+            "text": "patient plans to start using for seasonal allergies in the Spring when pollen is in the air"
+        }
+    ],
+    "status": "intended",
+    "subject": {
+        "id": "fe0ecce6-a577-4cde-8c02-f7c482111de8",
+        "resourceType": "Patient"
+    },
+    "medication": {
+        "CodeableConcept": {
+            "coding": [
+                {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "358793",
+                    "display": "Mometasone Furoate 0.05mg/Actuat"
+                }
+            ]
+        }
+    }
+}
