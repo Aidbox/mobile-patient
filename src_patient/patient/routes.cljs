@@ -14,7 +14,7 @@
   (ui/DrawerNavigator
    routes
    (clj->js
-    {:initialRouteName "Vitals Signs" ;;for dev
+    {;;:initialRouteName "Vitals Signs" ;;for dev
      :drawerWidth 250
      :contentComponent (fn [props]
                          (r/as-element [Drawer props]))})))
