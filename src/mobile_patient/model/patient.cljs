@@ -7,7 +7,7 @@
 
 (s/def ::name vector?)
 
-(s/def ::patient-spec (s/keys :req-un [::id ::photo ::name]))
+(s/def ::patient-spec (s/keys :req-un [::id ::name]))
 
 
 (defn get-official-name [patient]

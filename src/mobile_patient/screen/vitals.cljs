@@ -53,9 +53,9 @@
              ]
             )]))]
 
-   [gesture-view
+   #_[gesture-view
     [vital-chart [{:x @state1 :y @state1} ]]]
 
-   [gesture-view
+   #_[gesture-view
     [vital-chart [{:x @state2 :y @state2} ]]]
    ])

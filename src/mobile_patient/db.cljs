@@ -60,7 +60,7 @@
              :last-time nil
              :unread-messages {}
              :current-screen :login
-             :config {:base-url "https://sansara.health-samurai.io"
+             :config {:base-url "https://tealnet.health-samurai.io"
                       :client-id "sansara"}
              :active-medication-statements {}
              :other-medication-statements {}
