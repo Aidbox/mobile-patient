@@ -28,12 +28,13 @@
 (def state2 (r/atom 2))
 
 (defn VitalsScreen [{:keys [navigation]}]
-  [ui/scroll-view {:style {:flex 1
-                           :background-color "#fff"
-                           }}
-   [ui/shadow-box
+  (let [observations @(rf/subscribe [:get-observations])]
+    [ui/scroll-view {:style {:flex 1
+                             :background-color "#fff"
+                             }}
+     [ui/shadow-box
       (ui/show-remote-data
-       @(rf/subscribe [:get-observations])
+       observations
        (fn [data]
          [ui/view
           {:style {:flex 1
@@ -53,9 +54,9 @@
              ]
             )]))]
 
-   #_[gesture-view
-    [vital-chart [{:x @state1 :y @state1} ]]]
+     #_[gesture-view
+        [vital-chart [{:x @state1 :y @state1} ]]]
 
-   #_[gesture-view
-    [vital-chart [{:x @state2 :y @state2} ]]]
-   ])
+     #_[gesture-view
+        [vital-chart [{:x @state2 :y @state2} ]]]
+     ]))

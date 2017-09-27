@@ -7,7 +7,7 @@
 
 (s/def ::name vector?)
 
-(s/def ::practitioner-spec (s/keys :req-un [::id ::photo ::name]))
+(s/def ::practitioner-spec (s/keys :req-un [::id ::name]))
 
 
 (defn get-official-name [practitioner]

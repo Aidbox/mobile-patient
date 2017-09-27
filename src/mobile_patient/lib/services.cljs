@@ -13,12 +13,16 @@
    (fn [_ [_ extra-opts]]
      (let [base-url @(subscribe [:get-in [:config :base-url]])
            opts (merge default-opts extra-opts)
-           data-path (keyword (str (name (first db-path)) "-data"))]
+           data-path (keyword (str (name (first db-path)) "-data"))
+           token @(subscribe [:get-in [:auth :id_token]])]
+       (println opts)
+
        (dispatch [:assoc-in (concat db-path [:status]) :loading])
        (-> (js/fetch (str base-url (:uri opts) (h/parms->query (:params opts)))
                      (clj->js (merge {:redirect "manual"
                                       :method "GET"
-                                      :headers {"Content-Type" "application/json"}}
+                                      :headers (merge {"Content-Type" "application/json"}
+                                                      {"Authorization" (str "Bearer " token)})}
                                      opts)))
            (.then #(.json %))
            (.then (fn [resp]
