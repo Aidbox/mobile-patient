@@ -42,12 +42,15 @@
  :fetch
  (fn [{:keys [base-url uri opts success success-parms spinner-id]}]
    (let [base-url (or base-url @(subscribe [:get-in [:config :base-url]]))
-         response (atom nil)]
+         response (atom nil)
+         token @(subscribe [:get-in [:auth :id_token]])
+         ]
      (if spinner-id (dispatch [:spinner spinner-id true]))
      (-> (js/fetch (str base-url uri (h/parms->query (:params opts)))
                    (clj->js (merge {:redirect "manual"
                                     :method "GET"
-                                    :headers {"Content-Type" "application/json"}}
+                                    :headers (merge {"Content-Type" "application/json"}
+                                                    {"Authorization" (str "Bearer " token)})}
                                    opts)))
          (.then (fn [resp]
                   (reset! response resp)
@@ -86,7 +89,7 @@
               :spinner-id :login
               :success :on-login
               :opts {:params {:response_type "id_token token"
-                             :client_id "sansara"
+                             :client_id "tealnet"
                              :state "state"
                              :scope "openid"}
                      :method "POST"
@@ -106,7 +109,8 @@
                token-data (jwt/get-data-from-token id-token)
                user-id  (:user-id token-data)]
            (assert user-id)
-           {:db (merge db {:access-token (:access_token auth-data)
+           {:db (merge db {:auth auth-data
+                           :access-token (:access_token auth-data)
                            :last-time (.toISOString (js/Date.))})
             :dispatch [:boot user-id]})))
      (do
